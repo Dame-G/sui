@@ -10,7 +10,7 @@ Layout: `registry/` = component source of truth (`ui/`, `lib/`, `theme.css`, `re
 ## Project rules
 (General working rules live in `~/.claude/CLAUDE.md`.)
 - Hardened (tests, CI, audit exist). Keep `bun run check`, `bun test tests` green; tests only at real boundaries.
-- Don't add dependencies without asking. Releases: `main` deploys the site and registry to `https://sui.dame.gg` via Cloudflare Pages.
+- Don't add dependencies without asking. Live at `https://sui.dame.gg` (Cloudflare Workers static assets, `wrangler.jsonc`). Deploy with `bun run deploy` (needs `wrangler login`); `SUI_LIVE=https://sui.dame.gg/r bun run smoke` checks the live registry. Afterwards run `bun run registry:build` to put dev URLs back.
 - UI work: run `bun dev` (http://localhost:5173), and after adding files `touch site/src/style.css` so Tailwind rescans. Open the result with `xdg-open`.
 - Rebuilding from the original: read `Dame-G/eos` first (`packages/vue/src/components/*`, `styles/`, `tokens/src/tokens.json`).
 

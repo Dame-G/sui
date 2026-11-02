@@ -7,7 +7,9 @@ import { components } from '../registry/components'
 
 const root = join(import.meta.dir, '..')
 const port = 4399
-const base = `http://localhost:${port}/r`
+// SUI_LIVE=https://sui.dame.gg/r tests the deployed registry instead of a local build.
+const live = process.env.SUI_LIVE?.replace(/\/$/, '')
+const base = live ?? `http://localhost:${port}/r`
 const reg = await mkdtemp(join(tmpdir(), 'sui-reg-'))
 const app = await mkdtemp(join(tmpdir(), 'sui-app-'))
 
@@ -21,8 +23,8 @@ const write = (f: string, s: string) => mkdir(join(app, f, '..'), { recursive: t
 
 let server: ReturnType<typeof Bun.serve> | undefined
 try {
-  await run(['bun', 'scripts/build-registry.ts'], root, { SUI_REGISTRY_URL: base, SUI_REGISTRY_OUT: reg })
-  server = Bun.serve({
+  if (!live) await run(['bun', 'scripts/build-registry.ts'], root, { SUI_REGISTRY_URL: base, SUI_REGISTRY_OUT: reg })
+  if (!live) server = Bun.serve({
     port,
     fetch: (req) => {
       const f = Bun.file(join(reg, new URL(req.url).pathname.replace(/^\/r\//, '')))

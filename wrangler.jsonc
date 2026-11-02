@@ -1,0 +1,6 @@
+{
+  "name": "sui",
+  "compatibility_date": "2026-11-01",
+  "assets": { "directory": "site/dist", "not_found_handling": "single-page-application" },
+  "routes": [{ "pattern": "sui.dame.gg", "custom_domain": true }]
+}
