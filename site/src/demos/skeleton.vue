@@ -1,0 +1,26 @@
+<script setup lang="ts">
+import Card from '@/components/ui/card.vue'
+import Skeleton from '@/components/ui/skeleton.vue'
+</script>
+
+<template>
+  <div class="grid items-start gap-8 md:grid-cols-2">
+    <div class="flex flex-col gap-3">
+      <p class="kicker">Text lines</p>
+      <Skeleton label="Loading comments" class="w-2/5" />
+      <Skeleton />
+      <Skeleton class="w-3/5" />
+    </div>
+    <div class="flex flex-col gap-2">
+      <p class="kicker">In context</p>
+      <Card title="Ada Lovelace">
+        <div class="flex items-center gap-3">
+          <Skeleton class="size-11 shrink-0" />
+          <div class="grid flex-1 gap-2"><Skeleton class="w-1/2" /><Skeleton class="w-3/4" /></div>
+        </div>
+        <Skeleton /><Skeleton class="w-2/3" />
+      </Card>
+    </div>
+    <p class="text-muted md:col-span-2">Skeletons are hidden from screen readers. Give the first one a <code class="numeral">label</code> and it speaks for the group.</p>
+  </div>
+</template>

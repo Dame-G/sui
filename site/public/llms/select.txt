@@ -1,0 +1,80 @@
+# Select
+
+Dropdown list with keyboard typeahead, groups, multi-select and clear.
+
+Group: Forms. Registry item: http://localhost:5173/r/select.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/select.json
+```
+
+Installs with: theme, utils, field, spinner. npm packages: reka-ui.
+
+Import it from your own copy: `import Select from '@/components/ui/select.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `v-model` | `T` |  | Two-way bound value. |
+| `options (required)` | `{ value: string; label: string; description?: string; group?: string; disabled?: boolean }[]` |  | `group` puts options under a heading (keep a group's options together); `description` is a second line. |
+| `placeholder` | `string` |  |  |
+| `label` | `string` |  | Optional: without one the select carries a hidden label so it still has an accessible name. |
+| `hint` | `string` |  |  |
+| `error` | `string` |  |  |
+| `required` | `boolean` |  |  |
+| `optional` | `boolean` |  |  |
+| `multiple` | `boolean` |  | Pick several: the model is then a string[] and the trigger reads "3 selected". |
+| `clearable` | `boolean` |  | Show a clear button once something is picked. |
+| `loading` | `boolean` |  | Options are on their way: shows a spinner and sets aria-busy. |
+| `disabled` | `boolean` |  |  |
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import Select from '@/components/ui/select.vue'
+
+const fruit = ref<string>()
+const roles = ref<string[]>(['read'])
+const region = ref<string>('eu')
+const picked = ref<string>()
+const options = [
+  { value: 'apple', label: 'Apple' },
+  { value: 'mango', label: 'Mango' },
+  { value: 'pear', label: 'Pear' },
+  { value: 'durian', label: 'Durian (sold out)', disabled: true },
+]
+const roleOptions = [
+  { value: 'read', label: 'Read', description: 'View everything' },
+  { value: 'write', label: 'Write', description: 'Create and edit' },
+  { value: 'admin', label: 'Admin', description: 'Manage people and billing' },
+]
+const regions = [
+  { value: 'us-e', label: 'US East', group: 'Americas' },
+  { value: 'us-w', label: 'US West', group: 'Americas' },
+  { value: 'eu', label: 'Frankfurt', group: 'Europe' },
+  { value: 'uk', label: 'London', group: 'Europe' },
+  { value: 'ap', label: 'Singapore', group: 'Asia Pacific' },
+]
+</script>
+
+<template>
+  <div class="grid items-start gap-6 md:grid-cols-2">
+    <Select v-model="fruit" :options="options" label="Fruit" placeholder="Pick a fruit" hint="Durian is sold out." />
+    <Select v-model="roles" :options="roleOptions" label="Roles" multiple clearable placeholder="Choose roles" />
+    <Select v-model="region" :options="regions" label="Region" clearable />
+    <Select v-model="picked" :options="options" label="Favourite fruit" required placeholder="Pick one" :error="picked ? undefined : 'Pick a fruit to continue.'" />
+    <Select model-value="pear" :options="options" label="Locked" disabled />
+    <Select :options="[]" label="Loading" loading placeholder="Fetching options…" />
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.

@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "jsx": "preserve",
+    "skipLibCheck": true,
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "types": ["vite/client"],
+    "paths": { "@/lib/*": ["../registry/lib/*"], "@/components/ui/*": ["../registry/ui/*"], "@/*": ["./src/*"], "@registry/*": ["../registry/*"] }
+  },
+  "include": ["src/**/*", "src/**/*.vue", "../registry/**/*", "vite.config.ts", "props-plugin.ts", "props-lib.ts"]
+}

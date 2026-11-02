@@ -1,0 +1,78 @@
+# Hover card
+
+Rich preview shown when hovering a link or trigger.
+
+Group: Overlays. Registry item: http://localhost:5173/r/hover-card.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/hover-card.json
+```
+
+Installs with: theme, utils. npm packages: reka-ui.
+
+Import it from your own copy: `import Hovercard from '@/components/ui/hover-card.vue'`.
+
+## Props
+
+No props; it takes content only.
+
+Slots: `trigger`, `default`.
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import Avatar from '@/components/ui/avatar.vue'
+import Badge from '@/components/ui/badge.vue'
+import HoverCard from '@/components/ui/hover-card.vue'
+import Progress from '@/components/ui/progress.vue'
+</script>
+
+<template>
+  <div class="grid max-w-xl gap-8">
+    <div class="grid gap-3">
+      <span class="kicker">A person</span>
+      <p>
+        Built by
+        <HoverCard>
+          <template #trigger>
+            <a href="#/components/hover-card" class="rounded-sm font-medium text-primary underline underline-offset-4 focus-ring">@dame-g</a>
+          </template>
+          <div class="flex gap-3">
+            <Avatar fallback="DG" />
+            <div class="grid gap-1">
+              <p class="font-medium">Dame G</p>
+              <p class="text-sm text-muted">Makes small tools and the sui component set.</p>
+            </div>
+          </div>
+        </HoverCard>
+        in the evenings.
+      </p>
+    </div>
+    <div class="grid gap-3">
+      <span class="kicker">A project</span>
+      <p>
+        Next up is
+        <HoverCard>
+          <template #trigger>
+            <a href="#/components/hover-card" class="rounded-sm font-medium text-primary underline underline-offset-4 focus-ring">the Q4 launch</a>
+          </template>
+          <div class="grid gap-3">
+            <div class="flex items-center justify-between gap-2"><p class="font-medium">Q4 launch</p><Badge tone="warning">At risk</Badge></div>
+            <Progress :model-value="58" label="Done" />
+            <p class="text-sm text-muted">14 of 24 tasks complete. Due Dec 12.</p>
+          </div>
+        </HoverCard>
+        and the website refresh.
+      </p>
+    </div>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.

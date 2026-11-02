@@ -1,0 +1,36 @@
+<script setup lang="ts">
+import Accordion from '@/components/ui/accordion.vue'
+import Badge from '@/components/ui/badge.vue'
+
+const faq = [
+  { value: 'own', title: 'Do I own the code?' },
+  { value: 'theme', title: 'How do I change the look?' },
+  { value: 'update', title: 'How do updates work?' },
+]
+const long = [
+  { value: 'a', title: 'A heading that is long enough that it has to wrap onto a second line on narrow screens' },
+  { value: 'b', title: 'Short one' },
+]
+</script>
+
+<template>
+  <div class="grid gap-8 md:grid-cols-2">
+    <div class="flex flex-col gap-2">
+      <p class="kicker">Default</p>
+      <Accordion :items="faq">
+        <template #own>Yes. The CLI copies the source into your project.</template>
+        <template #theme>Edit the tokens in your theme file; the design rules stay put.</template>
+        <template #update>Re-run the add command and review the diff.</template>
+      </Accordion>
+    </div>
+    <div class="flex flex-col gap-2">
+      <p class="kicker">Long titles and rich content</p>
+      <Accordion :items="long">
+        <template #a>
+          <p class="leading-normal">Panels can hold anything: text, a <Badge tone="success">Badge</Badge> and more.</p>
+        </template>
+        <template #b>Only one panel is open at a time.</template>
+      </Accordion>
+    </div>
+  </div>
+</template>

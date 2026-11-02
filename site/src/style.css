@@ -1,0 +1,103 @@
+@import 'tailwindcss';
+@import '@registry/theme.css';
+@source '../../registry';
+
+/* Site-only fonts, self-hosted (latin subset). The components fall back to system fonts. */
+@font-face {
+  font-family: 'Bricolage Grotesque';
+  font-weight: 400 800;
+  font-display: swap;
+  src: url('/fonts/bricolage-grotesque.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Geist Mono';
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/fonts/geist-mono.woff2') format('woff2');
+}
+
+/* Home page flowing lines (FlowField.vue): they fade in, and stay still under reduced motion. */
+.flow-field {
+  animation: sui-fade-in 900ms var(--ease-out) both;
+}
+.flow-field.is-still {
+  animation: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .flow-field {
+    animation: none;
+  }
+}
+
+/* Syntax colours for CodeBlock: the sui tone colours, so they follow the theme. */
+.code {
+  --code-foreground: var(--color-ink);
+  --code-background: transparent;
+  --code-token-constant: var(--color-warning);
+  --code-token-string: var(--color-success);
+  --code-token-comment: var(--color-muted);
+  --code-token-keyword: var(--color-danger);
+  --code-token-parameter: var(--color-ink);
+  --code-token-function: var(--color-primary);
+  --code-token-string-expression: var(--color-success);
+  --code-token-punctuation: var(--color-muted);
+  --code-token-link: var(--color-primary);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  line-height: 1.7;
+}
+.code pre { margin: 0; background: transparent !important; font: inherit; white-space: pre; }
+.code code { font: inherit; }
+/* A one-line command wraps instead of scrolling sideways. */
+.code-wrap pre, pre.code-wrap { white-space: pre-wrap; overflow-wrap: anywhere; }
+
+/* Print: the page is a document, not an app. Chrome that only works on screen is dropped; nothing is clipped; blocks don't split. */
+@page { margin: 14mm; }
+@media print {
+  html { font-size: 13px; }
+  [role='tablist'], .flow-field { display: none !important; }
+  /* scroll boxes and windowed regions show everything */
+  .overflow-x-auto, .overflow-y-auto, .overflow-auto:not([style*='height']), [style*='max-height'], .code { overflow: visible !important; max-height: none !important; }
+  /* a windowed list prints the rows it has drawn, not thousands of blank ones */
+  tr[aria-hidden='true'][style*='height'] { display: none; }
+  .code pre, pre.code { white-space: pre-wrap !important; overflow-wrap: anywhere; font-size: 0.85em; }
+  pre, tr, li, figure, table caption { break-inside: avoid; }
+  h1, h2, h3, h4 { break-after: avoid; }
+  /* a link in running text shows where it goes */
+  p a[href^='http']::after, li a[href^='http']::after, dd a[href^='http']::after { content: ' (' attr(href) ')'; color: var(--color-muted); font-size: 0.85em; overflow-wrap: anywhere; }
+  main { min-height: 0 !important; }
+}
+
+/* The site header has one height, so the components sidebar can fill exactly what is left below it. */
+:root {
+  --header-h: 5.25rem;
+  --footer-h: 4.5rem;
+}
+.site-header {
+  height: var(--header-h);
+}
+.site-footer {
+  min-height: var(--footer-h);
+}
+/* The row is never shorter than the sidebar, so the sidebar can always stick in full. */
+.docs-row {
+  min-height: calc(100dvh - var(--header-h));
+}
+.toc {
+  position: sticky;
+  top: calc(var(--header-h) + 2rem);
+}
+[id^='sec-'], [id^='step-'] {
+  scroll-margin-top: calc(var(--header-h) + 2rem);
+}
+.side-nav {
+  position: sticky;
+  top: calc(var(--header-h) + 2rem);
+  /* Room for the footer too, so at the end of the page the sidebar still clears the header. */
+  height: calc(100dvh - var(--header-h) - var(--footer-h) - 4rem);
+}
+
+/* The page header's lines fade out toward its bottom edge, so they never meet the content. */
+.flow-fade {
+  mask-image: linear-gradient(to bottom, black 35%, transparent);
+}

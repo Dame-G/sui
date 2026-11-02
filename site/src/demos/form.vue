@@ -1,0 +1,42 @@
+<script setup lang="ts">
+import { computed, ref } from 'vue'
+import Button from '@/components/ui/button.vue'
+import Card from '@/components/ui/card.vue'
+import Form from '@/components/ui/form.vue'
+import PasswordField from '@/components/ui/password-field.vue'
+import TextField from '@/components/ui/text-field.vue'
+import { toast } from '@/components/ui/toast.vue'
+
+const form = ref<InstanceType<typeof Form>>()
+const name = ref('')
+const email = ref('grace@')
+const password = ref('')
+const submitting = ref(false)
+const emailError = computed(() => (email.value && !/^\S+@\S+\.\S+$/.test(email.value) ? 'Enter a full email address.' : undefined))
+const passwordError = computed(() => (password.value && password.value.length < 8 ? 'Use at least 8 characters.' : undefined))
+
+function save() {
+  submitting.value = true
+  setTimeout(() => {
+    submitting.value = false
+    toast({ title: 'Account created', tone: 'success' })
+  }, 900)
+}
+</script>
+
+<template>
+  <div class="grid items-start gap-6 md:grid-cols-2">
+    <Card title="Create account">
+      <Form ref="form" :submitting="submitting" @submit="save">
+        <TextField v-model="name" label="Full name" required />
+        <TextField v-model="email" label="Email" type="email" :error="emailError" required />
+        <PasswordField v-model="password" label="Password" mode="new" :error="passwordError" required />
+        <div class="flex flex-wrap gap-3">
+          <Button type="submit" :disabled="submitting">{{ submitting ? 'Creating…' : 'Create account' }}</Button>
+          <Button type="button" @click="form?.reset()">Reset</Button>
+        </div>
+      </Form>
+    </Card>
+    <p class="max-w-sm text-muted">Submit it empty: a summary lists each problem as a link and focus moves to it. Each link jumps to its field.</p>
+  </div>
+</template>

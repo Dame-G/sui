@@ -1,0 +1,59 @@
+# Color picker
+
+Pick a colour from an area, a hue slider, swatches or a hex field.
+
+Group: Forms. Registry item: http://localhost:5173/r/color-picker.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/color-picker.json
+```
+
+Installs with: theme, utils. npm packages: reka-ui.
+
+Import it from your own copy: `import Colorpicker from '@/components/ui/color-picker.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `v-model` | `string` | `'#2c95b4'` | Two-way bound value. |
+| `label (required)` | `string` |  |  |
+| `swatches` | `string[]` | `['#2c95b4', '#005f7c', '#2e7d4f', '#d89614', '#d6561f', '#b3261e', '#7a3e9d', '#242424']` |  |
+| `error` | `string` |  |  |
+| `disabled` | `boolean` |  |  |
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { computed, ref } from 'vue'
+import ColorPicker from '@/components/ui/color-picker.vue'
+
+const brand = ref('#2c95b4')
+const accent = ref('#f4efe2')
+
+// A rough light-or-dark test, to show the error state.
+const tooLight = computed(() => {
+  const n = parseInt(accent.value.slice(1), 16)
+  return 0.299 * (n >> 16) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255) > 170
+})
+</script>
+
+<template>
+  <div class="grid items-start gap-8 md:grid-cols-3">
+    <div class="grid content-start gap-3">
+      <ColorPicker v-model="brand" label="Brand colour" />
+      <p class="numeral text-sm text-muted">Picked: {{ brand }}</p>
+    </div>
+    <ColorPicker v-model="accent" label="Accent" :swatches="['#d6561f', '#f4efe2', '#7a3e9d', '#1d4e5a']" :error="tooLight ? 'Too light for white text.' : undefined" />
+    <ColorPicker model-value="#7a3e9d" label="Locked" disabled />
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.

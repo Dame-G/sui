@@ -1,0 +1,28 @@
+<script setup lang="ts">
+import { ref } from 'vue'
+import Menubar from '@/components/ui/menubar.vue'
+
+const last = ref('nothing yet')
+const menus = [
+  { value: 'file', label: 'File', items: [{ value: 'new', label: 'New file' }, { value: 'open', label: 'Open…' }, { value: 'save', label: 'Save' }, { value: 'export', label: 'Export as PDF' }] },
+  { value: 'edit', label: 'Edit', items: [{ value: 'undo', label: 'Undo' }, { value: 'redo', label: 'Redo' }, { value: 'cut', label: 'Cut' }, { value: 'copy', label: 'Copy' }, { value: 'paste', label: 'Paste', disabled: true }] },
+  { value: 'view', label: 'View', items: [{ value: 'zoom-in', label: 'Zoom in' }, { value: 'zoom-out', label: 'Zoom out' }, { value: 'full', label: 'Full screen' }] },
+  { value: 'window', label: 'Window', items: [{ value: 'min', label: 'Minimise' }, { value: 'tile', label: 'Tile left' }] },
+  { value: 'help', label: 'Help', items: [{ value: 'docs', label: 'Documentation' }, { value: 'about', label: 'About sui' }] },
+]
+const small = menus.slice(0, 2)
+</script>
+
+<template>
+  <div class="grid gap-8">
+    <div class="grid gap-3">
+      <span class="kicker">App menu bar · {{ last }}</span>
+      <Menubar :menus="menus" @select="(m, i) => (last = `${m} / ${i}`)" />
+      <p class="max-w-md text-sm text-muted">Open one menu, then move across the bar with the arrow keys to switch menus.</p>
+    </div>
+    <div class="grid gap-3">
+      <span class="kicker">Two menus only</span>
+      <Menubar :menus="small" @select="(m, i) => (last = `${m} / ${i}`)" />
+    </div>
+  </div>
+</template>

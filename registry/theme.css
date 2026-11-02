@@ -1,0 +1,938 @@
+/*
+ * sui theme. Tokens + a few recipes. Import once, after tailwindcss.
+ *
+ * THEMABLE (change freely): brand / primary colours, radius, depth, fonts.
+ * THE IDENTITY (don't change, it is what makes sui sui):
+ *   - the SLAB: a raised face sits on a darker bottom edge (`slab`); a tone edge is a slab turned on its side (`edge-start`)
+ *   - 1px edges, a 2px slab, 2px focus ring, one control height
+ *   - soft tinted tones, striped "still to do" areas (`stripes`), dashed edges for disabled/busy
+ *   - three weights only: regular 400, medium 500, strong 600 (no bold)
+ *   - mono for labels and figures (`kicker`, `numeral`)
+ */
+
+@theme static {
+  /* ---- colour: brand + action ------------------------------------------------ */
+  --color-brand: #2c95b4; /* the logo blue. decorative only, never carries text */
+  --color-accent: #72c451; /* the logo green. decorative only */
+  --color-primary: #005f7c; /* action colour: deep enough for white text at AAA */
+  --color-on-primary: #ffffff;
+  --color-primary-hover: color-mix(in srgb, var(--color-primary), black 8%);
+  --color-primary-press: color-mix(in srgb, var(--color-primary), black 16%);
+  --color-primary-slab: color-mix(in srgb, var(--color-primary), black 30%);
+  --color-primary-soft: color-mix(in srgb, var(--color-brand) 16%, var(--color-surface));
+
+  /* ---- colour: tones ----------------------------------------------------------- */
+  --color-info: var(--color-primary);
+  --color-info-soft: var(--color-primary-soft);
+  --color-success: #266444;
+  --color-success-soft: #dcfbe8;
+  --color-warning: #714a00;
+  --color-warning-soft: #fdf3dc;
+  --color-danger: #962019;
+  --color-on-danger: #ffffff;
+  --color-danger-hover: color-mix(in srgb, var(--color-danger), black 8%);
+  --color-danger-press: color-mix(in srgb, var(--color-danger), black 16%);
+  --color-danger-slab: color-mix(in srgb, var(--color-danger), black 30%);
+  --color-danger-soft: #fbe9e7;
+
+  /* ---- colour: neutrals -------------------------------------------------------- */
+  --color-ink: #000000;
+  --color-muted: #515151;
+  --color-edge: #6d7d84; /* 1px frames */
+  --color-edge-strong: #767676; /* control edges and neutral slabs */
+  --color-page: #ffffff;
+  --color-surface: #ffffff;
+  --color-surface-tint: #d0e1e8; /* wells and neutral chips */
+  --color-paper: #fefcf7;
+  --color-skeleton: color-mix(in srgb, var(--color-ink) 6%, var(--color-surface));
+  --color-wash-hover: color-mix(in srgb, #a1c3d1 50%, transparent);
+  --color-wash-press: color-mix(in srgb, #a1c3d1 75%, transparent);
+  --color-wash-ring: color-mix(in srgb, var(--color-ink) 42%, transparent);
+  --color-scrim: rgb(8 41 50 / 0.55);
+  --color-selection: #9bcde3;
+  --color-focus: var(--color-ink);
+
+  /* ---- type -------------------------------------------------------------------- */
+  --font-sans: 'Bricolage Grotesque', 'Avenir Next', system-ui, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, Menlo, Consolas, monospace;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-strong: 600;
+  --tracking-label: 0.08em;
+  --tracking-tight: -0.02em;
+
+  /* ---- shape ------------------------------------------------------------------- */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 16px;
+  --stroke-edge: 1px;
+  --stroke-focus: 2px;
+  --depth: 2px; /* how far the slab reaches. theme input */
+  --depth-thin: calc(var(--depth) / 2);
+  --depth-bold: calc(var(--depth) * 2);
+
+  /* ---- sizes (utilities: h-control, size-check, min-h-tap ...) ------------------ */
+  --spacing-control: 3rem;
+  --spacing-tap: 2.75rem;
+  --spacing-chip: 1.5rem;
+  --spacing-check: 1.5rem;
+
+  /* ---- depth materials (utilities: shadow-frame, shadow-well, shadow-float) ----- */
+  --shadow-frame: 0 0 0 var(--stroke-edge) var(--color-edge);
+  --shadow-well: inset 0 2px 0 0 rgb(36 36 36 / 0.07);
+  --shadow-drop: 0 12px 32px -8px rgb(36 36 36 / 0.18);
+  --shadow-float:
+    0 0 0 var(--stroke-edge) var(--color-edge), 0 calc(2 * var(--depth)) 0 var(--stroke-edge) var(--color-edge),
+    0 12px 32px -8px rgb(36 36 36 / 0.18);
+
+  /* ---- motion ------------------------------------------------------------------ */
+  --duration-tap: 80ms;
+  --duration-fade: 140ms;
+  --duration-move: 220ms;
+  --ease-out: cubic-bezier(0.2, 0, 0, 1);
+  --animate-ring: sui-spin 900ms linear infinite;
+  --animate-stripes: sui-stripes 900ms linear infinite;
+  --animate-slide: sui-slide 1400ms ease-in-out infinite;
+  --animate-pulse-soft: sui-pulse 1400ms ease-in-out infinite;
+}
+
+@keyframes sui-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes sui-stripes {
+  to {
+    background-position-x: 1.4142rem;
+  }
+}
+@keyframes sui-slide {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(250%);
+  }
+}
+@keyframes sui-pulse {
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Enter/exit animations for floating panels (used by dialog, sheet, popover, tooltip, dropdown-menu, accordion). */
+@keyframes sui-pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(calc(-2 * var(--depth)));
+  }
+}
+@keyframes sui-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes sui-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+/* Centred panels sit with Tailwind's `translate` property, so these animate `scale` only; a `transform: translate(-50%)` here would stack on top and fly the panel in from the corner. */
+@keyframes sui-dialog-in {
+  from {
+    opacity: 0;
+    scale: 0.97;
+  }
+}
+@keyframes sui-dialog-out {
+  to {
+    opacity: 0;
+    scale: 0.97;
+  }
+}
+@keyframes sui-sheet-in {
+  from {
+    transform: translateX(100%);
+  }
+}
+@keyframes sui-sheet-out {
+  to {
+    transform: translateX(100%);
+  }
+}
+@keyframes sui-accordion-down {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--reka-accordion-content-height);
+  }
+}
+@keyframes sui-accordion-up {
+  from {
+    height: var(--reka-accordion-content-height);
+  }
+  to {
+    height: 0;
+  }
+}
+
+/* Collapsible (the accordion's motion, with Reka's collapsible height variable). */
+@keyframes sui-collapse-down {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--reka-collapsible-content-height);
+  }
+}
+@keyframes sui-collapse-up {
+  from {
+    height: var(--reka-collapsible-content-height);
+  }
+  to {
+    height: 0;
+  }
+}
+
+/* Toast: slides in from the inline end. */
+@keyframes sui-toast-in {
+  from {
+    opacity: 0;
+    transform: translateX(calc(100% + 1rem));
+  }
+}
+@keyframes sui-toast-out {
+  to {
+    opacity: 0;
+    transform: translateX(calc(100% + 1rem));
+  }
+}
+
+/* Drawer: slides up from the bottom edge. It uses `transform`; swiping uses the separate `translate` property, so the two stack. */
+@keyframes sui-drawer-in {
+  from {
+    transform: translateY(100%);
+  }
+}
+@keyframes sui-drawer-out {
+  to {
+    transform: translateY(100%);
+  }
+}
+
+/* Sheet, start side (the end side is sui-sheet-in/out; RTL flips them). */
+@keyframes sui-sheet-in-start {
+  from {
+    transform: translateX(-100%);
+  }
+}
+@keyframes sui-sheet-out-start {
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+/* Reduced motion, decided in one place. Every transition and animation in sui reads these tokens, so zeroing them stops it all; the loops
+   (spinner arc, stripes, shimmer, indeterminate bar) are switched off outright. The spinner then shows as a still arc, which still reads as "busy". */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-tap: 0.01ms;
+    --duration-fade: 0.01ms;
+    --duration-move: 0.01ms;
+    --animate-ring: none;
+    --animate-stripes: none;
+    --animate-slide: none;
+    --animate-pulse-soft: none;
+    scroll-behavior: auto;
+  }
+}
+
+/* ================================ schemes ===================================== */
+/* Dark: `data-scheme="dark"` on <html> forces it; `data-scheme="auto"` follows the system. No attribute (or "light") keeps the light palette.
+   Every pair is checked: body text 7:1, other text 4.5:1, edges and focus 3:1 (the playground's Theme page re-checks them live). */
+:root[data-scheme='dark'] {
+  color-scheme: dark;
+  --color-page: #0d1519;
+  --color-surface: #121e23;
+  --color-surface-tint: #1d2f36;
+  --color-paper: #0f191d;
+  --color-ink: #f3f8fa;
+  --color-muted: #aebcc2;
+  --color-edge: #6f858d;
+  --color-edge-strong: #8197a0;
+  --color-primary: #59c0de;
+  --color-on-primary: #00212b;
+  --color-primary-hover: color-mix(in srgb, var(--color-primary), white 8%);
+  --color-primary-press: color-mix(in srgb, var(--color-primary), white 16%);
+  --color-primary-slab: color-mix(in srgb, var(--color-primary), black 40%);
+  --color-success: #7ad79d;
+  --color-success-soft: #123122;
+  --color-warning: #f0c36a;
+  --color-warning-soft: #352708;
+  --color-danger: #ff8f86;
+  --color-on-danger: #2a0604;
+  --color-danger-hover: color-mix(in srgb, var(--color-danger), white 8%);
+  --color-danger-press: color-mix(in srgb, var(--color-danger), white 16%);
+  --color-danger-slab: color-mix(in srgb, var(--color-danger), black 40%);
+  --color-danger-soft: #3b1613;
+  --color-wash-hover: color-mix(in srgb, #a1c3d1 14%, transparent);
+  --color-wash-press: color-mix(in srgb, #a1c3d1 26%, transparent);
+  --color-scrim: rgb(0 0 0 / 0.65);
+  --color-selection: #245567;
+  --shadow-well: inset 0 2px 0 0 rgb(0 0 0 / 0.35);
+  --shadow-drop: 0 12px 32px -8px rgb(0 0 0 / 0.6);
+  --shadow-float:
+    0 0 0 var(--stroke-edge) var(--color-edge), 0 calc(2 * var(--depth)) 0 var(--stroke-edge) var(--color-edge),
+    0 12px 32px -8px rgb(0 0 0 / 0.6);
+}
+@media (prefers-color-scheme: dark) {
+  :root[data-scheme='auto'] {
+    color-scheme: dark;
+    --color-page: #0d1519;
+    --color-surface: #121e23;
+    --color-surface-tint: #1d2f36;
+    --color-paper: #0f191d;
+    --color-ink: #f3f8fa;
+    --color-muted: #aebcc2;
+    --color-edge: #6f858d;
+    --color-edge-strong: #8197a0;
+    --color-primary: #59c0de;
+    --color-on-primary: #00212b;
+    --color-primary-hover: color-mix(in srgb, var(--color-primary), white 8%);
+    --color-primary-press: color-mix(in srgb, var(--color-primary), white 16%);
+    --color-primary-slab: color-mix(in srgb, var(--color-primary), black 40%);
+    --color-success: #7ad79d;
+    --color-success-soft: #123122;
+    --color-warning: #f0c36a;
+    --color-warning-soft: #352708;
+    --color-danger: #ff8f86;
+    --color-on-danger: #2a0604;
+    --color-danger-hover: color-mix(in srgb, var(--color-danger), white 8%);
+    --color-danger-press: color-mix(in srgb, var(--color-danger), white 16%);
+    --color-danger-slab: color-mix(in srgb, var(--color-danger), black 40%);
+    --color-danger-soft: #3b1613;
+    --color-wash-hover: color-mix(in srgb, #a1c3d1 14%, transparent);
+    --color-wash-press: color-mix(in srgb, #a1c3d1 26%, transparent);
+    --color-scrim: rgb(0 0 0 / 0.65);
+    --color-selection: #245567;
+    --shadow-well: inset 0 2px 0 0 rgb(0 0 0 / 0.35);
+    --shadow-drop: 0 12px 32px -8px rgb(0 0 0 / 0.6);
+    --shadow-float:
+      0 0 0 var(--stroke-edge) var(--color-edge), 0 calc(2 * var(--depth)) 0 var(--stroke-edge) var(--color-edge),
+      0 12px 32px -8px rgb(0 0 0 / 0.6);
+  }
+}
+
+/* High contrast: `data-contrast="high"` forces it; `data-contrast="auto"` follows prefers-contrast. Edges go full strength, strokes get heavier
+   (those drawn from --stroke-edge: slabs, tone edges, frames), tints turn plain grey, muted text darkens to 7:1. Works on top of either scheme. */
+:root[data-contrast='high'] {
+  --stroke-edge: 2px;
+  --stroke-focus: 3px;
+  --color-edge: var(--color-ink);
+  --color-edge-strong: var(--color-ink);
+  --color-muted: color-mix(in srgb, var(--color-ink) 85%, var(--color-surface));
+  --color-surface-tint: color-mix(in srgb, var(--color-ink) 8%, var(--color-surface));
+  --color-primary-soft: color-mix(in srgb, var(--color-ink) 3%, var(--color-surface));
+  --color-success-soft: color-mix(in srgb, var(--color-success) 10%, var(--color-surface));
+  --color-warning-soft: color-mix(in srgb, var(--color-warning) 10%, var(--color-surface));
+  --color-danger-soft: color-mix(in srgb, var(--color-danger) 10%, var(--color-surface));
+}
+@media (prefers-contrast: more) {
+  :root[data-contrast='auto'] {
+    --stroke-edge: 2px;
+    --stroke-focus: 3px;
+    --color-edge: var(--color-ink);
+    --color-edge-strong: var(--color-ink);
+    --color-muted: color-mix(in srgb, var(--color-ink) 85%, var(--color-surface));
+    --color-surface-tint: color-mix(in srgb, var(--color-ink) 8%, var(--color-surface));
+    --color-primary-soft: color-mix(in srgb, var(--color-ink) 3%, var(--color-surface));
+    --color-success-soft: color-mix(in srgb, var(--color-success) 10%, var(--color-surface));
+    --color-warning-soft: color-mix(in srgb, var(--color-warning) 10%, var(--color-surface));
+    --color-danger-soft: color-mix(in srgb, var(--color-danger) 10%, var(--color-surface));
+  }
+}
+
+/* Forced colours (Windows high contrast): the system palette wins. Edges and focus rings are kept, decorative shadows are dropped, and the
+   few fills that carry meaning (primary and danger faces, progress and slider ranges, chart series) keep a visible system colour. */
+@media (forced-colors: active) {
+  :root {
+    --color-focus: Highlight;
+    --shadow-well: none;
+    --shadow-drop: none;
+    --shadow-frame: 0 0 0 var(--stroke-edge) CanvasText;
+    --shadow-float: 0 0 0 var(--stroke-edge) CanvasText;
+  }
+  .bg-primary {
+    forced-color-adjust: none;
+    background-color: Highlight;
+    color: HighlightText;
+  }
+  .bg-danger {
+    forced-color-adjust: none;
+    background-color: Mark;
+    color: MarkText;
+  }
+  .keep-colors,
+  .keep-colors * {
+    forced-color-adjust: none;
+  }
+  .stripes {
+    background-image: none;
+  }
+}
+
+/* Print: always the light palette on white (whatever the screen scheme), backgrounds kept so tones and slabs survive, floating panels and
+   toasts hidden, collapsed <details> opened. */
+@media print {
+  :root,
+  :root[data-scheme],
+  :root[data-contrast] {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+    color-scheme: light;
+    --color-page: #ffffff !important;
+    --color-surface: #ffffff !important;
+    --color-paper: #ffffff !important;
+    --color-ink: #000000 !important;
+    --color-muted: #404040 !important;
+    --color-edge: #6d7d84 !important;
+    --color-edge-strong: #767676 !important;
+    --color-surface-tint: #e6edf0 !important;
+    --color-primary: #005f7c !important;
+    --color-on-primary: #ffffff !important;
+    --color-success: #266444 !important;
+    --color-success-soft: #dcfbe8 !important;
+    --color-warning: #714a00 !important;
+    --color-warning-soft: #fdf3dc !important;
+    --color-danger: #962019 !important;
+    --color-danger-soft: #fbe9e7 !important;
+    --color-on-danger: #ffffff !important;
+    --shadow-drop: none;
+    --shadow-float: none;
+  }
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  [role='tooltip'],
+  [data-reka-popper-content-wrapper],
+  [role='region'][aria-label^='Notifications'],
+  [data-sui-skip-link] {
+    display: none !important;
+  }
+  details:not([open])::details-content {
+    content-visibility: visible;
+  }
+  details:not([open]) > :not(summary) {
+    display: revert;
+  }
+}
+
+@layer base {
+  :root {
+    color-scheme: light;
+    accent-color: var(--color-primary);
+  }
+  body {
+    background: var(--color-page);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-optical-sizing: auto;
+  }
+  ::selection {
+    background: var(--color-selection);
+    color: var(--color-ink);
+  }
+  :where(h1, h2, h3, h4, h5, h6) {
+    text-wrap: balance;
+  }
+  :where(button, summary, [role='button'], [role='tab'], [role='switch'], [role='menuitem'], [role='option']) {
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+}
+
+/* ================================ recipes ===================================== */
+/* Hooks (set by other utilities, all optional): --_ring slab colour, --_lift slab depth, --_r radius, --_tone / --_bg / --_ink tone colours. */
+
+/* A raised face on a slab: 1px edge all round, the bottom edge `depth` thicker. The bottom corners are as much taller than wide as the slab is thick, so the face inside them stays a true circle. */
+@utility slab {
+  border: var(--stroke-edge) solid var(--_ring, var(--color-edge-strong));
+  border-bottom-width: calc(var(--stroke-edge) + var(--_lift, var(--depth)));
+  border-radius:
+    var(--_r, var(--radius-md)) / var(--_r, var(--radius-md)) var(--_r, var(--radius-md))
+    calc(var(--_r, var(--radius-md)) + var(--_lift, var(--depth)))
+    calc(var(--_r, var(--radius-md)) + var(--_lift, var(--depth)));
+}
+@utility slab-thin {
+  --_lift: var(--depth-thin);
+}
+@utility slab-flat {
+  --_lift: 0px;
+}
+@utility slab-sm {
+  --_r: var(--radius-sm);
+}
+@utility slab-primary {
+  --_ring: var(--color-primary-slab);
+}
+@utility slab-danger {
+  --_ring: var(--color-danger-slab);
+}
+@utility slab-ink {
+  --_ring: var(--color-ink);
+}
+@utility slab-quiet {
+  --_ring: var(--color-edge-strong);
+}
+
+/* A tone edge: a slab turned on its side, on the inline-start edge. Flips in right-to-left pages. */
+@utility edge-start {
+  border: var(--stroke-edge) solid var(--_tone, var(--color-muted));
+  border-inline-start-width: calc(var(--stroke-edge) + var(--depth-bold));
+  border-radius: var(--_r, var(--radius-md));
+  border-start-start-radius: calc(var(--_r, var(--radius-md)) + var(--depth-bold)) var(--_r, var(--radius-md));
+  border-end-start-radius: calc(var(--_r, var(--radius-md)) + var(--depth-bold)) var(--_r, var(--radius-md));
+  background-color: var(--_bg, var(--color-surface-tint));
+  background-clip: padding-box;
+}
+@utility tone-neutral {
+  --_tone: var(--color-muted);
+  --_bg: var(--color-surface-tint);
+  --_ink: var(--color-ink);
+}
+@utility tone-info {
+  --_tone: var(--color-info);
+  --_bg: var(--color-info-soft);
+  --_ink: var(--color-info);
+}
+@utility tone-success {
+  --_tone: var(--color-success);
+  --_bg: var(--color-success-soft);
+  --_ink: var(--color-success);
+}
+@utility tone-warning {
+  --_tone: var(--color-warning);
+  --_bg: var(--color-warning-soft);
+  --_ink: var(--color-warning);
+}
+@utility tone-danger {
+  --_tone: var(--color-danger);
+  --_bg: var(--color-danger-soft);
+  --_ink: var(--color-danger);
+}
+
+/* "Still to do": diagonal stripes. Pair with `animate-stripes` to make it move. */
+@utility stripes {
+  background-image: repeating-linear-gradient(
+    135deg,
+    transparent 0 0.5rem,
+    var(--color-wash-hover) 0.5rem 1rem
+  );
+  background-size: 1.4142rem 1.4142rem;
+}
+
+/* Disabled or busy: a dashed edge drawn over the control's own edge. Set `--_dash` to recolour it. */
+@utility dashed-edge {
+  position: relative;
+  &::before {
+    content: '';
+    position: absolute;
+    inset: calc(-1 * var(--stroke-edge));
+    border: var(--stroke-edge) dashed var(--_dash, var(--color-edge-strong));
+    border-radius: inherit;
+    pointer-events: none;
+  }
+}
+
+/* Focus ring outside the box (default) or inside it (for rows that touch, clipped or scrolling regions). */
+@utility focus-ring {
+  &:focus-visible {
+    outline: var(--stroke-focus) solid var(--color-focus);
+    outline-offset: var(--stroke-focus);
+  }
+}
+@utility focus-inset {
+  &:focus-visible {
+    outline: var(--stroke-focus) solid var(--color-focus);
+    outline-offset: calc(-1 * var(--stroke-focus));
+  }
+}
+
+/* State changes. */
+@utility transition-state {
+  transition:
+    background-color var(--duration-tap) var(--ease-out),
+    box-shadow var(--duration-tap) var(--ease-out),
+    border-color var(--duration-tap) var(--ease-out),
+    color var(--duration-tap) var(--ease-out);
+}
+
+/* Type voices. */
+@utility kicker {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1.15;
+  font-weight: var(--font-weight-strong);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+/* A section label: a kicker that says "this is a heading, not a row". Mono caps, then a hairline that runs to the edge. Used by Nav list and Command. */
+@utility section-label {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  line-height: 1.15;
+  font-weight: var(--font-weight-strong);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+  user-select: none;
+  &::after {
+    content: '';
+    flex: 1;
+    height: var(--stroke-edge);
+    background-color: var(--color-edge);
+  }
+}
+@utility numeral {
+  font-family: var(--font-mono);
+  font-weight: var(--font-weight-medium);
+  font-variant-numeric: tabular-nums;
+}
+@utility type-button {
+  font-weight: var(--font-weight-medium);
+  font-size: 1rem;
+  line-height: 1.15;
+}
+@utility heading {
+  font-weight: var(--font-weight-medium);
+  line-height: 1.3;
+  letter-spacing: var(--tracking-tight);
+}
+
+/* The well: the sunk field every text-like input shares. Put it on an <input>, a <textarea> or a trigger; add height and padding yourself. */
+@utility well {
+  border: var(--stroke-edge) solid var(--color-edge-strong);
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface);
+  background-clip: padding-box;
+  color: var(--color-ink);
+  box-shadow: inset 0 0 0 100vmax var(--_veil, transparent), var(--shadow-well);
+  transition:
+    box-shadow var(--duration-tap) var(--ease-out),
+    border-color var(--duration-tap) var(--ease-out);
+  &::placeholder {
+    color: var(--color-muted);
+  }
+  @media (hover: hover) {
+    &:hover {
+      --_veil: var(--color-wash-hover);
+    }
+  }
+  &:focus {
+    --_veil: transparent;
+    border-color: var(--color-primary);
+  }
+  &:focus-visible {
+    outline: var(--stroke-focus) solid var(--color-primary);
+    outline-offset: -1px;
+  }
+  &[aria-invalid='true'] {
+    border-color: var(--color-danger);
+    @media (hover: hover) {
+      &:hover {
+        --_veil: var(--color-danger-soft);
+      }
+    }
+    &:focus-visible {
+      outline-color: var(--color-danger);
+    }
+  }
+  &:disabled {
+    cursor: not-allowed;
+    border-color: transparent;
+    background-color: transparent;
+    color: var(--color-muted);
+    outline: 1px dashed var(--color-edge-strong);
+    outline-offset: -1px;
+    box-shadow: none;
+  }
+}
+
+/* Scrollers with no visible scrollbar (carousel track). */
+@utility scrollbar-none {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Chart series colours (chart.vue). Derived from the tone colours so they follow the theme. A series is never told apart by colour alone: it also has its own marker shape (circle, square, diamond, triangle, inverted triangle) and bars sit on a 2px darker slab. */
+@theme static {
+  --color-chart-1: var(--color-primary);
+  --color-chart-2: color-mix(in oklch, var(--color-warning) 40%, #f0a500);
+  --color-chart-3: color-mix(in oklch, var(--color-success) 55%, var(--color-accent));
+  --color-chart-4: color-mix(in oklch, var(--color-danger), white 6%);
+  --color-chart-5: color-mix(in oklch, var(--color-primary) 55%, var(--color-danger));
+}
+
+/* ---- field-well ---------------------------------------------------------------------------
+   A `well` on a <div> that holds an input plus affixes (prefix, clear button, spinner, submit). The box shows focus, invalid, disabled
+   and readonly for the whole thing, and a click on its padding or an affix focuses the input. Use with `well`; set data-invalid /
+   data-disabled / data-readonly on it. */
+@utility field-well {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+  min-height: var(--spacing-control);
+  cursor: text;
+  &:has(:is(input, textarea):focus) {
+    --_veil: transparent;
+    border-color: var(--color-primary);
+  }
+  &:has(:is(input, textarea):focus-visible) {
+    outline: var(--stroke-focus) solid var(--color-primary);
+    outline-offset: -1px;
+  }
+  &[data-invalid],
+  &[aria-invalid='true'] {
+    border-color: var(--color-danger);
+    @media (hover: hover) {
+      &:hover {
+        --_veil: var(--color-danger-soft);
+      }
+    }
+    &:has(:is(input, textarea):focus-visible) {
+      outline-color: var(--color-danger);
+    }
+  }
+  &[data-readonly] {
+    background-color: color-mix(in srgb, var(--color-surface-tint) 40%, transparent);
+  }
+  &[data-disabled] {
+    cursor: not-allowed;
+    border-color: transparent;
+    background-color: transparent;
+    color: var(--color-muted);
+    outline: 1px dashed var(--color-edge-strong);
+    outline-offset: -1px;
+    box-shadow: none;
+  }
+}
+
+/* ---- shared parts: one definition each --------------------------------------------------------------------------------
+   panel      every floating surface (menu, popover, hover card, toggletip, select and combobox list, date popup) looks and arrives the same.
+   menu-item  every row inside one: menu items, options, flyout links. Highlight = the wash with a ring; press = a deeper wash.
+   well-trigger / well-button / field-action / field-spinner: the parts that live inside a `well` (see `well`, `field-well`). */
+@utility panel {
+  z-index: 50;
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface);
+  color: var(--color-ink);
+  box-shadow: var(--shadow-float);
+  outline: none;
+  animation: sui-pop-in var(--duration-fade) var(--ease-out);
+  &[data-state='closed'] {
+    animation: none;
+  }
+}
+@utility menu-item {
+  display: flex;
+  width: 100%;
+  min-height: var(--spacing-tap);
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: max(0px, calc(var(--radius-md) - 2px));
+  color: var(--color-ink);
+  line-height: 1.25;
+  text-align: start;
+  cursor: pointer;
+  outline: none;
+  user-select: none;
+  transition:
+    background-color var(--duration-tap) var(--ease-out),
+    box-shadow var(--duration-tap) var(--ease-out);
+  &[data-highlighted] {
+    background-color: var(--color-wash-hover);
+    box-shadow: inset 0 0 0 var(--stroke-edge) var(--color-wash-ring);
+  }
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--color-wash-hover);
+      box-shadow: inset 0 0 0 var(--stroke-edge) var(--color-wash-ring);
+    }
+  }
+  &:active {
+    background-color: var(--color-wash-press);
+    box-shadow: inset 0 0 0 var(--stroke-edge) var(--color-ink);
+  }
+  &:focus-visible {
+    outline: var(--stroke-focus) solid var(--color-focus);
+    outline-offset: calc(-1 * var(--stroke-focus));
+  }
+  &[data-state='checked'] {
+    font-weight: var(--font-weight-strong);
+  }
+  &[data-disabled] {
+    cursor: not-allowed;
+    color: var(--color-muted);
+    background-color: transparent;
+    box-shadow: none;
+  }
+}
+
+/* The trigger of a select-like popup, used with `well`. */
+@utility well-trigger {
+  display: flex;
+  height: var(--spacing-control);
+  width: 100%;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  cursor: pointer;
+  text-align: start;
+  padding-inline: calc(1rem - var(--stroke-edge)) calc(0.75rem - var(--stroke-edge));
+  &[data-placeholder] {
+    color: var(--color-muted);
+  }
+  &[data-state='open'] {
+    --_veil: transparent;
+    border-color: var(--color-primary);
+    outline: var(--stroke-focus) solid var(--color-primary);
+    outline-offset: -1px;
+  }
+}
+
+/* A quiet icon button inside a well (clear, remove, reveal). Add a size class, or use `field-action` for the standard 44px one. */
+@utility well-button {
+  display: inline-grid;
+  flex-shrink: 0;
+  cursor: pointer;
+  place-items: center;
+  border-radius: var(--radius-md);
+  color: var(--color-muted);
+  transition:
+    background-color var(--duration-tap) var(--ease-out),
+    color var(--duration-tap) var(--ease-out);
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--color-wash-hover);
+      color: var(--color-ink);
+    }
+  }
+  &:active {
+    background-color: var(--color-wash-press);
+  }
+  &:focus-visible {
+    outline: var(--stroke-focus) solid var(--color-focus);
+    outline-offset: calc(-1 * var(--stroke-focus));
+  }
+  &:disabled {
+    cursor: not-allowed;
+    background-color: transparent;
+  }
+}
+@utility field-action {
+  @apply well-button;
+  width: var(--spacing-tap);
+  height: var(--spacing-tap);
+  margin-inline-end: 0.25rem;
+}
+
+/* A small busy ring for a field: a faint track with one primary arc travelling round it. */
+@utility field-spinner {
+  display: inline-block;
+  flex: none;
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-inline: 0.5rem 0.75rem;
+  border: 2.5px solid color-mix(in srgb, var(--color-primary) 22%, transparent);
+  border-top-color: var(--color-primary);
+  border-radius: 9999px;
+  animation: var(--animate-ring);
+}
+
+/* ---- Command palette: its rows. A menu-item, with the current-place edge on the highlighted one and a beat of pressed when chosen. ---- */
+@utility command-row {
+  @apply menu-item;
+  gap: 0.75rem;
+  justify-content: flex-start;
+  & .command-icon {
+    color: var(--color-muted);
+  }
+  &[data-highlighted] {
+    box-shadow:
+      inset max(var(--depth-bold), 2px) 0 0 var(--color-primary),
+      inset 0 0 0 var(--stroke-edge) var(--color-wash-ring);
+    & .command-icon {
+      color: var(--color-primary);
+    }
+    &:dir(rtl) {
+      box-shadow:
+        inset calc(-1 * max(var(--depth-bold), 2px)) 0 0 var(--color-primary),
+        inset 0 0 0 var(--stroke-edge) var(--color-wash-ring);
+    }
+  }
+  &[data-pressed] {
+    background-color: var(--color-wash-press);
+  }
+  &[data-disabled] {
+    outline: var(--stroke-edge) dashed var(--color-edge-strong);
+    outline-offset: calc(-1 * var(--stroke-edge));
+    box-shadow: none;
+  }
+  @media (forced-colors: active) {
+    &[data-highlighted] {
+      outline: 2px solid Highlight;
+      outline-offset: -2px;
+    }
+  }
+}
+
+/* ---- Chart: hairline gridlines and the draw-in ---------------------------------------------------------------- */
+@utility chart-grid {
+  stroke: color-mix(in srgb, var(--color-edge) 45%, transparent);
+  stroke-width: 1;
+  shape-rendering: crispEdges;
+}
+:root[data-contrast='high'] .chart-grid {
+  stroke: var(--color-edge);
+}
+@media (prefers-contrast: more) {
+  :root[data-contrast='auto'] .chart-grid {
+    stroke: var(--color-edge);
+  }
+}
+@media (forced-colors: active) {
+  .chart-grid {
+    stroke: GrayText;
+  }
+}
+/* A line draws itself (its path is normalised to length 1); areas, bars and points fade in. Both read the duration tokens, so reduced motion makes them instant. */
+@keyframes sui-chart-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@utility chart-draw {
+  stroke-dasharray: 1;
+  animation: sui-chart-draw calc(var(--duration-move) * 4) var(--ease-out) both;
+}
+@utility chart-in {
+  animation: sui-fade-in calc(var(--duration-move) * 3) var(--ease-out) both;
+}

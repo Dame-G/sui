@@ -1,0 +1,66 @@
+# Radio group
+
+Pick exactly one option.
+
+Group: Forms. Registry item: http://localhost:5173/r/radio-group.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/radio-group.json
+```
+
+Installs with: theme, utils. npm packages: reka-ui.
+
+Import it from your own copy: `import Radiogroup from '@/components/ui/radio-group.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `v-model` | `string` |  | Two-way bound value. |
+| `options (required)` | `{ value: string; label: string; /** A line of help under the label. */ description?: string; disabled?: boolean }[]` |  |  |
+| `hideLabel` | `boolean` |  | Hide every option's label visually (they stay for screen readers); useful for a table of radios. |
+| `name` | `string` |  |  |
+| `required` | `boolean` |  |  |
+| `disabled` | `boolean` |  |  |
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import RadioGroup from '@/components/ui/radio-group.vue'
+
+const plan = ref('team')
+const billing = ref('annual')
+const options = [
+  { value: 'free', label: 'Free' },
+  { value: 'team', label: 'Team' },
+  { value: 'scale', label: 'Scale' },
+]
+const withDisabled = [
+  { value: 'free', label: 'Free' },
+  { value: 'team', label: 'Team' },
+  { value: 'scale', label: 'Scale', disabled: true },
+]
+const tiers = [
+  { value: 'monthly', label: 'Monthly', description: '$12 a month, cancel any time.' },
+  { value: 'annual', label: 'Annual', description: '$99 a year, two months free.' },
+]
+</script>
+
+<template>
+  <div class="grid items-start gap-8 md:grid-cols-2">
+    <RadioGroup v-model="plan" :options="options" />
+    <RadioGroup v-model="billing" :options="tiers" />
+    <RadioGroup model-value="free" :options="withDisabled" />
+    <RadioGroup model-value="team" :options="options" disabled />
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.

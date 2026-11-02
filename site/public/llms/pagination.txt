@@ -1,0 +1,59 @@
+# Pagination
+
+Page through long lists, with links or buttons and announced page changes.
+
+Group: Navigation. Registry item: http://localhost:5173/r/pagination.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/pagination.json
+```
+
+Installs with: theme, utils, announce. npm packages: reka-ui.
+
+Import it from your own copy: `import Pagination from '@/components/ui/pagination.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `v-model:page` | `number` | `1` | Two-way bound value. |
+| `total (required)` | `number` |  |  |
+| `itemsPerPage` | `number` | `10` |  |
+| `href` | `(page: number) => string` |  | Makes every page a real link (for server-rendered or router-driven pages). The model still updates on click. |
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import Pagination from '@/components/ui/pagination.vue'
+
+const middle = ref(6)
+const few = ref(2)
+const linked = ref(3)
+</script>
+
+<template>
+  <div class="grid gap-6">
+    <div class="grid gap-2">
+      <span class="kicker">Page {{ middle }} of 12</span>
+      <Pagination v-model:page="middle" :total="120" :items-per-page="10" />
+    </div>
+    <div class="grid gap-2">
+      <span class="kicker">Few pages</span>
+      <Pagination v-model:page="few" :total="30" :items-per-page="10" />
+    </div>
+    <div class="grid gap-2">
+      <span class="kicker">As links</span>
+      <Pagination v-model:page="linked" :total="80" :items-per-page="10" :href="(n) => `#/components/pagination?page=${n}`" />
+    </div>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.

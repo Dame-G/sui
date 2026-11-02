@@ -1,0 +1,66 @@
+# Toggle group
+
+Segmented single-choice control; can stretch to fill the width.
+
+Group: Forms. Registry item: http://localhost:5173/r/toggle-group.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/toggle-group.json
+```
+
+Installs with: theme, utils. npm packages: reka-ui.
+
+Import it from your own copy: `import Togglegroup from '@/components/ui/toggle-group.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `v-model` | `string` |  | Two-way bound value. |
+| `options (required)` | `{ value: string; label: string; disabled?: boolean }[]` |  |  |
+| `stretch` | `boolean` |  | Fill the available width, items sharing it equally. |
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import ToggleGroup from '@/components/ui/toggle-group.vue'
+
+const view = ref('grid')
+const period = ref('month')
+const stretched = ref('week')
+const options = [
+  { value: 'grid', label: 'Grid' },
+  { value: 'list', label: 'List' },
+  { value: 'board', label: 'Board' },
+]
+const periods = [
+  { value: 'week', label: 'Week' },
+  { value: 'month', label: 'Month' },
+  { value: 'year', label: 'Year' },
+]
+const withDisabled = [
+  { value: 'a', label: 'Free' },
+  { value: 'b', label: 'Team' },
+  { value: 'c', label: 'Scale', disabled: true },
+]
+const pick = ref('a')
+</script>
+
+<template>
+  <div class="grid items-start gap-6 md:grid-cols-2">
+    <ToggleGroup v-model="view" :options="options" />
+    <ToggleGroup v-model="period" :options="periods" />
+    <ToggleGroup v-model="pick" :options="withDisabled" />
+    <ToggleGroup v-model="stretched" :options="periods" stretch />
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.

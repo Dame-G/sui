@@ -1,0 +1,94 @@
+# Combobox
+
+Type to filter a list and pick one or many, with groups, descriptions, clear, loading and freeform entry.
+
+Group: Forms. Registry item: http://localhost:5173/r/combobox.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/combobox.json
+```
+
+Installs with: theme, utils, field, spinner, announce. npm packages: reka-ui.
+
+Import it from your own copy: `import Combobox from '@/components/ui/combobox.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `v-model` | `string \| string[]` |  | Two-way bound value. |
+| `options (required)` | `{ value: string; label: string; description?: string; group?: string; disabled?: boolean }[]` |  | `group` puts options under a heading (options of one group should sit together); `description` is a second line. |
+| `label` | `string` |  |  |
+| `placeholder` | `string` |  |  |
+| `error` | `string` |  |  |
+| `hint` | `string` |  |  |
+| `required` | `boolean` |  |  |
+| `optional` | `boolean` |  |  |
+| `clearable` | `boolean` |  | Show a clear button once something is picked. |
+| `loading` | `boolean` |  | Options are on their way: shows a spinner, sets aria-busy, and the empty row says Loading. |
+| `emptyText` | `string` |  | The text of the empty row. |
+| `freeform` | `boolean` |  | Accept whatever is typed (Enter or leaving the field commits it) as well as the listed options. |
+| `multiple` | `boolean` |  | Pick several: the model is then a string[] and the picks show as chips in the field. |
+| `disabled` | `boolean` |  |  |
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { onBeforeUnmount, ref } from 'vue'
+import Card from '@/components/ui/card.vue'
+import Combobox from '@/components/ui/combobox.vue'
+
+const country = ref<string>('nz')
+const visited = ref<string[]>(['jp', 'se'])
+const plan = ref<string>()
+const tags = ref<string[]>(['design'])
+const needed = ref<string[]>([])
+const options = [
+  { value: 'au', label: 'Australia' },
+  { value: 'ca', label: 'Canada' },
+  { value: 'fr', label: 'France' },
+  { value: 'jp', label: 'Japan' },
+  { value: 'nz', label: 'New Zealand' },
+  { value: 'se', label: 'Sweden' },
+]
+const plans = [
+  { value: 'free', label: 'Free', description: 'One project', group: 'Personal' },
+  { value: 'pro', label: 'Pro', description: 'Unlimited projects', group: 'Personal' },
+  { value: 'team', label: 'Team', description: 'Shared workspaces, roles', group: 'Business' },
+  { value: 'scale', label: 'Scale', description: 'SSO and audit log', group: 'Business' },
+]
+const tagOptions = ['design', 'research', 'engineering'].map((t) => ({ value: t, label: t }))
+
+// Options that arrive after a moment.
+const reviewer = ref<string>()
+const people = ref<{ value: string; label: string }[]>([])
+const loading = ref(true)
+const timer = setTimeout(() => {
+  people.value = ['Ada Lovelace', 'Alan Turing', 'Grace Hopper'].map((n) => ({ value: n, label: n }))
+  loading.value = false
+}, 1500)
+onBeforeUnmount(() => clearTimeout(timer))
+</script>
+
+<template>
+  <div class="grid items-start gap-6 md:grid-cols-2">
+    <Combobox v-model="country" :options="options" label="Home country" placeholder="Search countries" hint="Start typing to filter." />
+    <Combobox v-model="visited" :options="options" label="Countries visited" placeholder="Add more" multiple clearable />
+    <Combobox v-model="plan" :options="plans" label="Plan" placeholder="Choose a plan" optional />
+    <Combobox v-model="tags" :options="tagOptions" label="Tags" placeholder="Type, then Enter" multiple freeform hint="Pick one, or type your own." />
+    <Combobox v-model="needed" :options="options" label="Countries" placeholder="Add a country" multiple required :error="needed.length ? undefined : 'Choose at least one country.'" />
+    <Combobox model-value="ca" :options="options" label="Locked" disabled />
+    <Card title="Assign a reviewer" class="md:col-span-2 md:max-w-sm">
+      <Combobox v-model="reviewer" :options="people" label="Reviewer" placeholder="Search people" :loading="loading" clearable />
+    </Card>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.

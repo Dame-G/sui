@@ -1,0 +1,61 @@
+# Card
+
+Framed surface that groups related content.
+
+Group: Primitives. Registry item: http://localhost:5173/r/card.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/card.json
+```
+
+Installs with: theme, utils. npm packages: none beyond Vue.
+
+Import it from your own copy: `import Card from '@/components/ui/card.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `title` | `string` |  |  |
+| `level` | `2 \| 3 \| 4` | `2` |  |
+
+Slots: `default`.
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import Button from '@/components/ui/button.vue'
+import Card from '@/components/ui/card.vue'
+import TextField from '@/components/ui/text-field.vue'
+
+const email = ref('')
+</script>
+
+<template>
+  <div class="grid items-start gap-6 md:grid-cols-2">
+    <div class="flex flex-col gap-2">
+      <p class="kicker">With a title</p>
+      <Card title="Join the waitlist">
+        <TextField v-model="email" label="Email" type="email" placeholder="you@example.com" />
+        <div><Button>Notify me</Button></div>
+      </Card>
+    </div>
+    <div class="flex flex-col gap-2">
+      <p class="kicker">Without a title</p>
+      <Card>
+        <p class="font-medium">Plain surface</p>
+        <p class="text-muted">Leave the title out and the header goes away; the body keeps its padding and edge.</p>
+      </Card>
+    </div>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
