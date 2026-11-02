@@ -1,0 +1,67 @@
+# Editable
+
+Text you click to edit in place.
+
+Group: Forms. Registry item: http://localhost:5173/r/editable.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/editable.json
+```
+
+Installs with: theme, utils, field. npm packages: reka-ui.
+
+Import it from your own copy: `import Editable from '@/components/ui/editable.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `v-model` | `string` | `''` | Two-way bound value. |
+| `label (required)` | `string` |  |  |
+| `hint` | `string` |  |  |
+| `error` | `string` |  |  |
+| `required` | `boolean` |  |  |
+| `optional` | `boolean` |  |  |
+| `hideLabel` | `boolean` |  |  |
+| `readonly` | `boolean` |  |  |
+| `loading` | `boolean` |  |  |
+| `name` | `string` |  |  |
+| `placeholder` | `string` |  |  |
+| `disabled` | `boolean` |  |  |
+
+Events: `submit`.
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { reactive, ref } from 'vue'
+import Card from '@/components/ui/card.vue'
+import Editable from '@/components/ui/editable.vue'
+
+const title = ref('Quarterly report')
+const saved = ref('nothing yet')
+const profile = reactive({ name: 'Grace Hopper', role: 'Rear Admiral', city: '' })
+</script>
+
+<template>
+  <div class="grid items-start gap-6 md:grid-cols-2">
+    <Editable v-model="title" label="Title" hint="Click the text to edit; Enter saves, Esc cancels." @submit="saved = $event" />
+    <p class="text-muted">Saved: <span class="numeral text-ink">{{ saved }}</span></p>
+    <Editable label="Read only" model-value="Locked" readonly />
+    <Editable label="Disabled" model-value="Locked" disabled />
+    <Card title="Profile" class="md:col-span-2 md:max-w-sm">
+      <Editable v-model="profile.name" label="Name" />
+      <Editable v-model="profile.role" label="Role" />
+      <Editable v-model="profile.city" label="City" placeholder="Add a city" />
+    </Card>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.

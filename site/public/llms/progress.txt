@@ -1,0 +1,64 @@
+# Progress
+
+Progress bar with a striped track for what is left, a sliding bar when unknown, and spoken value text.
+
+Group: Primitives. Registry item: http://localhost:5173/r/progress.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/progress.json
+```
+
+Installs with: theme, utils. npm packages: reka-ui.
+
+Import it from your own copy: `import Progress from '@/components/ui/progress.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `v-model` | `number \| null` | `null` | Two-way bound value. |
+| `label` | `string` |  |  |
+| `hideLabel` | `boolean` |  |  |
+| `hideValue` | `boolean` |  |  |
+| `valueText` | `string` |  | What a screen reader hears instead of the percentage, e.g. "3 of 8 files". |
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import Button from '@/components/ui/button.vue'
+import Progress from '@/components/ui/progress.vue'
+
+const upload = ref(40)
+</script>
+
+<template>
+  <div class="grid max-w-md gap-8">
+    <div class="flex flex-col gap-3">
+      <p class="kicker">Determinate: step it</p>
+      <Progress v-model="upload" label="Uploading photos" />
+      <div class="flex gap-2">
+        <Button @click="upload = Math.max(0, upload - 10)">−10</Button>
+        <Button @click="upload = Math.min(100, upload + 10)">+10</Button>
+      </div>
+    </div>
+    <div class="flex flex-col gap-3">
+      <p class="kicker">Complete, and unknown length</p>
+      <Progress :model-value="100" label="Finished" />
+      <Progress label="Waiting for the server" />
+    </div>
+    <div class="flex flex-col gap-3">
+      <p class="kicker">Spoken text instead of a percentage</p>
+      <Progress :model-value="38" label="Importing contacts" value-text="3 of 8 files" />
+    </div>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.

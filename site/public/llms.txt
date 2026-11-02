@@ -1,0 +1,103 @@
+# sui
+
+> A Vue 3 component registry in the shadcn style: you download the source with `bunx shadcn-vue@latest add http://localhost:5173/r/<name>.json` and own it. One distinct identity, themed only through tokens. Built on Reka UI, Tailwind v4 and TypeScript.
+
+Identity (not options): a raised face sits on a darker 2px "slab"; 1px edges; soft tinted tones; stripes mean "still to do"; a dashed edge means disabled or busy; one control height; three font weights; mono for labels and figures. Components take no style variants. Theme the whole system with four tokens in sui-theme.css (brand colour, radius, slab depth, font); scheme (`data-scheme="dark|auto"`) and contrast (`data-contrast="high|auto"`) are attributes on <html>.
+
+Setup: install Tailwind v4, add the `@` alias, add a components.json, then `@import "./styles/sui-theme.css"` after Tailwind. Steps: http://localhost:5173/#/start
+
+## Primitives
+
+- [Button](http://localhost:5173/llms/button.txt): Primary action: a face on a slab that sinks onto it when pressed, with a busy state and icon slots.
+- [Icon button](http://localhost:5173/llms/icon-button.txt): Square button for an icon alone: a required label, a tooltip, a busy state and a 44px tap size.
+- [Badge](http://localhost:5173/llms/badge.txt): Stamp for status: a tinted chip with a tone-coloured side slab.
+- [Button group](http://localhost:5173/llms/button-group.txt): Buttons joined into one control with matching corners.
+- [Link](http://localhost:5173/llms/link.txt): Text link with the identity underline, hover and focus.
+- [Card](http://localhost:5173/llms/card.txt): Framed surface that groups related content.
+- [Separator](http://localhost:5173/llms/separator.txt): Hairline rule, horizontal or vertical.
+- [Avatar](http://localhost:5173/llms/avatar.txt): Image with an initials fallback.
+- [Kbd](http://localhost:5173/llms/kbd.txt): Keyboard key cap on a thin slab.
+- [Spinner](http://localhost:5173/llms/spinner.txt): Loading ring: an arc travelling round a dashed track, announced to screen readers.
+- [Skeleton](http://localhost:5173/llms/skeleton.txt): Striped, pulsing placeholder while content loads.
+- [Progress](http://localhost:5173/llms/progress.txt): Progress bar with a striped track for what is left, a sliding bar when unknown, and spoken value text.
+- [Notice](http://localhost:5173/llms/notice.txt): Inline message with a tone icon and a side slab.
+
+## Forms
+
+- [Text field](http://localhost:5173/llms/text-field.txt): Labelled input with an accessible error message.
+- [Field](http://localhost:5173/llms/field.txt): The shared anatomy of every input: label with Required/Optional, hint or error, and an aside for a counter.
+- [Form](http://localhost:5173/llms/form.txt): Validates on submit, lists the problems as links to their fields, and moves focus to the list.
+- [Password field](http://localhost:5173/llms/password-field.txt): Text field with a show/hide button and password-manager friendly attributes.
+- [Search field](http://localhost:5173/llms/search-field.txt): Search input with an icon, a clear button and Escape to clear.
+- [Textarea](http://localhost:5173/llms/textarea.txt): Labelled multi-line input.
+- [Checkbox](http://localhost:5173/llms/checkbox.txt): Labelled checkbox with indeterminate support.
+- [Switch](http://localhost:5173/llms/switch.txt): On/off toggle with a label.
+- [Checkbox group](http://localhost:5173/llms/checkbox-group.txt): Pick any number of options, with an optional select-all.
+- [Radio group](http://localhost:5173/llms/radio-group.txt): Pick exactly one option.
+- [Select](http://localhost:5173/llms/select.txt): Dropdown list with keyboard typeahead, groups, multi-select and clear.
+- [Slider](http://localhost:5173/llms/slider.txt): Pick a value or range along a track.
+- [Toggle](http://localhost:5173/llms/toggle.txt): Two-state pressable button.
+- [Toggle group](http://localhost:5173/llms/toggle-group.txt): Segmented single-choice control; can stretch to fill the width.
+- [Combobox](http://localhost:5173/llms/combobox.txt): Type to filter a list and pick one or many, with groups, descriptions, clear, loading and freeform entry.
+- [Number field](http://localhost:5173/llms/number-field.txt): Numeric input with stepper buttons and keyboard steps.
+- [Calendar](http://localhost:5173/llms/calendar.txt): Month grid for picking a date, with presets, marked days and a Today/Clear footer.
+- [Date picker](http://localhost:5173/llms/date-picker.txt): Field that opens a calendar in a popover.
+- [Date range picker](http://localhost:5173/llms/date-range-picker.txt): Pick a start and end date from one calendar popover.
+- [Range calendar](http://localhost:5173/llms/range-calendar.txt): Month grid for picking a start and end date, with a band between, presets and marked days.
+- [Time field](http://localhost:5173/llms/time-field.txt): Segmented hour and minute input.
+- [Date field](http://localhost:5173/llms/date-field.txt): Typed, segmented day, month and year input.
+- [Fieldset](http://localhost:5173/llms/fieldset.txt): Groups related controls under a legend with a shared hint and error.
+- [Color picker](http://localhost:5173/llms/color-picker.txt): Pick a colour from an area, a hue slider, swatches or a hex field.
+- [Pin input](http://localhost:5173/llms/pin-input.txt): One box per character, for one-time codes.
+- [Tags input](http://localhost:5173/llms/tags-input.txt): Type to add several values as removable chips.
+- [Input group](http://localhost:5173/llms/input-group.txt): Text field with a prefix or suffix attached.
+- [Label](http://localhost:5173/llms/label.txt): Standalone label that stays tied to its control.
+- [Editable](http://localhost:5173/llms/editable.txt): Text you click to edit in place.
+- [File upload](http://localhost:5173/llms/file-upload.txt): Dropzone and file list with validation, thumbnails and progress.
+
+## Overlays
+
+- [Dialog](http://localhost:5173/llms/dialog.txt): Modal dialog with focus trap and scroll lock.
+- [Sheet](http://localhost:5173/llms/sheet.txt): Side panel built on the dialog primitive.
+- [Popover](http://localhost:5173/llms/popover.txt): Floating panel anchored to a trigger.
+- [Toggletip](http://localhost:5173/llms/toggletip.txt): A tooltip you click, for touch and screen readers. Focus stays on the button.
+- [Tooltip](http://localhost:5173/llms/tooltip.txt): Short hint on hover or focus.
+- [Dropdown menu](http://localhost:5173/llms/dropdown-menu.txt): Menu of actions with arrow-key navigation.
+- [Alert dialog](http://localhost:5173/llms/alert-dialog.txt): Modal that demands a decision, for confirming destructive actions.
+- [Context menu](http://localhost:5173/llms/context-menu.txt): Menu of actions on right-click or long-press.
+- [Hover card](http://localhost:5173/llms/hover-card.txt): Rich preview shown when hovering a link or trigger.
+- [Drawer](http://localhost:5173/llms/drawer.txt): Bottom sheet you can drag down to dismiss, made for touch.
+- [Command](http://localhost:5173/llms/command.txt): Command palette: ranked, highlighted matches, groups, icons, shortcuts, nested pages and a loading state.
+- [Toast](http://localhost:5173/llms/toast.txt): Brief notification fired from code: duration, action button, keyed updates and a promise helper.
+
+## Navigation
+
+- [Tabs](http://localhost:5173/llms/tabs.txt): Switch between panels of related content, with optional counts and vertical layout.
+- [Accordion](http://localhost:5173/llms/accordion.txt): Collapsible sections, one open at a time.
+- [Breadcrumb](http://localhost:5173/llms/breadcrumb.txt): Shows where the current page sits.
+- [Pagination](http://localhost:5173/llms/pagination.txt): Page through long lists, with links or buttons and announced page changes.
+- [Collapsible](http://localhost:5173/llms/collapsible.txt): Single section that expands and collapses.
+- [Skip link](http://localhost:5173/llms/skip-link.txt): Hidden until focused; jumps the keyboard past the header to the main content.
+- [Nav list](http://localhost:5173/llms/nav-list.txt): List of links or buttons with an active slab, vertical or horizontal. The first letter of each item is strong.
+- [Menubar](http://localhost:5173/llms/menubar.txt): Row of menus, like an app menu bar.
+- [Navigation menu](http://localhost:5173/llms/navigation-menu.txt): Site navigation with flyout panels.
+- [Stepper](http://localhost:5173/llms/stepper.txt): Steps through a multi-step flow: interactive or read-only, horizontal or vertical, with error and done states.
+- [Toolbar](http://localhost:5173/llms/toolbar.txt): Grouped buttons and toggles with roving keyboard focus.
+- [Tree](http://localhost:5173/llms/tree.txt): Expandable hierarchy for files and categories.
+
+## Data
+
+- [Scroll area](http://localhost:5173/llms/scroll-area.txt): Scrollable region with a styled scrollbar.
+- [Empty state](http://localhost:5173/llms/empty-state.txt): Calm tinted placeholder for when there is nothing to show yet.
+- [Description list](http://localhost:5173/llms/description-list.txt): Label and value rows, ruled apart, for facts about one thing.
+- [Carousel](http://localhost:5173/llms/carousel.txt): Scroll-snapping slides with previous, next and dots.
+- [Chart](http://localhost:5173/llms/chart.txt): Line, area and bar charts drawn in SVG from the theme tokens.
+- [List](http://localhost:5173/llms/list.txt): One-tab-stop list with arrow keys and typeahead, for choosing a row or marking the current one.
+- [Virtual list](http://localhost:5173/llms/virtual-list.txt): Draws only the rows in view, for lists of tens of thousands of items.
+- [Data table](http://localhost:5173/llms/data-table.txt): A quiet captioned table for any data. Opt in to sort, search, filters, resizing, a column menu, selection and paging; also server mode, windowing and cards on narrow screens.
+- [Resizable](http://localhost:5173/llms/resizable.txt): Split panes with a draggable handle.
+
+## Optional
+
+- [Everything in one file](http://localhost:5173/llms-full.txt)
+- [Theme playground](http://localhost:5173/#/theme)

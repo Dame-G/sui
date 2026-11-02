@@ -1,0 +1,70 @@
+# File upload
+
+Dropzone and file list with validation, thumbnails and progress.
+
+Group: Forms. Registry item: http://localhost:5173/r/file-upload.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/file-upload.json
+```
+
+Installs with: theme, utils, field, announce. npm packages: none beyond Vue.
+
+Import it from your own copy: `import Fileupload from '@/components/ui/file-upload.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `v-model` | `File[]` | `[]` | Two-way bound value. |
+| `label` | `string` |  |  |
+| `accept` | `string` |  | Same syntax as the input's `accept`: ".png", "image/*", "image/png". |
+| `maxSize` | `number` |  | Largest file in bytes. |
+| `maxFiles` | `number` |  | Most files in the list. Extra ones are rejected with a reason, whether picked or dropped. |
+| `hint` | `string` |  |  |
+| `error` | `string` |  |  |
+| `required` | `boolean` |  |  |
+| `optional` | `boolean` |  |  |
+| `multiple` | `boolean` | `true` |  |
+| `progress` | `Record<string, number>` |  | Upload progress per file name, 0-100. A file without an entry shows no bar. |
+
+Events: `reject`.
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { reactive, ref, watch } from 'vue'
+import FileUpload from '@/components/ui/file-upload.vue'
+
+const files = ref<File[]>([])
+const progress = reactive<Record<string, number>>({})
+const avatar = ref<File[]>([])
+
+// Pretend to upload: each new file fills up over a couple of seconds.
+watch(files, (list) => {
+  for (const f of list) {
+    if (f.name in progress) continue
+    progress[f.name] = 0
+    const timer = setInterval(() => {
+      progress[f.name] = Math.min(100, (progress[f.name] ?? 0) + 8 + Math.random() * 10)
+      if (progress[f.name]! >= 100) clearInterval(timer)
+    }, 250)
+  }
+})
+</script>
+
+<template>
+  <div class="grid items-start gap-8 md:grid-cols-2">
+    <FileUpload v-model="files" label="Attachments" accept=".png,.jpg,.pdf" :max-size="2 * 1024 * 1024" :max-files="3" :progress="progress" hint="Drop a 4th file, a .txt or one over 2 MB to see it refused." />
+    <FileUpload v-model="avatar" label="Profile picture" accept="image/*" :max-size="500 * 1024" :multiple="false" required />
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.

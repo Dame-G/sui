@@ -1,0 +1,241 @@
+# Data table
+
+A quiet captioned table for any data. Opt in to sort, search, filters, resizing, a column menu, selection and paging; also server mode, windowing and cards on narrow screens.
+
+Group: Data. Registry item: http://localhost:5173/r/data-table.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/data-table.json
+```
+
+Installs with: theme, utils, pagination, popover, checkbox, button, announce. npm packages: none beyond Vue.
+
+Import it from your own copy: `import Datatable from '@/components/ui/data-table.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `v-model:selected` | `(string \| number)[]` | `[]` | Two-way bound value. |
+| `v-model:page` | `number` | `1` | Two-way bound value. |
+| `columns (required)` | `Column[]` |  |  |
+| `rows (required)` | `Row[]` |  |  |
+| `selectable` | `boolean` |  |  |
+| `pageSize` | `number` |  |  |
+| `rowKey` | `string` |  | Field that identifies a row in `selected`. Defaults to the row's position in `rows`. |
+| `label` | `string` | `'Data table'` | The table's name for screen readers: it is the table's caption, hidden unless `showCaption`. |
+| `showCaption` | `boolean` |  |  |
+| `empty` | `string` |  | Message when there are no rows. The `empty` slot replaces it. |
+| `searchable` | `boolean` |  | A search box above the table that matches any column. |
+| `searchDebounce` | `number` | `200` |  |
+| `resizable` | `boolean` |  | Column resizing: drag the edge, or focus it and use the arrow keys (Shift for bigger steps, Home resets, Esc cancels). |
+| `columnMenu` | `boolean` |  | A Columns menu to show and hide columns. |
+| `stickyFirst` | `boolean` |  | Keeps the first column in view while the table scrolls sideways. |
+| `maxHeight` | `string` |  | Any CSS length. The table scrolls inside it and its header stays in view. |
+| `dense` | `boolean` |  |  |
+| `striped` | `boolean` |  |  |
+| `cards` | `boolean` |  | Below a medium container width every row becomes a card with the column labels beside the values. |
+| `manual` | `boolean` |  | Server mode: the table does not sort, filter or page itself. It emits `queryChange` and shows what `rows` and `total` say. |
+| `total` | `number` |  |  |
+| `loading` | `boolean` |  |  |
+| `error` | `string` |  |  |
+| `rowLabel` | `string \| ((row: Row) => string)` |  | Names a row's checkbox: a column key, or a function. Defaults to the first column. |
+| `virtual` | `number` |  | Turns on windowing once there are more rows than this. Rows are `rowHeight` tall. |
+| `rowHeight` | `number` |  |  |
+
+Events: `queryChange`, `retry`.
+
+Slots: ``cell-${c.key}``, `empty`.
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import Badge from '@/components/ui/badge.vue'
+import Button from '@/components/ui/button.vue'
+import DataTable from '@/components/ui/data-table.vue'
+
+const names = ['Ada', 'Zoë', 'Grace', 'Alan', 'Margaret', 'Dennis', 'Barbara', 'Ken', 'Radia', 'Guido', 'Hedy', 'Tim', 'José', 'Édith']
+const roles = ['Maintainer', 'Contributor', 'Reviewer']
+const rows = names.map((name, i) => ({
+  id: name.toLowerCase(),
+  name,
+  role: roles[i % 3]!,
+  commits: 40 + ((i * 97) % 380),
+  joined: new Date(2019 + (i % 6), (i * 5) % 12, 1 + ((i * 7) % 27)),
+  spend: 120 + ((i * 731) % 9000) + 0.5,
+}))
+const columns = [
+  { key: 'name', label: 'Name', sortable: true, filter: 'text' as const },
+  { key: 'role', label: 'Role', sortable: true, filter: 'select' as const },
+  { key: 'commits', label: 'Commits', sortable: true, filter: 'number' as const, format: 'number' as const },
+  { key: 'joined', label: 'Joined', sortable: true, format: 'date' as const },
+  { key: 'spend', label: 'Spend', sortable: true, format: 'currency' as const },
+]
+const plainColumns = columns.map(({ key, label, format }) => ({ key, label, format }))
+const selected = ref<(string | number)[]>(['grace'])
+
+const invoices = [
+  { number: 'INV-1042', customer: 'Northwind', total: 1280 },
+  { number: 'INV-1043', customer: 'Contoso', total: 460 },
+  { number: 'INV-1044', customer: 'Fabrikam', total: 3120 },
+]
+const invoiceColumns = [
+  { key: 'number', label: 'Invoice' },
+  { key: 'customer', label: 'Customer', sortable: true },
+  { key: 'total', label: 'Total (USD)', sortable: true, align: 'end' as const },
+]
+
+// A custom cell: the status is shown as a Badge but sorts and filters on its text.
+const tasks = [
+  { id: 1, task: 'Ship the registry', status: 'Done', due: 3 },
+  { id: 2, task: 'Write the docs', status: 'Active', due: 9 },
+  { id: 3, task: 'Fix the focus ring', status: 'Blocked', due: 2 },
+  { id: 4, task: 'Tidy the theme', status: 'Active', due: 14 },
+]
+const taskColumns = [
+  { key: 'task', label: 'Task', sortable: true },
+  { key: 'status', label: 'Status', sortable: true },
+  { key: 'due', label: 'Due', sortable: true, align: 'end' as const, format: (v: unknown) => `in ${v} days` },
+]
+const tone = { Done: 'success', Active: 'info', Blocked: 'danger' } as const
+
+// Wide table: sticky first column and a short window
+const wide = Array.from({ length: 14 }, (_, i) => ({
+  id: i,
+  region: ['North', 'South', 'East', 'West'][i % 4]!,
+  q1: 120 + i * 17,
+  q2: 140 + i * 11,
+  q3: 90 + i * 23,
+  q4: 160 + i * 9,
+  total: 510 + i * 60,
+}))
+const wideColumns = [
+  { key: 'region', label: 'Region', width: 160 },
+  ...['q1', 'q2', 'q3', 'q4', 'total'].map((k) => ({ key: k, label: k.toUpperCase(), width: 140, sortable: true })),
+]
+
+// Server mode: the table asks, we answer later
+const everyone = Array.from({ length: 87 }, (_, i) => ({ id: i + 1, user: `user-${String(i + 1).padStart(3, '0')}`, plan: ['Free', 'Team', 'Scale'][i % 3]!, seats: 1 + (i % 9) }))
+const serverRows = ref<typeof everyone>([])
+const serverTotal = ref(everyone.length)
+const loading = ref(true)
+const failing = ref(false)
+const last = ref('nothing yet')
+let lastQuery: { sort: { key: string; dir: string } | null; search: string; page: number } = { sort: null, search: '', page: 1 }
+function load(q = lastQuery) {
+  lastQuery = q
+  loading.value = true
+  failing.value = false
+  last.value = `page ${q.page}${q.sort ? `, sorted by ${q.sort.key} ${q.sort.dir}` : ''}${q.search ? `, search “${q.search}”` : ''}`
+  setTimeout(() => {
+    loading.value = false
+    if (broken.value) return (failing.value = true)
+    let list = everyone.filter((r) => !q.search || r.user.includes(q.search.toLowerCase()))
+    if (q.sort) {
+      const { key, dir } = q.sort
+      list = [...list].sort((a, b) => String(a[key as 'user']).localeCompare(String(b[key as 'user']), undefined, { numeric: true }) * (dir === 'asc' ? 1 : -1))
+    }
+    serverTotal.value = list.length
+    serverRows.value = list.slice((q.page - 1) * 8, q.page * 8)
+  }, 700)
+}
+load()
+const broken = ref(false)
+const serverColumns = [
+  { key: 'id', label: 'ID', sortable: true },
+  { key: 'user', label: 'User', sortable: true },
+  { key: 'plan', label: 'Plan' },
+  { key: 'seats', label: 'Seats', sortable: true },
+]
+
+// Windowing: 5000 rows, only those in view exist in the page
+const big = Array.from({ length: 5000 }, (_, i) => ({ id: i, event: `evt_${String(i).padStart(5, '0')}`, kind: ['click', 'view', 'submit'][i % 3]!, ms: 20 + ((i * 37) % 900) }))
+const bigColumns = [
+  { key: 'event', label: 'Event' },
+  { key: 'kind', label: 'Kind', sortable: true },
+  { key: 'ms', label: 'Duration (ms)', sortable: true },
+]
+</script>
+
+<template>
+  <div class="grid gap-10">
+    <div class="grid gap-2">
+      <p class="kicker">Everything on · {{ selected.length }} selected</p>
+      <DataTable
+        v-model:selected="selected"
+        label="Team"
+        :columns="columns"
+        :rows="rows"
+        row-key="id"
+        selectable
+        searchable
+        resizable
+        column-menu
+        :page-size="6"
+        row-label="name"
+      />
+      <p class="text-muted">Search “jose” finds José: matching ignores case and accents.</p>
+    </div>
+
+    <div class="grid gap-8 md:grid-cols-2">
+      <div class="grid content-start gap-2">
+        <p class="kicker">Static: it is just a quiet table</p>
+        <DataTable label="Invoices" show-caption :columns="invoiceColumns" :rows="invoices" />
+      </div>
+      <div class="grid content-start gap-2">
+        <p class="kicker">Dense, striped, custom cell</p>
+        <DataTable label="Tasks" :columns="taskColumns" :rows="tasks" dense striped>
+          <template #cell-status="{ value }"><Badge :tone="tone[value as keyof typeof tone]">{{ value }}</Badge></template>
+        </DataTable>
+      </div>
+      <div class="grid content-start gap-2">
+        <p class="kicker">Empty</p>
+        <DataTable label="Invoices" :columns="invoiceColumns" :rows="[]" empty="No invoices yet." />
+      </div>
+      <div class="grid content-start gap-2">
+        <p class="kicker">Cards on a narrow container</p>
+        <DataTable label="Team" :columns="plainColumns" :rows="rows.slice(0, 2)" cards class="max-w-xs" />
+      </div>
+    </div>
+
+    <div class="grid gap-2">
+      <p class="kicker">Sticky header and first column</p>
+      <DataTable label="Regions" :columns="wideColumns" :rows="wide" row-key="id" sticky-first max-height="14rem" striped class="max-w-xl" />
+    </div>
+
+    <div class="grid gap-2">
+      <div class="flex flex-wrap items-center gap-3">
+        <p class="kicker">Server mode · last request: {{ last }}</p>
+        <Button @click="((broken = !broken), load())">{{ broken ? 'Make it work' : 'Make it fail' }}</Button>
+      </div>
+      <DataTable
+        label="Users"
+        :columns="serverColumns"
+        :rows="serverRows"
+        :total="serverTotal"
+        :page-size="8"
+        manual
+        searchable
+        :loading="loading"
+        :error="failing ? 'We could not load the users.' : undefined"
+        @query-change="load"
+        @retry="load()"
+      />
+    </div>
+
+    <div class="grid gap-2">
+      <p class="kicker">Windowing: 5,000 rows, a few dozen in the page</p>
+      <DataTable label="Events" :columns="bigColumns" :rows="big" :virtual="100" max-height="16rem" dense row-key="id" class="max-w-xl" />
+    </div>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.

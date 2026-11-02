@@ -1,0 +1,67 @@
+# Pin input
+
+One box per character, for one-time codes.
+
+Group: Forms. Registry item: http://localhost:5173/r/pin-input.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/pin-input.json
+```
+
+Installs with: theme, utils, field. npm packages: reka-ui.
+
+Import it from your own copy: `import Pininput from '@/components/ui/pin-input.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `v-model` | `string` | `''` | Two-way bound value. |
+| `label (required)` | `string` |  |  |
+| `hint` | `string` |  |  |
+| `length` | `number` | `6` |  |
+| `groupSize` | `number` |  | Show a wider gap after every N boxes, so 123456 reads as 123 456. |
+| `charset` | `'numeric' \| 'alphanumeric' \| 'any'` | `'any'` | Which characters are allowed: digits, letters and digits, or anything. |
+| `error` | `string` |  |  |
+| `required` | `boolean` |  |  |
+| `optional` | `boolean` |  |  |
+| `hideLabel` | `boolean` |  |  |
+| `readonly` | `boolean` |  |  |
+| `disabled` | `boolean` |  |  |
+| `name` | `string` |  |  |
+
+Events: `complete`.
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { computed, ref } from 'vue'
+import PinInput from '@/components/ui/pin-input.vue'
+
+const code = ref('')
+const done = ref(false)
+const error = computed(() => (done.value && code.value !== '123456' ? 'That code is not right. Try 123456.' : undefined))
+const grouped = ref('')
+const letters = ref('')
+const short = ref('')
+</script>
+
+<template>
+  <div class="grid items-start gap-6 md:grid-cols-2">
+    <PinInput v-model="code" label="Code" hint="Paste works. Try 123456." :error="error" @complete="done = true" />
+    <PinInput v-model="grouped" label="In groups of three" :group-size="3" charset="numeric" />
+    <PinInput v-model="letters" label="Letters and digits" :length="4" charset="alphanumeric" />
+    <PinInput v-model="short" label="Four digits" :length="4" charset="numeric" optional />
+    <PinInput label="Read only" model-value="123456" readonly />
+    <PinInput label="Disabled" model-value="123456" disabled />
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.

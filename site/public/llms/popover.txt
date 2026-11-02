@@ -1,0 +1,82 @@
+# Popover
+
+Floating panel anchored to a trigger.
+
+Group: Overlays. Registry item: http://localhost:5173/r/popover.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/popover.json
+```
+
+Installs with: theme, utils. npm packages: reka-ui.
+
+Import it from your own copy: `import Popover from '@/components/ui/popover.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `v-model:open` | `boolean` | `false` | Two-way bound value. |
+
+Slots: `trigger`, `default`.
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import Badge from '@/components/ui/badge.vue'
+import Button from '@/components/ui/button.vue'
+import Checkbox from '@/components/ui/checkbox.vue'
+import Popover from '@/components/ui/popover.vue'
+import Switch from '@/components/ui/switch.vue'
+import TextField from '@/components/ui/text-field.vue'
+
+const link = ref('https://sui.dame.gg/share/412')
+const editable = ref(true)
+const status = ref(true)
+const owner = ref(false)
+</script>
+
+<template>
+  <div class="grid gap-8">
+    <div class="flex flex-col items-start gap-3">
+      <span class="kicker">Details</span>
+      <Popover>
+        <template #trigger><Button>Show details</Button></template>
+        <div class="grid gap-2">
+          <div class="flex items-center gap-2"><p class="font-medium">Build #412</p><Badge tone="success">Passed</Badge></div>
+          <p class="text-muted">Passed in 38s on main.</p>
+        </div>
+      </Popover>
+    </div>
+    <div class="flex flex-col items-start gap-3">
+      <span class="kicker">With a form</span>
+      <Popover>
+        <template #trigger><Button>Share link</Button></template>
+        <div class="flex flex-col items-start gap-3">
+          <TextField v-model="link" label="Link" />
+          <Switch v-model="editable" label="Allow editing" />
+        </div>
+      </Popover>
+    </div>
+    <div class="flex flex-col items-start gap-3">
+      <span class="kicker">Filters</span>
+      <Popover>
+        <template #trigger><Button>Filter</Button></template>
+        <div class="flex flex-col items-start gap-1">
+          <Checkbox v-model="status" label="Open" />
+          <Checkbox v-model="owner" label="Assigned to me" />
+        </div>
+      </Popover>
+    </div>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.

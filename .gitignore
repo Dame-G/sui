@@ -1,13 +1,6 @@
 node_modules
 dist
-coverage
-*.tsbuildinfo
-storybook-static
-.vite
-test-results
-__screenshots__/**/actual
+site/public/r
 .env
 .DS_Store
-.vitest
 .claude/settings.local.json
-.claude/worktrees/

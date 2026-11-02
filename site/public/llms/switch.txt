@@ -1,0 +1,63 @@
+# Switch
+
+On/off toggle with a label.
+
+Group: Forms. Registry item: http://localhost:5173/r/switch.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/switch.json
+```
+
+Installs with: theme, utils. npm packages: reka-ui.
+
+Import it from your own copy: `import Switch from '@/components/ui/switch.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `v-model` | `boolean` | `false` | Two-way bound value. |
+| `label (required)` | `string` |  |  |
+| `description` | `string` |  | A line of help under the label, read after the label rather than as part of its name. |
+| `hideLabel` | `boolean` |  |  |
+| `disabled` | `boolean` |  |  |
+| `value` | `string` |  |  |
+| `name` | `string` |  |  |
+| `required` | `boolean` |  |  |
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import Card from '@/components/ui/card.vue'
+import Switch from '@/components/ui/switch.vue'
+
+const airplane = ref(false)
+const alerts = ref(true)
+const wifi = ref(true)
+const marketing = ref(false)
+</script>
+
+<template>
+  <div class="grid items-start gap-8 md:grid-cols-2">
+    <div class="grid gap-1">
+      <Switch v-model="airplane" label="Airplane mode" />
+      <Switch v-model="alerts" label="Alerts" description="Sounds and banners." />
+      <Switch :model-value="true" label="Disabled, on" disabled />
+      <Switch :model-value="false" label="Disabled" disabled />
+    </div>
+    <Card title="Settings">
+      <Switch v-model="wifi" label="Wi-Fi" />
+      <Switch v-model="marketing" label="Product news" />
+    </Card>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.

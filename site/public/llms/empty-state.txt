@@ -1,0 +1,56 @@
+# Empty state
+
+Calm tinted placeholder for when there is nothing to show yet.
+
+Group: Data. Registry item: http://localhost:5173/r/empty-state.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/empty-state.json
+```
+
+Installs with: theme, utils, announce. npm packages: none beyond Vue.
+
+Import it from your own copy: `import Emptystate from '@/components/ui/empty-state.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `title (required)` | `string` |  |  |
+| `description` | `string` |  |  |
+| `announce` | `boolean` |  | Say "title. description" aloud when this appears, for results that empty out after a search or filter. |
+
+Slots: `icon`, `default`.
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import Button from '@/components/ui/button.vue'
+import EmptyState from '@/components/ui/empty-state.vue'
+</script>
+
+<template>
+  <div class="grid items-start gap-6 md:grid-cols-2">
+    <div class="flex flex-col gap-2">
+      <p class="kicker">First use, with an action</p>
+      <EmptyState title="No projects yet" description="Create your first project to see it here.">
+        <Button>New project</Button>
+      </EmptyState>
+    </div>
+    <div class="flex flex-col gap-2">
+      <p class="kicker">No results</p>
+      <EmptyState title="No matches for “overdue”" description="Try a different word, or clear your filters.">
+        <Button>Clear filters</Button>
+      </EmptyState>
+    </div>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.

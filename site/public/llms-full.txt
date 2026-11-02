@@ -1,0 +1,5778 @@
+# sui
+
+> A Vue 3 component registry in the shadcn style: you download the source with `bunx shadcn-vue@latest add http://localhost:5173/r/<name>.json` and own it. One distinct identity, themed only through tokens. Built on Reka UI, Tailwind v4 and TypeScript.
+
+Identity (not options): a raised face sits on a darker 2px "slab"; 1px edges; soft tinted tones; stripes mean "still to do"; a dashed edge means disabled or busy; one control height; three font weights; mono for labels and figures. Components take no style variants. Theme the whole system with four tokens in sui-theme.css (brand colour, radius, slab depth, font); scheme (`data-scheme="dark|auto"`) and contrast (`data-contrast="high|auto"`) are attributes on <html>.
+
+Setup: install Tailwind v4, add the `@` alias, add a components.json, then `@import "./styles/sui-theme.css"` after Tailwind. Steps: http://localhost:5173/#/start
+
+
+---
+
+# Button
+
+Primary action: a face on a slab that sinks onto it when pressed, with a busy state and icon slots.
+
+Group: Primitives. Registry item: http://localhost:5173/r/button.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/button.json
+```
+
+Installs with: theme, utils. npm packages: reka-ui.
+
+Import it from your own copy: `import Button from '@/components/ui/button.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `loading` | `boolean` |  | Busy: a spinner sits over the label, the width does not change and clicks are ignored. |
+| `block` | `boolean` |  | Stretch to the full width of the parent. |
+
+Also takes everything in PrimitiveProps, and `class` for placement only.
+
+Slots: `default`.
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { h, ref } from 'vue'
+import Button from '@/components/ui/button.vue'
+
+// Each button owns its busy flag, so pressing one never makes another busy.
+const busy = ref({ save: false, download: false })
+function run(key: 'save' | 'download') {
+  busy.value[key] = true
+  setTimeout(() => (busy.value[key] = false), 1800)
+}
+const stroke = { viewBox: '0 0 16 16', fill: 'none', stroke: 'currentColor', 'stroke-width': 1.75, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' } as const
+const Plus = () => h('svg', stroke, [h('path', { d: 'M8 3v10M3 8h10' })])
+const Download = () => h('svg', stroke, [h('path', { d: 'M8 2v8M4.5 7 8 10.5 11.5 7M3 13h10' })])
+</script>
+
+<template>
+  <div class="grid gap-8">
+    <div class="flex flex-col gap-2">
+      <p class="kicker">Default and disabled</p>
+      <div class="flex flex-wrap gap-3">
+        <Button>Save changes</Button>
+        <Button disabled>Disabled</Button>
+        <Button as="a" href="#/start">As a link</Button>
+      </div>
+    </div>
+    <div class="flex flex-col gap-2">
+      <p class="kicker">With an icon: it is just a child</p>
+      <div class="flex flex-wrap gap-3">
+        <Button><Plus /> New project</Button>
+        <Button><Download /> Download</Button>
+      </div>
+    </div>
+    <div class="flex flex-col gap-2">
+      <p class="kicker">Busy: press one. The width holds and clicks are ignored</p>
+      <div class="flex flex-wrap gap-3">
+        <Button :loading="busy.save" @click="run('save')">Save</Button>
+        <Button :loading="busy.download" @click="run('download')"><Download /> Download</Button>
+      </div>
+    </div>
+    <div class="flex max-w-sm flex-col gap-2">
+      <p class="kicker">Full width</p>
+      <Button block>Create your account</Button>
+    </div>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Icon button
+
+Square button for an icon alone: a required label, a tooltip, a busy state and a 44px tap size.
+
+Group: Primitives. Registry item: http://localhost:5173/r/icon-button.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/icon-button.json
+```
+
+Installs with: theme, utils, tooltip. npm packages: reka-ui.
+
+Import it from your own copy: `import Iconbutton from '@/components/ui/icon-button.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `label (required)` | `string` |  | The accessible name. Required: an icon alone says nothing to a screen reader. It also shows as a tooltip. |
+| `loading` | `boolean` |  |  |
+| `tooltip` | `boolean` | `true` | Show the label as a tooltip. Turn it off when the button is the `as-child` trigger of a menu or dialog (a tooltip wrapper has no element of its own to hand back); the `title` attribute then carries the label. |
+
+Also takes everything in PrimitiveProps, and `class` for placement only.
+
+Slots: `default`.
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import IconButton from '@/components/ui/icon-button.vue'
+import DropdownMenu from '@/components/ui/dropdown-menu.vue'
+
+const busy = ref(false)
+function refresh() {
+  busy.value = true
+  setTimeout(() => (busy.value = false), 1600)
+}
+const stroke = { fill: 'none', stroke: 'currentColor', 'stroke-width': 1.75, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' } as const
+</script>
+
+<template>
+  <div class="grid gap-8">
+    <div class="flex flex-col gap-2">
+      <p class="kicker">Hover or focus for the label</p>
+      <div class="flex flex-wrap items-center gap-3">
+        <IconButton label="Add"><svg viewBox="0 0 16 16" v-bind="stroke"><path d="M8 3v10M3 8h10" /></svg></IconButton>
+        <IconButton label="Search"><svg viewBox="0 0 16 16" v-bind="stroke"><circle cx="7" cy="7" r="4.5" /><path d="M10.5 10.5L14 14" /></svg></IconButton>
+        <IconButton label="Settings"><svg viewBox="0 0 24 24" v-bind="stroke"><circle cx="12" cy="12" r="3" /><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1" /></svg></IconButton>
+        <IconButton label="Unavailable" disabled><svg viewBox="0 0 16 16" v-bind="stroke"><path d="M3 8h10" /></svg></IconButton>
+      </div>
+    </div>
+    <div class="flex flex-col gap-2">
+      <p class="kicker">Busy: press refresh</p>
+      <div><IconButton label="Refresh" :loading="busy" @click="refresh"><svg viewBox="0 0 16 16" v-bind="stroke"><path d="M13 8a5 5 0 1 1-1.5-3.5M13 2.5V5h-2.5" /></svg></IconButton></div>
+    </div>
+    <div class="flex flex-col gap-2">
+      <p class="kicker">As a menu trigger, with the tooltip off</p>
+      <DropdownMenu :items="[{ value: 'rename', label: 'Rename' }, { value: 'duplicate', label: 'Duplicate' }, { value: 'delete', label: 'Delete' }]">
+        <template #trigger>
+          <IconButton label="More actions" :tooltip="false"><svg viewBox="0 0 16 16" fill="currentColor"><circle cx="3.5" cy="8" r="1.4" /><circle cx="8" cy="8" r="1.4" /><circle cx="12.5" cy="8" r="1.4" /></svg></IconButton>
+        </template>
+      </DropdownMenu>
+    </div>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Badge
+
+Stamp for status: a tinted chip with a tone-coloured side slab.
+
+Group: Primitives. Registry item: http://localhost:5173/r/badge.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/badge.json
+```
+
+Installs with: theme, utils. npm packages: none beyond Vue.
+
+Import it from your own copy: `import Badge from '@/components/ui/badge.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `tone` | `'neutral' \| 'info' \| 'success' \| 'warning' \| 'danger'` | `'neutral'` |  |
+
+Slots: `default`.
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import Badge from '@/components/ui/badge.vue'
+</script>
+
+<template>
+  <div class="grid gap-8">
+    <div class="flex flex-col gap-2">
+      <p class="kicker">Tones</p>
+      <div class="flex flex-wrap gap-3">
+        <Badge>Draft</Badge>
+        <Badge tone="info">New</Badge>
+        <Badge tone="success">Paid</Badge>
+        <Badge tone="warning">Due soon</Badge>
+        <Badge tone="danger">Overdue</Badge>
+      </div>
+    </div>
+    <div class="flex max-w-sm flex-col gap-2">
+      <p class="kicker">In context</p>
+      <div class="flex items-center justify-between border-b border-edge py-3"><span>Invoice 1042</span><Badge tone="success">Paid</Badge></div>
+      <div class="flex items-center justify-between border-b border-edge py-3"><span>Invoice 1043</span><Badge tone="warning">Due soon</Badge></div>
+      <div class="flex items-center justify-between py-3"><span>Invoice 1044</span><Badge tone="danger">Overdue</Badge></div>
+    </div>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Button group
+
+Buttons joined into one control with matching corners.
+
+Group: Primitives. Registry item: http://localhost:5173/r/button-group.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/button-group.json
+```
+
+Installs with: theme, utils. npm packages: none beyond Vue.
+
+Import it from your own copy: `import Buttongroup from '@/components/ui/button-group.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `orientation` | `'horizontal' \| 'vertical'` | `'horizontal'` |  |
+
+Slots: `default`.
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import Button from '@/components/ui/button.vue'
+import ButtonGroup from '@/components/ui/button-group.vue'
+</script>
+
+<template>
+  <div class="flex flex-wrap items-start gap-x-12 gap-y-8">
+    <div class="flex flex-col gap-2">
+      <p class="kicker">Horizontal</p>
+      <ButtonGroup>
+        <Button>Day</Button>
+        <Button>Week</Button>
+        <Button disabled>Month</Button>
+      </ButtonGroup>
+    </div>
+    <div class="flex flex-col gap-2">
+      <p class="kicker">Vertical</p>
+      <ButtonGroup orientation="vertical">
+        <Button>Top</Button>
+        <Button>Middle</Button>
+        <Button>Bottom</Button>
+      </ButtonGroup>
+    </div>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Link
+
+Text link with the identity underline, hover and focus.
+
+Group: Primitives. Registry item: http://localhost:5173/r/link.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/link.json
+```
+
+Installs with: theme, utils. npm packages: reka-ui.
+
+Import it from your own copy: `import Link from '@/components/ui/link.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `href` | `string` |  |  |
+| `external` | `boolean` |  |  |
+
+Also takes everything in PrimitiveProps, and `class` for placement only.
+
+Slots: `default`.
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import Link from '@/components/ui/link.vue'
+</script>
+
+<template>
+  <div class="grid max-w-prose gap-4 leading-relaxed">
+    <p>
+      Read the <Link href="#/start">getting started guide</Link>, or see how
+      <Link href="https://reka-ui.com" external>Reka UI</Link> handles the behaviour. External links open in a new tab.
+    </p>
+    <p>A link that has gone away: <Link href="#/" aria-disabled="true">archived page</Link>.</p>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Card
+
+Framed surface that groups related content.
+
+Group: Primitives. Registry item: http://localhost:5173/r/card.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/card.json
+```
+
+Installs with: theme, utils. npm packages: none beyond Vue.
+
+Import it from your own copy: `import Card from '@/components/ui/card.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `title` | `string` |  |  |
+| `level` | `2 \| 3 \| 4` | `2` |  |
+
+Slots: `default`.
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import Button from '@/components/ui/button.vue'
+import Card from '@/components/ui/card.vue'
+import TextField from '@/components/ui/text-field.vue'
+
+const email = ref('')
+</script>
+
+<template>
+  <div class="grid items-start gap-6 md:grid-cols-2">
+    <div class="flex flex-col gap-2">
+      <p class="kicker">With a title</p>
+      <Card title="Join the waitlist">
+        <TextField v-model="email" label="Email" type="email" placeholder="you@example.com" />
+        <div><Button>Notify me</Button></div>
+      </Card>
+    </div>
+    <div class="flex flex-col gap-2">
+      <p class="kicker">Without a title</p>
+      <Card>
+        <p class="font-medium">Plain surface</p>
+        <p class="text-muted">Leave the title out and the header goes away; the body keeps its padding and edge.</p>
+      </Card>
+    </div>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Separator
+
+Hairline rule, horizontal or vertical.
+
+Group: Primitives. Registry item: http://localhost:5173/r/separator.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/separator.json
+```
+
+Installs with: theme, utils. npm packages: reka-ui.
+
+Import it from your own copy: `import Separator from '@/components/ui/separator.vue'`.
+
+## Props
+
+No props; it takes content only.
+
+Also takes everything in SeparatorProps, and `class` for placement only.
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import Separator from '@/components/ui/separator.vue'
+</script>
+
+<template>
+  <div class="grid gap-8">
+    <div class="flex max-w-sm flex-col gap-3">
+      <p class="kicker">Horizontal</p>
+      <span>Above the rule</span>
+      <Separator />
+      <span>Below the rule</span>
+    </div>
+    <div class="flex flex-col gap-2">
+      <p class="kicker">Vertical</p>
+      <div class="flex h-6 items-center gap-3"><span>Docs</span><Separator orientation="vertical" /><span>Blog</span><Separator orientation="vertical" /><span>Changelog</span></div>
+    </div>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Avatar
+
+Image with an initials fallback.
+
+Group: Primitives. Registry item: http://localhost:5173/r/avatar.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/avatar.json
+```
+
+Installs with: theme, utils. npm packages: reka-ui.
+
+Import it from your own copy: `import Avatar from '@/components/ui/avatar.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `src` | `string` |  |  |
+| `alt` | `string` |  |  |
+| `fallback (required)` | `string` |  |  |
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import Avatar from '@/components/ui/avatar.vue'
+import Badge from '@/components/ui/badge.vue'
+</script>
+
+<template>
+  <div class="grid gap-8">
+    <div class="flex flex-col gap-2">
+      <p class="kicker">Initials, and an image that fails to load</p>
+      <div class="flex flex-wrap gap-3">
+        <Avatar fallback="DG" />
+        <Avatar fallback="AB" />
+        <Avatar src="/missing.png" alt="" fallback="KL" />
+      </div>
+    </div>
+    <div class="flex max-w-sm flex-col gap-2">
+      <p class="kicker">In context</p>
+      <div v-for="p in [{ i: 'AL', n: 'Ada Lovelace', t: 'Maintainer' }, { i: 'GH', n: 'Grace Hopper', t: 'Reviewer' }]" :key="p.i" class="flex items-center gap-3 border-b border-edge py-3 last:border-b-0">
+        <Avatar :fallback="p.i" />
+        <div class="grid min-w-0 flex-1 leading-snug"><span class="font-medium">{{ p.n }}</span><span class="text-sm text-muted">{{ p.t }}</span></div>
+        <Badge tone="success">Active</Badge>
+      </div>
+    </div>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Kbd
+
+Keyboard key cap on a thin slab.
+
+Group: Primitives. Registry item: http://localhost:5173/r/kbd.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/kbd.json
+```
+
+Installs with: theme, utils. npm packages: none beyond Vue.
+
+Import it from your own copy: `import Kbd from '@/components/ui/kbd.vue'`.
+
+## Props
+
+No props; it takes content only.
+
+Slots: `default`.
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import Kbd from '@/components/ui/kbd.vue'
+</script>
+
+<template>
+  <div class="grid gap-8">
+    <div class="flex flex-col gap-2">
+      <p class="kicker">Keys and chords</p>
+      <div class="flex flex-wrap items-center gap-2">
+        <Kbd>Esc</Kbd><Kbd>Enter</Kbd>
+        <span class="flex gap-1"><Kbd>Ctrl</Kbd><Kbd>K</Kbd></span>
+        <span class="flex gap-1"><Kbd>Shift</Kbd><Kbd>Tab</Kbd></span>
+      </div>
+    </div>
+    <div class="flex max-w-sm flex-col gap-2">
+      <p class="kicker">In context</p>
+      <div class="flex items-center justify-between border-b border-edge py-3"><span>Open the command palette</span><span class="flex gap-1"><Kbd>Ctrl</Kbd><Kbd>K</Kbd></span></div>
+      <div class="flex items-center justify-between py-3"><span>Close</span><Kbd>Esc</Kbd></div>
+    </div>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Spinner
+
+Loading ring: an arc travelling round a dashed track, announced to screen readers.
+
+Group: Primitives. Registry item: http://localhost:5173/r/spinner.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/spinner.json
+```
+
+Installs with: theme, utils, announce. npm packages: none beyond Vue.
+
+Import it from your own copy: `import Spinner from '@/components/ui/spinner.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `label` | `string` |  |  |
+| `announce` | `boolean` |  |  |
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import Card from '@/components/ui/card.vue'
+import Spinner from '@/components/ui/spinner.vue'
+</script>
+
+<template>
+  <div class="grid items-start gap-8 md:grid-cols-2">
+    <div class="flex flex-col gap-3">
+      <p class="kicker">Bare and labelled</p>
+      <Spinner :announce="false" />
+      <Spinner label="Loading your results…" :announce="false" />
+    </div>
+    <div class="flex flex-col gap-2">
+      <p class="kicker">In context</p>
+      <Card title="Recent activity">
+        <div class="grid place-items-center py-6"><Spinner label="Fetching activity…" :announce="false" /></div>
+      </Card>
+    </div>
+    <p class="text-muted md:col-span-2">A spinner that appears is spoken once to screen readers. Pass <code class="numeral">:announce="false"</code> where it would repeat.</p>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Skeleton
+
+Striped, pulsing placeholder while content loads.
+
+Group: Primitives. Registry item: http://localhost:5173/r/skeleton.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/skeleton.json
+```
+
+Installs with: theme, utils. npm packages: none beyond Vue.
+
+Import it from your own copy: `import Skeleton from '@/components/ui/skeleton.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `label` | `string` |  |  |
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import Card from '@/components/ui/card.vue'
+import Skeleton from '@/components/ui/skeleton.vue'
+</script>
+
+<template>
+  <div class="grid items-start gap-8 md:grid-cols-2">
+    <div class="flex flex-col gap-3">
+      <p class="kicker">Text lines</p>
+      <Skeleton label="Loading comments" class="w-2/5" />
+      <Skeleton />
+      <Skeleton class="w-3/5" />
+    </div>
+    <div class="flex flex-col gap-2">
+      <p class="kicker">In context</p>
+      <Card title="Ada Lovelace">
+        <div class="flex items-center gap-3">
+          <Skeleton class="size-11 shrink-0" />
+          <div class="grid flex-1 gap-2"><Skeleton class="w-1/2" /><Skeleton class="w-3/4" /></div>
+        </div>
+        <Skeleton /><Skeleton class="w-2/3" />
+      </Card>
+    </div>
+    <p class="text-muted md:col-span-2">Skeletons are hidden from screen readers. Give the first one a <code class="numeral">label</code> and it speaks for the group.</p>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Progress
+
+Progress bar with a striped track for what is left, a sliding bar when unknown, and spoken value text.
+
+Group: Primitives. Registry item: http://localhost:5173/r/progress.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/progress.json
+```
+
+Installs with: theme, utils. npm packages: reka-ui.
+
+Import it from your own copy: `import Progress from '@/components/ui/progress.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `v-model` | `number \| null` | `null` | Two-way bound value. |
+| `label` | `string` |  |  |
+| `hideLabel` | `boolean` |  |  |
+| `hideValue` | `boolean` |  |  |
+| `valueText` | `string` |  | What a screen reader hears instead of the percentage, e.g. "3 of 8 files". |
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import Button from '@/components/ui/button.vue'
+import Progress from '@/components/ui/progress.vue'
+
+const upload = ref(40)
+</script>
+
+<template>
+  <div class="grid max-w-md gap-8">
+    <div class="flex flex-col gap-3">
+      <p class="kicker">Determinate: step it</p>
+      <Progress v-model="upload" label="Uploading photos" />
+      <div class="flex gap-2">
+        <Button @click="upload = Math.max(0, upload - 10)">−10</Button>
+        <Button @click="upload = Math.min(100, upload + 10)">+10</Button>
+      </div>
+    </div>
+    <div class="flex flex-col gap-3">
+      <p class="kicker">Complete, and unknown length</p>
+      <Progress :model-value="100" label="Finished" />
+      <Progress label="Waiting for the server" />
+    </div>
+    <div class="flex flex-col gap-3">
+      <p class="kicker">Spoken text instead of a percentage</p>
+      <Progress :model-value="38" label="Importing contacts" value-text="3 of 8 files" />
+    </div>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Notice
+
+Inline message with a tone icon and a side slab.
+
+Group: Primitives. Registry item: http://localhost:5173/r/notice.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/notice.json
+```
+
+Installs with: theme, utils. npm packages: none beyond Vue.
+
+Import it from your own copy: `import Notice from '@/components/ui/notice.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `tone` | `'neutral' \| 'info' \| 'success' \| 'warning' \| 'danger'` | `'info'` |  |
+| `title (required)` | `string` |  |  |
+
+Slots: `default`.
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import Button from '@/components/ui/button.vue'
+import Notice from '@/components/ui/notice.vue'
+</script>
+
+<template>
+  <div class="grid max-w-xl gap-8">
+    <div class="flex flex-col gap-3">
+      <p class="kicker">Tones</p>
+      <Notice title="Heads up">Your trial ends in 3 days. Add a payment method to keep your projects.</Notice>
+      <Notice tone="success" title="Payment received">A receipt is on its way to your inbox.</Notice>
+      <Notice tone="warning" title="Almost out of space">You have used 92% of your storage.</Notice>
+      <Notice tone="danger" title="Couldn't save your changes">Check your connection and try again.</Notice>
+      <Notice tone="neutral" title="Scheduled maintenance" />
+    </div>
+    <div class="flex flex-col gap-3">
+      <p class="kicker">With an action</p>
+      <Notice tone="warning" title="Your plan changes next month">
+        <div class="grid items-start gap-3">
+          <p>We'll move you to the new pricing automatically. Nothing changes until then.</p>
+          <div><Button>Review billing</Button></div>
+        </div>
+      </Notice>
+    </div>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Text field
+
+Labelled input with an accessible error message.
+
+Group: Forms. Registry item: http://localhost:5173/r/text-field.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/text-field.json
+```
+
+Installs with: theme, utils, field. npm packages: none beyond Vue.
+
+Import it from your own copy: `import Textfield from '@/components/ui/text-field.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `v-model` | `string` | `''` | Two-way bound value. |
+| `label (required)` | `string` |  |  |
+| `hint` | `string` |  |  |
+| `error` | `string` |  |  |
+| `required` | `boolean` |  |  |
+| `optional` | `boolean` |  |  |
+| `hideLabel` | `boolean` |  |  |
+| `readonly` | `boolean` |  |  |
+| `disabled` | `boolean` |  |  |
+| `loading` | `boolean` |  | Shows a spinner and marks the field busy. |
+| `clearable` | `boolean` |  | Adds a clear button once there is text; focus stays in the input. |
+| `prefix` | `string` |  | Text before and after the value, such as "$" or "kg". Read as part of the description. |
+| `suffix` | `string` |  |  |
+| `maxlength` | `number` |  |  |
+| `counter` | `boolean` |  | Show how many characters are used (of `maxlength` if set). |
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { computed, ref } from 'vue'
+import Button from '@/components/ui/button.vue'
+import Card from '@/components/ui/card.vue'
+import PasswordField from '@/components/ui/password-field.vue'
+import TextField from '@/components/ui/text-field.vue'
+
+const name = ref('')
+const email = ref('ada@')
+const emailError = computed(() => (/^\S+@\S+\.\S+$/.test(email.value) ? undefined : 'Enter a full email address.'))
+const handle = ref('ada')
+const price = ref('12')
+const note = ref('')
+const signEmail = ref('')
+const signPass = ref('')
+</script>
+
+<template>
+  <div class="grid items-start gap-6 md:grid-cols-2">
+    <TextField v-model="name" label="Name" placeholder="Hover and focus me" hint="As it appears on invoices." />
+    <TextField v-model="email" label="Email" type="email" :error="emailError" required />
+    <TextField v-model="handle" label="Handle" prefix="@" clearable />
+    <TextField v-model="price" label="Price" prefix="$" suffix="USD" />
+    <TextField v-model="note" label="Note" :maxlength="40" counter optional />
+    <TextField label="Saving" model-value="Checking availability" loading />
+    <TextField label="Read only" model-value="grace@example.com" readonly />
+    <TextField label="Disabled" model-value="locked@example.com" disabled />
+    <Card title="Sign in" class="md:col-span-2 md:max-w-sm">
+      <TextField v-model="signEmail" label="Email" type="email" placeholder="you@example.com" />
+      <PasswordField v-model="signPass" label="Password" />
+      <div><Button>Sign in</Button></div>
+    </Card>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Field
+
+The shared anatomy of every input: label with Required/Optional, hint or error, and an aside for a counter.
+
+Group: Forms. Registry item: http://localhost:5173/r/field.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/field.json
+```
+
+Installs with: theme, utils, announce. npm packages: reka-ui.
+
+Import it from your own copy: `import Field from '@/components/ui/field.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `label (required)` | `string` |  |  |
+| `hint` | `string` |  |  |
+| `error` | `string` |  |  |
+| `required` | `boolean` |  |  |
+| `optional` | `boolean` |  |  |
+| `hideLabel` | `boolean` |  |  |
+| `id` | `string` |  |  |
+| `disabled` | `boolean` |  |  |
+
+Slots: `default`, `aside`.
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import Field from '@/components/ui/field.vue'
+import Slider from '@/components/ui/slider.vue'
+import TextField from '@/components/ui/text-field.vue'
+
+const volume = ref([40])
+const name = ref('')
+</script>
+
+<template>
+  <div class="grid items-start gap-6 md:grid-cols-2">
+    <TextField v-model="name" label="Built on Field" hint="Label, hint, error and flag come from one place." required />
+    <TextField label="Optional, with a counter" :maxlength="40" counter optional />
+    <TextField label="Error" model-value="" error="This field is required." required />
+    <Field v-slot="{ id }" label="Around any control" :hint="`${volume[0]}%`">
+      <Slider v-model="volume" :labelledby="`${id}-label`" />
+    </Field>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Form
+
+Validates on submit, lists the problems as links to their fields, and moves focus to the list.
+
+Group: Forms. Registry item: http://localhost:5173/r/form.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/form.json
+```
+
+Installs with: theme, utils, notice. npm packages: none beyond Vue.
+
+Import it from your own copy: `import Form from '@/components/ui/form.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `submitting` | `boolean` |  |  |
+
+Events: `submit`.
+
+Slots: `default`.
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { computed, ref } from 'vue'
+import Button from '@/components/ui/button.vue'
+import Card from '@/components/ui/card.vue'
+import Form from '@/components/ui/form.vue'
+import PasswordField from '@/components/ui/password-field.vue'
+import TextField from '@/components/ui/text-field.vue'
+import { toast } from '@/components/ui/toast.vue'
+
+const form = ref<InstanceType<typeof Form>>()
+const name = ref('')
+const email = ref('grace@')
+const password = ref('')
+const submitting = ref(false)
+const emailError = computed(() => (email.value && !/^\S+@\S+\.\S+$/.test(email.value) ? 'Enter a full email address.' : undefined))
+const passwordError = computed(() => (password.value && password.value.length < 8 ? 'Use at least 8 characters.' : undefined))
+
+function save() {
+  submitting.value = true
+  setTimeout(() => {
+    submitting.value = false
+    toast({ title: 'Account created', tone: 'success' })
+  }, 900)
+}
+</script>
+
+<template>
+  <div class="grid items-start gap-6 md:grid-cols-2">
+    <Card title="Create account">
+      <Form ref="form" :submitting="submitting" @submit="save">
+        <TextField v-model="name" label="Full name" required />
+        <TextField v-model="email" label="Email" type="email" :error="emailError" required />
+        <PasswordField v-model="password" label="Password" mode="new" :error="passwordError" required />
+        <div class="flex flex-wrap gap-3">
+          <Button type="submit" :disabled="submitting">{{ submitting ? 'Creating…' : 'Create account' }}</Button>
+          <Button type="button" @click="form?.reset()">Reset</Button>
+        </div>
+      </Form>
+    </Card>
+    <p class="max-w-sm text-muted">Submit it empty: a summary lists each problem as a link and focus moves to it. Each link jumps to its field.</p>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Password field
+
+Text field with a show/hide button and password-manager friendly attributes.
+
+Group: Forms. Registry item: http://localhost:5173/r/password-field.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/password-field.json
+```
+
+Installs with: theme, utils, field, announce. npm packages: none beyond Vue.
+
+Import it from your own copy: `import Passwordfield from '@/components/ui/password-field.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `v-model` | `string` | `''` | Two-way bound value. |
+| `label (required)` | `string` |  |  |
+| `hint` | `string` |  |  |
+| `error` | `string` |  |  |
+| `required` | `boolean` |  |  |
+| `optional` | `boolean` |  |  |
+| `hideLabel` | `boolean` |  |  |
+| `readonly` | `boolean` |  |  |
+| `disabled` | `boolean` |  |  |
+| `loading` | `boolean` |  |  |
+| `mode` | `'current' \| 'new'` | `'current'` | 'current' for signing in, 'new' for choosing one: it sets autocomplete so a password manager does the right thing. |
+| `rules` | `{ label: string; test: (value: string) => boolean }[]` |  | A checklist shown under the field: each rule is met when `test` returns true. |
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { computed, ref } from 'vue'
+import Button from '@/components/ui/button.vue'
+import Card from '@/components/ui/card.vue'
+import PasswordField from '@/components/ui/password-field.vue'
+
+const current = ref('')
+const short = ref('abc')
+const error = computed(() => (short.value && short.value.length < 8 ? 'Use at least 8 characters.' : undefined))
+const fresh = ref('')
+const rules = [
+  { label: 'At least 8 characters', test: (v: string) => v.length >= 8 },
+  { label: 'A number', test: (v: string) => /\d/.test(v) },
+  { label: 'An upper-case letter', test: (v: string) => /[A-Z]/.test(v) },
+]
+</script>
+
+<template>
+  <div class="grid items-start gap-6 md:grid-cols-2">
+    <PasswordField v-model="current" label="Password" placeholder="Reveal with the eye" />
+    <PasswordField v-model="short" label="Error" :error="error" />
+    <PasswordField label="Disabled" model-value="locked" disabled />
+    <Card title="Choose a password">
+      <PasswordField v-model="fresh" label="New password" mode="new" :rules="rules" />
+      <div><Button :disabled="rules.some((r) => !r.test(fresh))">Save</Button></div>
+    </Card>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Search field
+
+Search input with an icon, a clear button and Escape to clear.
+
+Group: Forms. Registry item: http://localhost:5173/r/search-field.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/search-field.json
+```
+
+Installs with: theme, utils, field. npm packages: none beyond Vue.
+
+Import it from your own copy: `import Searchfield from '@/components/ui/search-field.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `v-model` | `string` | `''` | Two-way bound value. |
+| `label (required)` | `string` |  |  |
+| `hint` | `string` |  |  |
+| `error` | `string` |  |  |
+| `hideLabel` | `boolean` |  |  |
+| `readonly` | `boolean` |  |  |
+| `disabled` | `boolean` |  |  |
+| `loading` | `boolean` |  | Shows a spinner and marks the field busy. |
+| `action` | `string` |  | Text of a submit button at the end of the field, such as "Search". It fires `search`, like Enter. |
+
+Events: `clear`, `search`.
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { computed, ref } from 'vue'
+import Card from '@/components/ui/card.vue'
+import EmptyState from '@/components/ui/empty-state.vue'
+import SearchField from '@/components/ui/search-field.vue'
+
+const typed = ref('ap')
+const submitted = ref('')
+const busy = ref('slow query')
+const q = ref('')
+const items = ['Apple', 'Apricot', 'Banana', 'Blueberry', 'Cherry', 'Grape', 'Mango', 'Pear']
+const hits = computed(() => items.filter((i) => i.toLowerCase().includes(q.value.trim().toLowerCase())))
+</script>
+
+<template>
+  <div class="grid items-start gap-6 md:grid-cols-2">
+    <SearchField v-model="typed" label="Clear with ✕ or Esc" placeholder="Search" />
+    <SearchField v-model="submitted" label="With a button" placeholder="Search" action="Search" />
+    <SearchField v-model="busy" label="Searching" loading />
+    <SearchField label="Disabled" model-value="" placeholder="Search" disabled />
+    <Card title="Filter a list" class="md:col-span-2 md:max-w-md">
+      <SearchField v-model="q" label="Fruit" placeholder="Try “ap” or “zz”" />
+      <ul v-if="hits.length" class="grid">
+        <li v-for="h in hits" :key="h" class="border-b border-edge py-2 last:border-b-0">{{ h }}</li>
+      </ul>
+      <EmptyState v-else title="No matches" :description="`Nothing is called “${q}”.`" />
+    </Card>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Textarea
+
+Labelled multi-line input.
+
+Group: Forms. Registry item: http://localhost:5173/r/textarea.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/textarea.json
+```
+
+Installs with: theme, utils, field. npm packages: none beyond Vue.
+
+Import it from your own copy: `import Textarea from '@/components/ui/textarea.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `v-model` | `string` | `''` | Two-way bound value. |
+| `label (required)` | `string` |  |  |
+| `hint` | `string` |  |  |
+| `error` | `string` |  |  |
+| `required` | `boolean` |  |  |
+| `optional` | `boolean` |  |  |
+| `hideLabel` | `boolean` |  |  |
+| `readonly` | `boolean` |  |  |
+| `disabled` | `boolean` |  |  |
+| `loading` | `boolean` |  |  |
+| `maxlength` | `number` |  |  |
+| `counter` | `boolean` |  | Show how many characters are used (of `maxlength` if set). |
+| `autoGrow` | `boolean` |  | Grow with the text instead of scrolling; the resize handle goes away. |
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import Textarea from '@/components/ui/textarea.vue'
+
+const message = ref('')
+const grown = ref('Type a few lines and I grow with you.')
+const bio = ref('A short bio.')
+</script>
+
+<template>
+  <div class="grid items-start gap-6 md:grid-cols-2">
+    <Textarea v-model="message" label="Message" placeholder="Hover and focus me" hint="Plain text only." />
+    <Textarea v-model="bio" label="Bio" :maxlength="120" counter optional />
+    <Textarea v-model="grown" label="Grows with the text" auto-grow />
+    <Textarea label="Error" model-value="" error="Write something first." required />
+    <Textarea label="Saving" model-value="Autosaving your draft" loading />
+    <Textarea label="Read only" model-value="Locked by an admin." readonly />
+    <Textarea label="Disabled" model-value="Locked by an admin." disabled />
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Checkbox
+
+Labelled checkbox with indeterminate support.
+
+Group: Forms. Registry item: http://localhost:5173/r/checkbox.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/checkbox.json
+```
+
+Installs with: theme, utils. npm packages: reka-ui.
+
+Import it from your own copy: `import Checkbox from '@/components/ui/checkbox.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `v-model` | `boolean \| 'indeterminate'` | `false` | Two-way bound value. |
+| `label (required)` | `string` |  |  |
+| `description` | `string` |  | A line of help under the label, read after the label rather than as part of its name. |
+| `hideLabel` | `boolean` |  |  |
+| `disabled` | `boolean` |  |  |
+| `value` | `string` |  | Sent with the form when checked (default "on"), and the field name. |
+| `name` | `string` |  |  |
+| `required` | `boolean` |  |  |
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { computed, ref } from 'vue'
+import Checkbox from '@/components/ui/checkbox.vue'
+
+const terms = ref(true)
+const news = ref(false)
+const files = ref([true, false, false])
+const names = ['report.pdf', 'budget.xlsx', 'notes.md']
+const all = computed<boolean | 'indeterminate'>({
+  get: () => (files.value.every(Boolean) ? true : files.value.some(Boolean) ? 'indeterminate' : false),
+  set: (v) => (files.value = files.value.map(() => v === true)),
+})
+</script>
+
+<template>
+  <div class="grid items-start gap-8 md:grid-cols-2">
+    <div class="grid gap-1">
+      <Checkbox v-model="terms" label="I accept the terms" />
+      <Checkbox v-model="news" label="Email me updates" description="At most one a month." />
+      <Checkbox :model-value="true" label="Disabled, checked" disabled />
+      <Checkbox :model-value="false" label="Disabled" disabled />
+    </div>
+    <div class="grid gap-1">
+      <Checkbox v-model="all" label="Select all" />
+      <div class="grid gap-1 ps-7">
+        <Checkbox v-for="(n, i) in names" :key="n" v-model="files[i]" :label="n" />
+      </div>
+    </div>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Switch
+
+On/off toggle with a label.
+
+Group: Forms. Registry item: http://localhost:5173/r/switch.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/switch.json
+```
+
+Installs with: theme, utils. npm packages: reka-ui.
+
+Import it from your own copy: `import Switch from '@/components/ui/switch.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `v-model` | `boolean` | `false` | Two-way bound value. |
+| `label (required)` | `string` |  |  |
+| `description` | `string` |  | A line of help under the label, read after the label rather than as part of its name. |
+| `hideLabel` | `boolean` |  |  |
+| `disabled` | `boolean` |  |  |
+| `value` | `string` |  |  |
+| `name` | `string` |  |  |
+| `required` | `boolean` |  |  |
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import Card from '@/components/ui/card.vue'
+import Switch from '@/components/ui/switch.vue'
+
+const airplane = ref(false)
+const alerts = ref(true)
+const wifi = ref(true)
+const marketing = ref(false)
+</script>
+
+<template>
+  <div class="grid items-start gap-8 md:grid-cols-2">
+    <div class="grid gap-1">
+      <Switch v-model="airplane" label="Airplane mode" />
+      <Switch v-model="alerts" label="Alerts" description="Sounds and banners." />
+      <Switch :model-value="true" label="Disabled, on" disabled />
+      <Switch :model-value="false" label="Disabled" disabled />
+    </div>
+    <Card title="Settings">
+      <Switch v-model="wifi" label="Wi-Fi" />
+      <Switch v-model="marketing" label="Product news" />
+    </Card>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Checkbox group
+
+Pick any number of options, with an optional select-all.
+
+Group: Forms. Registry item: http://localhost:5173/r/checkbox-group.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/checkbox-group.json
+```
+
+Installs with: theme, utils, checkbox, fieldset. npm packages: none beyond Vue.
+
+Import it from your own copy: `import Checkboxgroup from '@/components/ui/checkbox-group.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `v-model` | `string[]` | `[]` | Two-way bound value. |
+| `legend (required)` | `string` |  |  |
+| `options (required)` | `{ value: string; label: string; disabled?: boolean }[]` |  |  |
+| `selectAll` | `string` |  | Adds a first checkbox that checks or clears everything; it shows the indeterminate state for a partial pick. |
+| `hint` | `string` |  |  |
+| `error` | `string` |  |  |
+| `disabled` | `boolean` |  |  |
+| `orientation` | `'vertical' \| 'horizontal'` |  |  |
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { computed, ref } from 'vue'
+import CheckboxGroup from '@/components/ui/checkbox-group.vue'
+
+const toppings = [
+  { value: 'cheese', label: 'Extra cheese' },
+  { value: 'olives', label: 'Olives' },
+  { value: 'mushroom', label: 'Mushrooms' },
+  { value: 'anchovy', label: 'Anchovies', disabled: true },
+]
+const picked = ref(['cheese'])
+const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'].map((d) => ({ value: d, label: d }))
+const workdays = ref(['Mon', 'Wed'])
+const none = ref<string[]>([])
+const error = computed(() => (none.value.length ? undefined : 'Pick at least one.'))
+</script>
+
+<template>
+  <div class="grid items-start gap-8 md:grid-cols-2">
+    <CheckboxGroup v-model="picked" legend="Toppings" hint="Anchovies are sold out." :options="toppings" select-all="Everything" />
+    <CheckboxGroup v-model="workdays" legend="Days" orientation="horizontal" :options="days" />
+    <CheckboxGroup v-model="none" legend="Error" :options="toppings.slice(0, 3)" :error="error" />
+    <CheckboxGroup :model-value="['cheese']" legend="Disabled" :options="toppings.slice(0, 3)" disabled />
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Radio group
+
+Pick exactly one option.
+
+Group: Forms. Registry item: http://localhost:5173/r/radio-group.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/radio-group.json
+```
+
+Installs with: theme, utils. npm packages: reka-ui.
+
+Import it from your own copy: `import Radiogroup from '@/components/ui/radio-group.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `v-model` | `string` |  | Two-way bound value. |
+| `options (required)` | `{ value: string; label: string; /** A line of help under the label. */ description?: string; disabled?: boolean }[]` |  |  |
+| `hideLabel` | `boolean` |  | Hide every option's label visually (they stay for screen readers); useful for a table of radios. |
+| `name` | `string` |  |  |
+| `required` | `boolean` |  |  |
+| `disabled` | `boolean` |  |  |
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import RadioGroup from '@/components/ui/radio-group.vue'
+
+const plan = ref('team')
+const billing = ref('annual')
+const options = [
+  { value: 'free', label: 'Free' },
+  { value: 'team', label: 'Team' },
+  { value: 'scale', label: 'Scale' },
+]
+const withDisabled = [
+  { value: 'free', label: 'Free' },
+  { value: 'team', label: 'Team' },
+  { value: 'scale', label: 'Scale', disabled: true },
+]
+const tiers = [
+  { value: 'monthly', label: 'Monthly', description: '$12 a month, cancel any time.' },
+  { value: 'annual', label: 'Annual', description: '$99 a year, two months free.' },
+]
+</script>
+
+<template>
+  <div class="grid items-start gap-8 md:grid-cols-2">
+    <RadioGroup v-model="plan" :options="options" />
+    <RadioGroup v-model="billing" :options="tiers" />
+    <RadioGroup model-value="free" :options="withDisabled" />
+    <RadioGroup model-value="team" :options="options" disabled />
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Select
+
+Dropdown list with keyboard typeahead, groups, multi-select and clear.
+
+Group: Forms. Registry item: http://localhost:5173/r/select.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/select.json
+```
+
+Installs with: theme, utils, field, spinner. npm packages: reka-ui.
+
+Import it from your own copy: `import Select from '@/components/ui/select.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `v-model` | `T` |  | Two-way bound value. |
+| `options (required)` | `{ value: string; label: string; description?: string; group?: string; disabled?: boolean }[]` |  | `group` puts options under a heading (keep a group's options together); `description` is a second line. |
+| `placeholder` | `string` |  |  |
+| `label` | `string` |  | Optional: without one the select carries a hidden label so it still has an accessible name. |
+| `hint` | `string` |  |  |
+| `error` | `string` |  |  |
+| `required` | `boolean` |  |  |
+| `optional` | `boolean` |  |  |
+| `multiple` | `boolean` |  | Pick several: the model is then a string[] and the trigger reads "3 selected". |
+| `clearable` | `boolean` |  | Show a clear button once something is picked. |
+| `loading` | `boolean` |  | Options are on their way: shows a spinner and sets aria-busy. |
+| `disabled` | `boolean` |  |  |
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import Select from '@/components/ui/select.vue'
+
+const fruit = ref<string>()
+const roles = ref<string[]>(['read'])
+const region = ref<string>('eu')
+const picked = ref<string>()
+const options = [
+  { value: 'apple', label: 'Apple' },
+  { value: 'mango', label: 'Mango' },
+  { value: 'pear', label: 'Pear' },
+  { value: 'durian', label: 'Durian (sold out)', disabled: true },
+]
+const roleOptions = [
+  { value: 'read', label: 'Read', description: 'View everything' },
+  { value: 'write', label: 'Write', description: 'Create and edit' },
+  { value: 'admin', label: 'Admin', description: 'Manage people and billing' },
+]
+const regions = [
+  { value: 'us-e', label: 'US East', group: 'Americas' },
+  { value: 'us-w', label: 'US West', group: 'Americas' },
+  { value: 'eu', label: 'Frankfurt', group: 'Europe' },
+  { value: 'uk', label: 'London', group: 'Europe' },
+  { value: 'ap', label: 'Singapore', group: 'Asia Pacific' },
+]
+</script>
+
+<template>
+  <div class="grid items-start gap-6 md:grid-cols-2">
+    <Select v-model="fruit" :options="options" label="Fruit" placeholder="Pick a fruit" hint="Durian is sold out." />
+    <Select v-model="roles" :options="roleOptions" label="Roles" multiple clearable placeholder="Choose roles" />
+    <Select v-model="region" :options="regions" label="Region" clearable />
+    <Select v-model="picked" :options="options" label="Favourite fruit" required placeholder="Pick one" :error="picked ? undefined : 'Pick a fruit to continue.'" />
+    <Select model-value="pear" :options="options" label="Locked" disabled />
+    <Select :options="[]" label="Loading" loading placeholder="Fetching options…" />
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Slider
+
+Pick a value or range along a track.
+
+Group: Forms. Registry item: http://localhost:5173/r/slider.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/slider.json
+```
+
+Installs with: theme, utils. npm packages: reka-ui.
+
+Import it from your own copy: `import Slider from '@/components/ui/slider.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `v-model` | `number[]` | `[0]` | Two-way bound value. |
+| `min` | `number` | `0` |  |
+| `max` | `number` | `100` |  |
+| `step` | `number` | `1` |  |
+| `disabled` | `boolean` |  |  |
+| `name` | `string` |  |  |
+| `label` | `string` |  | The control's accessible name. A two-thumb range reads "<label> minimum" and "<label> maximum". |
+| `labelledby` | `string` |  | Id of a visible label (a Field's `${id}-label`) to name a single thumb instead of `label`. |
+| `valueText` | `string \| ((value: number, index: number) => string)` |  | What a screen reader hears for the value, e.g. "$40": a string (shared) or a function of the value and thumb index. |
+| `marks` | `Mark[]` |  | Ticks along the track, each optionally with a label. |
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import Field from '@/components/ui/field.vue'
+import Slider from '@/components/ui/slider.vue'
+
+const volume = ref([40])
+const range = ref([20, 70])
+const stepped = ref([30])
+const budget = ref([50])
+const price = ref([150, 600])
+</script>
+
+<template>
+  <div class="grid items-start gap-8 md:grid-cols-2">
+    <Field v-slot="{ id }" label="Volume" :hint="`${volume[0]}%`">
+      <Slider v-model="volume" :labelledby="`${id}-label`" />
+    </Field>
+    <Field label="Range" :hint="`${range[0]} to ${range[1]}`">
+      <Slider v-model="range" label="Range" />
+    </Field>
+    <Field v-slot="{ id }" label="Steps of 10" :hint="`${stepped[0]}`">
+      <Slider v-model="stepped" :step="10" :labelledby="`${id}-label`" />
+    </Field>
+    <Field v-slot="{ id }" label="Budget" hint="Marks are decoration; the value is spoken in dollars.">
+      <Slider v-model="budget" :labelledby="`${id}-label`" :value-text="(v) => `$${v}`" :marks="[{ value: 0, label: '$0' }, { value: 50, label: '$50' }, { value: 100, label: '$100' }]" />
+    </Field>
+    <Field label="Price" :hint="`$${price[0]} to $${price[1]}`" class="md:col-span-2">
+      <Slider v-model="price" :min="0" :max="1000" :step="10" label="Price" />
+    </Field>
+    <Field v-slot="{ id }" label="Disabled" disabled>
+      <Slider :model-value="[60]" disabled :labelledby="`${id}-label`" />
+    </Field>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Toggle
+
+Two-state pressable button.
+
+Group: Forms. Registry item: http://localhost:5173/r/toggle.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/toggle.json
+```
+
+Installs with: theme, utils. npm packages: reka-ui.
+
+Import it from your own copy: `import Toggle from '@/components/ui/toggle.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `v-model` | `boolean` | `false` | Two-way bound value. |
+
+Slots: `default`.
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import Toggle from '@/components/ui/toggle.vue'
+
+const bold = ref(true)
+const italic = ref(false)
+const underline = ref(false)
+const starred = ref(false)
+</script>
+
+<template>
+  <div class="grid gap-6">
+    <div class="flex flex-wrap items-center gap-2">
+      <Toggle v-model="bold" aria-label="Bold">Bold</Toggle>
+      <Toggle v-model="italic" aria-label="Italic">Italic</Toggle>
+      <Toggle v-model="underline" aria-label="Underline">Underline</Toggle>
+      <Toggle :model-value="true" disabled>Disabled, on</Toggle>
+      <Toggle disabled>Disabled</Toggle>
+    </div>
+    <div><Toggle v-model="starred">{{ starred ? 'Starred' : 'Star' }}</Toggle></div>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Toggle group
+
+Segmented single-choice control; can stretch to fill the width.
+
+Group: Forms. Registry item: http://localhost:5173/r/toggle-group.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/toggle-group.json
+```
+
+Installs with: theme, utils. npm packages: reka-ui.
+
+Import it from your own copy: `import Togglegroup from '@/components/ui/toggle-group.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `v-model` | `string` |  | Two-way bound value. |
+| `options (required)` | `{ value: string; label: string; disabled?: boolean }[]` |  |  |
+| `stretch` | `boolean` |  | Fill the available width, items sharing it equally. |
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import ToggleGroup from '@/components/ui/toggle-group.vue'
+
+const view = ref('grid')
+const period = ref('month')
+const stretched = ref('week')
+const options = [
+  { value: 'grid', label: 'Grid' },
+  { value: 'list', label: 'List' },
+  { value: 'board', label: 'Board' },
+]
+const periods = [
+  { value: 'week', label: 'Week' },
+  { value: 'month', label: 'Month' },
+  { value: 'year', label: 'Year' },
+]
+const withDisabled = [
+  { value: 'a', label: 'Free' },
+  { value: 'b', label: 'Team' },
+  { value: 'c', label: 'Scale', disabled: true },
+]
+const pick = ref('a')
+</script>
+
+<template>
+  <div class="grid items-start gap-6 md:grid-cols-2">
+    <ToggleGroup v-model="view" :options="options" />
+    <ToggleGroup v-model="period" :options="periods" />
+    <ToggleGroup v-model="pick" :options="withDisabled" />
+    <ToggleGroup v-model="stretched" :options="periods" stretch />
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Combobox
+
+Type to filter a list and pick one or many, with groups, descriptions, clear, loading and freeform entry.
+
+Group: Forms. Registry item: http://localhost:5173/r/combobox.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/combobox.json
+```
+
+Installs with: theme, utils, field, spinner, announce. npm packages: reka-ui.
+
+Import it from your own copy: `import Combobox from '@/components/ui/combobox.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `v-model` | `string \| string[]` |  | Two-way bound value. |
+| `options (required)` | `{ value: string; label: string; description?: string; group?: string; disabled?: boolean }[]` |  | `group` puts options under a heading (options of one group should sit together); `description` is a second line. |
+| `label` | `string` |  |  |
+| `placeholder` | `string` |  |  |
+| `error` | `string` |  |  |
+| `hint` | `string` |  |  |
+| `required` | `boolean` |  |  |
+| `optional` | `boolean` |  |  |
+| `clearable` | `boolean` |  | Show a clear button once something is picked. |
+| `loading` | `boolean` |  | Options are on their way: shows a spinner, sets aria-busy, and the empty row says Loading. |
+| `emptyText` | `string` |  | The text of the empty row. |
+| `freeform` | `boolean` |  | Accept whatever is typed (Enter or leaving the field commits it) as well as the listed options. |
+| `multiple` | `boolean` |  | Pick several: the model is then a string[] and the picks show as chips in the field. |
+| `disabled` | `boolean` |  |  |
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { onBeforeUnmount, ref } from 'vue'
+import Card from '@/components/ui/card.vue'
+import Combobox from '@/components/ui/combobox.vue'
+
+const country = ref<string>('nz')
+const visited = ref<string[]>(['jp', 'se'])
+const plan = ref<string>()
+const tags = ref<string[]>(['design'])
+const needed = ref<string[]>([])
+const options = [
+  { value: 'au', label: 'Australia' },
+  { value: 'ca', label: 'Canada' },
+  { value: 'fr', label: 'France' },
+  { value: 'jp', label: 'Japan' },
+  { value: 'nz', label: 'New Zealand' },
+  { value: 'se', label: 'Sweden' },
+]
+const plans = [
+  { value: 'free', label: 'Free', description: 'One project', group: 'Personal' },
+  { value: 'pro', label: 'Pro', description: 'Unlimited projects', group: 'Personal' },
+  { value: 'team', label: 'Team', description: 'Shared workspaces, roles', group: 'Business' },
+  { value: 'scale', label: 'Scale', description: 'SSO and audit log', group: 'Business' },
+]
+const tagOptions = ['design', 'research', 'engineering'].map((t) => ({ value: t, label: t }))
+
+// Options that arrive after a moment.
+const reviewer = ref<string>()
+const people = ref<{ value: string; label: string }[]>([])
+const loading = ref(true)
+const timer = setTimeout(() => {
+  people.value = ['Ada Lovelace', 'Alan Turing', 'Grace Hopper'].map((n) => ({ value: n, label: n }))
+  loading.value = false
+}, 1500)
+onBeforeUnmount(() => clearTimeout(timer))
+</script>
+
+<template>
+  <div class="grid items-start gap-6 md:grid-cols-2">
+    <Combobox v-model="country" :options="options" label="Home country" placeholder="Search countries" hint="Start typing to filter." />
+    <Combobox v-model="visited" :options="options" label="Countries visited" placeholder="Add more" multiple clearable />
+    <Combobox v-model="plan" :options="plans" label="Plan" placeholder="Choose a plan" optional />
+    <Combobox v-model="tags" :options="tagOptions" label="Tags" placeholder="Type, then Enter" multiple freeform hint="Pick one, or type your own." />
+    <Combobox v-model="needed" :options="options" label="Countries" placeholder="Add a country" multiple required :error="needed.length ? undefined : 'Choose at least one country.'" />
+    <Combobox model-value="ca" :options="options" label="Locked" disabled />
+    <Card title="Assign a reviewer" class="md:col-span-2 md:max-w-sm">
+      <Combobox v-model="reviewer" :options="people" label="Reviewer" placeholder="Search people" :loading="loading" clearable />
+    </Card>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Number field
+
+Numeric input with stepper buttons and keyboard steps.
+
+Group: Forms. Registry item: http://localhost:5173/r/number-field.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/number-field.json
+```
+
+Installs with: theme, utils, field. npm packages: reka-ui.
+
+Import it from your own copy: `import Numberfield from '@/components/ui/number-field.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `v-model` | `number` |  | Two-way bound value. |
+| `label (required)` | `string` |  |  |
+| `hint` | `string` |  |  |
+| `min` | `number` |  |  |
+| `max` | `number` |  |  |
+| `step` | `number` |  |  |
+| `required` | `boolean` |  |  |
+| `optional` | `boolean` |  |  |
+| `hideLabel` | `boolean` |  |  |
+| `readonly` | `boolean` |  |  |
+| `disabled` | `boolean` |  |  |
+| `loading` | `boolean` |  |  |
+| `error` | `string` |  |  |
+| `name` | `string` |  |  |
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import NumberField from '@/components/ui/number-field.vue'
+
+const guests = ref(2)
+const qty = ref(10)
+const rooms = ref(9)
+</script>
+
+<template>
+  <div class="grid items-start gap-6 md:grid-cols-2">
+    <NumberField v-model="guests" label="Guests" :min="1" :max="8" hint="Between 1 and 8." />
+    <NumberField v-model="qty" label="Quantity" :min="0" :max="100" :step="5" hint="Steps of 5." />
+    <NumberField v-model="rooms" label="Rooms" :min="1" :max="10" :error="rooms > 8 ? 'We only have 8 rooms.' : undefined" />
+    <NumberField label="Saving" :model-value="3" loading />
+    <NumberField label="Read only" :model-value="3" readonly />
+    <NumberField label="Disabled" :model-value="3" disabled />
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Calendar
+
+Month grid for picking a date, with presets, marked days and a Today/Clear footer.
+
+Group: Forms. Registry item: http://localhost:5173/r/calendar.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/calendar.json
+```
+
+Installs with: theme, utils. npm packages: reka-ui, @internationalized/date.
+
+Import it from your own copy: `import Calendar from '@/components/ui/calendar.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `v-model` | `DateValue` |  | Two-way bound value. |
+| `minValue` | `DateValue` |  |  |
+| `maxValue` | `DateValue` |  |  |
+| `disabledDate` | `(date: DateValue) => boolean` |  | Dates that can't be picked, beyond min and max: return true to block one. |
+| `marked` | `DateValue[]` |  | Dates to flag with a dot (events, availability, deadlines). |
+| `footer` | `boolean` |  | A Today / Clear row under the grid. |
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { shallowRef } from 'vue'
+import { today, getLocalTimeZone, type DateValue } from '@internationalized/date'
+import Calendar from '@/components/ui/calendar.vue'
+
+const now = today(getLocalTimeZone())
+const picked = shallowRef<DateValue>(now)
+const limited = shallowRef<DateValue>()
+const events = shallowRef<DateValue>()
+
+const marked = [now.add({ days: 2 }), now.add({ days: 5 }), now.add({ days: 9 })]
+// Weekends can't be picked.
+const noWeekends = (d: DateValue) => [0, 6].includes(d.toDate(getLocalTimeZone()).getDay())
+</script>
+
+<template>
+  <div class="flex flex-wrap items-start gap-x-12 gap-y-8">
+    <div class="grid gap-2">
+      <p class="kicker">Click the month to jump by year</p>
+      <Calendar v-model="picked" />
+    </div>
+    <div class="grid gap-2">
+      <p class="kicker">Next 30 days, weekdays only</p>
+      <Calendar v-model="limited" :min-value="now" :max-value="now.add({ days: 30 })" :disabled-date="noWeekends" />
+    </div>
+    <div class="grid gap-2">
+      <p class="kicker">Marked days, with Today and Clear</p>
+      <Calendar v-model="events" :marked="marked" footer />
+    </div>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Date picker
+
+Field that opens a calendar in a popover.
+
+Group: Forms. Registry item: http://localhost:5173/r/date-picker.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/date-picker.json
+```
+
+Installs with: theme, utils, calendar, field. npm packages: reka-ui, @internationalized/date.
+
+Import it from your own copy: `import Datepicker from '@/components/ui/date-picker.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `v-model` | `DateValue` |  | Two-way bound value. |
+| `label (required)` | `string` |  |  |
+| `placeholder` | `string` |  |  |
+| `minValue` | `DateValue` |  |  |
+| `maxValue` | `DateValue` |  |  |
+| `disabledDate` | `(date: DateValue) => boolean` |  |  |
+| `marked` | `DateValue[]` |  |  |
+| `footer` | `boolean` |  |  |
+| `error` | `string` |  |  |
+| `hint` | `string` |  |  |
+| `required` | `boolean` |  |  |
+| `optional` | `boolean` |  |  |
+| `name` | `string` |  | Submits the date as YYYY-MM-DD with a form. |
+| `disabled` | `boolean` |  |  |
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { computed, shallowRef } from 'vue'
+import { today, getLocalTimeZone, type DateValue } from '@internationalized/date'
+import Card from '@/components/ui/card.vue'
+import DatePicker from '@/components/ui/date-picker.vue'
+
+const now = today(getLocalTimeZone())
+const due = shallowRef<DateValue>()
+const delivery = shallowRef<DateValue>(now.add({ days: 6 }))
+const start = shallowRef<DateValue>(now.subtract({ days: 12 }))
+const startError = computed(() => (start.value && start.value.compare(now) < 0 ? 'Choose today or a later date.' : undefined))
+const day = shallowRef<DateValue>()
+const busy = [now.add({ days: 1 }), now.add({ days: 4 })]
+// Not on weekends.
+const weekend = (d: DateValue) => [0, 6].includes(d.toDate(getLocalTimeZone()).getDay())
+</script>
+
+<template>
+  <div class="grid items-start gap-6 md:grid-cols-2">
+    <DatePicker v-model="due" label="Due date" placeholder="Pick a due date" :min-value="now" required hint="Today or later." />
+    <DatePicker v-model="delivery" label="Delivery" :min-value="now" :max-value="now.add({ days: 30 })" footer optional />
+    <DatePicker v-model="start" label="Start date" :error="startError" />
+    <DatePicker label="Locked" disabled />
+    <Card title="Schedule a call" class="md:col-span-2 md:max-w-sm">
+      <DatePicker v-model="day" label="Day" :disabled-date="weekend" :marked="busy" :min-value="now" footer name="day" hint="Dots are busy days." />
+      <p class="numeral text-sm text-muted">Submits as <span class="text-ink">{{ day?.toString() ?? 'nothing yet' }}</span></p>
+    </Card>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Date range picker
+
+Pick a start and end date from one calendar popover.
+
+Group: Forms. Registry item: http://localhost:5173/r/date-range-picker.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/date-range-picker.json
+```
+
+Installs with: theme, utils, range-calendar, field. npm packages: reka-ui, @internationalized/date.
+
+Import it from your own copy: `import Daterangepicker from '@/components/ui/date-range-picker.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `v-model` | `DateRange` | `({ start: undefined, end: undefined })` | Two-way bound value. |
+| `label (required)` | `string` |  |  |
+| `placeholder` | `string` |  |  |
+| `minValue` | `DateValue` |  |  |
+| `maxValue` | `DateValue` |  |  |
+| `disabledDate` | `(date: DateValue) => boolean` |  |  |
+| `marked` | `DateValue[]` |  |  |
+| `presets` | `{ label: string; value: { start: DateValue; end: DateValue } }[]` |  |  |
+| `footer` | `boolean` |  |  |
+| `error` | `string` |  |  |
+| `hint` | `string` |  |  |
+| `required` | `boolean` |  |  |
+| `optional` | `boolean` |  |  |
+| `startName` | `string` |  | Submit the two ends as YYYY-MM-DD with a form. |
+| `endName` | `string` |  |  |
+| `disabled` | `boolean` |  |  |
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { computed, shallowRef } from 'vue'
+import { today, getLocalTimeZone } from '@internationalized/date'
+import type { DateRange } from 'reka-ui'
+import DateRangePicker from '@/components/ui/date-range-picker.vue'
+
+const now = today(getLocalTimeZone())
+const stay = shallowRef<DateRange>({ start: undefined, end: undefined })
+const long = shallowRef<DateRange>({ start: now, end: now.add({ days: 40 }) })
+const longError = computed(() => (long.value.start && long.value.end && long.value.end.compare(long.value.start.add({ days: 30 })) > 0 ? 'Bookings are limited to 30 nights.' : undefined))
+const report = shallowRef<DateRange>({ start: now.subtract({ days: 6 }), end: now })
+const presets = [
+  { label: 'Last 7 days', value: { start: now.subtract({ days: 6 }), end: now } },
+  { label: 'Last 30 days', value: { start: now.subtract({ days: 29 }), end: now } },
+  { label: 'This month', value: { start: now.set({ day: 1 }), end: now } },
+]
+</script>
+
+<template>
+  <div class="grid items-start gap-6 md:grid-cols-2">
+    <DateRangePicker v-model="stay" label="Dates of stay" placeholder="Check in – check out" :min-value="now" required hint="From today onwards." />
+    <DateRangePicker v-model="report" label="Report period" :presets="presets" footer start-name="from" end-name="to" :max-value="now" />
+    <DateRangePicker v-model="long" label="Long booking" :error="longError" />
+    <DateRangePicker label="Locked" disabled />
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Range calendar
+
+Month grid for picking a start and end date, with a band between, presets and marked days.
+
+Group: Forms. Registry item: http://localhost:5173/r/range-calendar.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/range-calendar.json
+```
+
+Installs with: theme, utils. npm packages: reka-ui, @internationalized/date.
+
+Import it from your own copy: `import Rangecalendar from '@/components/ui/range-calendar.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `v-model` | `DateRange` | `({ start: undefined, end: undefined })` | Two-way bound value. |
+| `minValue` | `DateValue` |  |  |
+| `maxValue` | `DateValue` |  |  |
+| `disabledDate` | `(date: DateValue) => boolean` |  | Dates that can't be picked, beyond min and max: return true to block one. |
+| `marked` | `DateValue[]` |  | Dates to flag with a dot (events, availability, deadlines). |
+| `presets` | `{ label: string; value: { start: DateValue; end: DateValue } }[]` |  | Quick picks shown under the grid, e.g. { label: 'Last 7 days', value: { start, end } }. |
+| `footer` | `boolean` |  | A Clear row under the grid. |
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { shallowRef } from 'vue'
+import { CalendarDate, today, getLocalTimeZone } from '@internationalized/date'
+import type { DateRange } from 'reka-ui'
+import RangeCalendar from '@/components/ui/range-calendar.vue'
+
+const now = today(getLocalTimeZone())
+const across = shallowRef<DateRange>({ start: new CalendarDate(2026, 11, 26), end: new CalendarDate(2026, 12, 4) })
+const quick = shallowRef<DateRange>({ start: undefined, end: undefined })
+const booked = shallowRef<DateRange>({ start: undefined, end: undefined })
+
+const presets = [
+  { label: 'Last 7 days', value: { start: now.subtract({ days: 6 }), end: now } },
+  { label: 'Last 30 days', value: { start: now.subtract({ days: 29 }), end: now } },
+]
+const holidays = [now.add({ days: 3 }), now.add({ days: 10 })]
+// Sundays are closed.
+const closed = (d: { toDate: (tz: string) => Date }) => d.toDate(getLocalTimeZone()).getDay() === 0
+</script>
+
+<template>
+  <div class="flex flex-wrap items-start gap-x-12 gap-y-8">
+    <div class="grid gap-2">
+      <p class="kicker">Across a month boundary</p>
+      <RangeCalendar v-model="across" />
+    </div>
+    <div class="grid gap-2">
+      <p class="kicker">Presets and Clear</p>
+      <RangeCalendar v-model="quick" :presets="presets" footer />
+    </div>
+    <div class="grid gap-2">
+      <p class="kicker">Marked days, Sundays closed, next 21 days</p>
+      <RangeCalendar v-model="booked" :marked="holidays" :disabled-date="closed" :min-value="now" :max-value="now.add({ days: 21 })" />
+    </div>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Time field
+
+Segmented hour and minute input.
+
+Group: Forms. Registry item: http://localhost:5173/r/time-field.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/time-field.json
+```
+
+Installs with: theme, utils, field. npm packages: reka-ui, @internationalized/date.
+
+Import it from your own copy: `import Timefield from '@/components/ui/time-field.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `v-model` | `TimeValue` |  | Two-way bound value. |
+| `label (required)` | `string` |  |  |
+| `hint` | `string` |  |  |
+| `required` | `boolean` |  |  |
+| `optional` | `boolean` |  |  |
+| `error` | `string` |  |  |
+| `disabled` | `boolean` |  |  |
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { computed, shallowRef } from 'vue'
+import { Time } from '@internationalized/date'
+import type { TimeValue } from 'reka-ui'
+import TimeField from '@/components/ui/time-field.vue'
+
+const start = shallowRef<TimeValue>(new Time(9, 30))
+const open = shallowRef<TimeValue>(new Time(17, 0))
+const close = shallowRef<TimeValue>(new Time(8, 0))
+const closeError = computed(() => (close.value && open.value && String(close.value) < String(open.value) ? 'Closing time must be after opening.' : undefined))
+</script>
+
+<template>
+  <div class="grid items-start gap-6 md:grid-cols-2">
+    <TimeField v-model="start" label="Starts at" hint="Type the digits; arrows step." />
+    <TimeField :model-value="undefined" label="Not set" optional />
+    <TimeField v-model="open" label="Opens" />
+    <TimeField v-model="close" label="Closes" :error="closeError" />
+    <TimeField :model-value="new Time(12, 0)" label="Locked" disabled />
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Date field
+
+Typed, segmented day, month and year input.
+
+Group: Forms. Registry item: http://localhost:5173/r/date-field.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/date-field.json
+```
+
+Installs with: theme, utils, field. npm packages: reka-ui, @internationalized/date.
+
+Import it from your own copy: `import Datefield from '@/components/ui/date-field.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `v-model` | `DateValue` |  | Two-way bound value. |
+| `label (required)` | `string` |  |  |
+| `minValue` | `DateValue` |  |  |
+| `maxValue` | `DateValue` |  |  |
+| `error` | `string` |  |  |
+| `hint` | `string` |  |  |
+| `required` | `boolean` |  |  |
+| `optional` | `boolean` |  |  |
+| `disabled` | `boolean` |  |  |
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { shallowRef } from 'vue'
+import { CalendarDate, today, getLocalTimeZone, type DateValue } from '@internationalized/date'
+import DateField from '@/components/ui/date-field.vue'
+
+const birthday = shallowRef<DateValue>(new CalendarDate(1990, 6, 14))
+const start = shallowRef<DateValue>()
+const late = shallowRef<DateValue>(new CalendarDate(2020, 1, 1))
+const from = today(getLocalTimeZone())
+</script>
+
+<template>
+  <div class="grid items-start gap-6 md:grid-cols-2">
+    <DateField v-model="birthday" label="Date of birth" hint="Type the digits; arrows step." />
+    <DateField v-model="start" label="Start date" :min-value="from" optional />
+    <DateField v-model="late" label="Deadline" :min-value="from" error="Pick a date from today onwards" />
+    <DateField label="Locked" disabled />
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Fieldset
+
+Groups related controls under a legend with a shared hint and error.
+
+Group: Forms. Registry item: http://localhost:5173/r/fieldset.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/fieldset.json
+```
+
+Installs with: theme, utils. npm packages: none beyond Vue.
+
+Import it from your own copy: `import Fieldset from '@/components/ui/fieldset.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `legend (required)` | `string` |  |  |
+| `hint` | `string` |  |  |
+| `error` | `string` |  |  |
+| `disabled` | `boolean` |  |  |
+| `orientation` | `'vertical' \| 'horizontal'` | `'vertical'` |  |
+
+Slots: `default`.
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import Checkbox from '@/components/ui/checkbox.vue'
+import Fieldset from '@/components/ui/fieldset.vue'
+import RadioGroup from '@/components/ui/radio-group.vue'
+
+const plan = ref('team')
+const plans = [
+  { value: 'free', label: 'Free' },
+  { value: 'team', label: 'Team' },
+  { value: 'scale', label: 'Scale' },
+]
+const a = ref(true)
+const b = ref(false)
+</script>
+
+<template>
+  <div class="grid items-start gap-8 md:grid-cols-2">
+    <Fieldset legend="Plan" hint="You can change it later."><RadioGroup v-model="plan" :options="plans" /></Fieldset>
+    <Fieldset legend="Notify me" error="Pick at least one.">
+      <Checkbox v-model="a" label="Email" />
+      <Checkbox v-model="b" label="Text message" />
+    </Fieldset>
+    <Fieldset legend="In a row" orientation="horizontal">
+      <Checkbox v-model="a" label="Email" />
+      <Checkbox v-model="b" label="Text" />
+    </Fieldset>
+    <Fieldset legend="Disabled" disabled>
+      <Checkbox :model-value="true" label="Email" />
+      <Checkbox :model-value="false" label="Text message" />
+    </Fieldset>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Color picker
+
+Pick a colour from an area, a hue slider, swatches or a hex field.
+
+Group: Forms. Registry item: http://localhost:5173/r/color-picker.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/color-picker.json
+```
+
+Installs with: theme, utils. npm packages: reka-ui.
+
+Import it from your own copy: `import Colorpicker from '@/components/ui/color-picker.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `v-model` | `string` | `'#2c95b4'` | Two-way bound value. |
+| `label (required)` | `string` |  |  |
+| `swatches` | `string[]` | `['#2c95b4', '#005f7c', '#2e7d4f', '#d89614', '#d6561f', '#b3261e', '#7a3e9d', '#242424']` |  |
+| `error` | `string` |  |  |
+| `disabled` | `boolean` |  |  |
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { computed, ref } from 'vue'
+import ColorPicker from '@/components/ui/color-picker.vue'
+
+const brand = ref('#2c95b4')
+const accent = ref('#f4efe2')
+
+// A rough light-or-dark test, to show the error state.
+const tooLight = computed(() => {
+  const n = parseInt(accent.value.slice(1), 16)
+  return 0.299 * (n >> 16) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255) > 170
+})
+</script>
+
+<template>
+  <div class="grid items-start gap-8 md:grid-cols-3">
+    <div class="grid content-start gap-3">
+      <ColorPicker v-model="brand" label="Brand colour" />
+      <p class="numeral text-sm text-muted">Picked: {{ brand }}</p>
+    </div>
+    <ColorPicker v-model="accent" label="Accent" :swatches="['#d6561f', '#f4efe2', '#7a3e9d', '#1d4e5a']" :error="tooLight ? 'Too light for white text.' : undefined" />
+    <ColorPicker model-value="#7a3e9d" label="Locked" disabled />
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Pin input
+
+One box per character, for one-time codes.
+
+Group: Forms. Registry item: http://localhost:5173/r/pin-input.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/pin-input.json
+```
+
+Installs with: theme, utils, field. npm packages: reka-ui.
+
+Import it from your own copy: `import Pininput from '@/components/ui/pin-input.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `v-model` | `string` | `''` | Two-way bound value. |
+| `label (required)` | `string` |  |  |
+| `hint` | `string` |  |  |
+| `length` | `number` | `6` |  |
+| `groupSize` | `number` |  | Show a wider gap after every N boxes, so 123456 reads as 123 456. |
+| `charset` | `'numeric' \| 'alphanumeric' \| 'any'` | `'any'` | Which characters are allowed: digits, letters and digits, or anything. |
+| `error` | `string` |  |  |
+| `required` | `boolean` |  |  |
+| `optional` | `boolean` |  |  |
+| `hideLabel` | `boolean` |  |  |
+| `readonly` | `boolean` |  |  |
+| `disabled` | `boolean` |  |  |
+| `name` | `string` |  |  |
+
+Events: `complete`.
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { computed, ref } from 'vue'
+import PinInput from '@/components/ui/pin-input.vue'
+
+const code = ref('')
+const done = ref(false)
+const error = computed(() => (done.value && code.value !== '123456' ? 'That code is not right. Try 123456.' : undefined))
+const grouped = ref('')
+const letters = ref('')
+const short = ref('')
+</script>
+
+<template>
+  <div class="grid items-start gap-6 md:grid-cols-2">
+    <PinInput v-model="code" label="Code" hint="Paste works. Try 123456." :error="error" @complete="done = true" />
+    <PinInput v-model="grouped" label="In groups of three" :group-size="3" charset="numeric" />
+    <PinInput v-model="letters" label="Letters and digits" :length="4" charset="alphanumeric" />
+    <PinInput v-model="short" label="Four digits" :length="4" charset="numeric" optional />
+    <PinInput label="Read only" model-value="123456" readonly />
+    <PinInput label="Disabled" model-value="123456" disabled />
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Tags input
+
+Type to add several values as removable chips.
+
+Group: Forms. Registry item: http://localhost:5173/r/tags-input.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/tags-input.json
+```
+
+Installs with: theme, utils, field. npm packages: reka-ui.
+
+Import it from your own copy: `import Tagsinput from '@/components/ui/tags-input.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `v-model` | `string[]` | `[]` | Two-way bound value. |
+| `label (required)` | `string` |  |  |
+| `hint` | `string` |  |  |
+| `placeholder` | `string` |  |  |
+| `error` | `string` |  |  |
+| `required` | `boolean` |  |  |
+| `optional` | `boolean` |  |  |
+| `hideLabel` | `boolean` |  |  |
+| `readonly` | `boolean` |  |  |
+| `disabled` | `boolean` |  |  |
+| `loading` | `boolean` |  |  |
+| `name` | `string` |  |  |
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { computed, ref } from 'vue'
+import TagsInput from '@/components/ui/tags-input.vue'
+
+const tags = ref(['design', 'vue'])
+const empty = ref<string[]>([])
+const few = ref(['one'])
+const fewError = computed(() => (few.value.length < 2 ? 'Add at least two topics.' : undefined))
+</script>
+
+<template>
+  <div class="grid items-start gap-6 md:grid-cols-2">
+    <TagsInput v-model="tags" label="Topics" hint="Enter or comma adds, Backspace removes." />
+    <TagsInput v-model="empty" label="Empty" placeholder="Type and press Enter" />
+    <TagsInput v-model="few" label="Error" :error="fewError" required />
+    <TagsInput :model-value="['ada', 'grace']" label="Saving" loading />
+    <TagsInput :model-value="['ada', 'grace']" label="Read only" readonly />
+    <TagsInput :model-value="['ada', 'grace']" label="Disabled" disabled />
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Input group
+
+Text field with a prefix or suffix attached.
+
+Group: Forms. Registry item: http://localhost:5173/r/input-group.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/input-group.json
+```
+
+Installs with: theme, utils, field. npm packages: none beyond Vue.
+
+Import it from your own copy: `import Inputgroup from '@/components/ui/input-group.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `v-model` | `string` | `''` | Two-way bound value. |
+| `label (required)` | `string` |  |  |
+| `hint` | `string` |  |  |
+| `prefix` | `string` |  |  |
+| `suffix` | `string` |  |  |
+| `error` | `string` |  |  |
+| `required` | `boolean` |  |  |
+| `optional` | `boolean` |  |  |
+| `hideLabel` | `boolean` |  |  |
+| `readonly` | `boolean` |  |  |
+| `disabled` | `boolean` |  |  |
+| `loading` | `boolean` |  |  |
+
+Slots: `prefix`, `suffix`.
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { computed, ref } from 'vue'
+import InputGroup from '@/components/ui/input-group.vue'
+
+const site = ref('sui')
+const price = ref('')
+const url = ref('example.com')
+const urlError = computed(() => (url.value.includes('.') ? 'Leave out the dot: the domain is added for you.' : undefined))
+const weight = ref('72')
+</script>
+
+<template>
+  <div class="grid items-start gap-6 md:grid-cols-2">
+    <InputGroup v-model="site" label="Website" prefix="https://" suffix=".com" />
+    <InputGroup v-model="price" label="Price" prefix="$" suffix="USD" placeholder="0.00" hint="Prefix and suffix are separate segments." />
+    <InputGroup v-model="url" label="Domain" prefix="https://" suffix=".com" :error="urlError" />
+    <InputGroup v-model="weight" label="Weight" suffix="kg" loading />
+    <InputGroup label="Read only" model-value="db.internal" prefix="host" readonly />
+    <InputGroup label="Disabled" model-value="db.internal" prefix="host" disabled />
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Label
+
+Standalone label that stays tied to its control.
+
+Group: Forms. Registry item: http://localhost:5173/r/label.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/label.json
+```
+
+Installs with: theme, utils. npm packages: reka-ui.
+
+Import it from your own copy: `import Label from '@/components/ui/label.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `required` | `boolean` |  |  |
+| `optional` | `boolean` |  |  |
+
+Also takes everything in LabelProps, and `class` for placement only.
+
+Slots: `default`.
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { useId } from 'vue'
+import Label from '@/components/ui/label.vue'
+
+const email = useId()
+const handle = useId()
+const note = useId()
+</script>
+
+<template>
+  <div class="grid max-w-md gap-6">
+    <p class="text-muted">The bare label for a control you wire yourself. For ready-made inputs, use Field: it does the wiring for you.</p>
+    <div class="grid gap-2">
+      <Label :for="email" required>Email</Label>
+      <input :id="email" type="email" required placeholder="you@example.com" class="well h-control w-full px-4" />
+    </div>
+    <div class="grid gap-2">
+      <Label :for="handle" optional>Handle</Label>
+      <input :id="handle" type="text" placeholder="grace" :aria-describedby="`${handle}-hint`" class="well h-control w-full px-4" />
+      <p :id="`${handle}-hint`" class="text-sm text-muted">Lowercase letters and numbers only.</p>
+    </div>
+    <div class="grid gap-2">
+      <Label :for="note">Locked</Label>
+      <input :id="note" disabled value="Cannot edit" class="well h-control w-full px-4" />
+    </div>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Editable
+
+Text you click to edit in place.
+
+Group: Forms. Registry item: http://localhost:5173/r/editable.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/editable.json
+```
+
+Installs with: theme, utils, field. npm packages: reka-ui.
+
+Import it from your own copy: `import Editable from '@/components/ui/editable.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `v-model` | `string` | `''` | Two-way bound value. |
+| `label (required)` | `string` |  |  |
+| `hint` | `string` |  |  |
+| `error` | `string` |  |  |
+| `required` | `boolean` |  |  |
+| `optional` | `boolean` |  |  |
+| `hideLabel` | `boolean` |  |  |
+| `readonly` | `boolean` |  |  |
+| `loading` | `boolean` |  |  |
+| `name` | `string` |  |  |
+| `placeholder` | `string` |  |  |
+| `disabled` | `boolean` |  |  |
+
+Events: `submit`.
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { reactive, ref } from 'vue'
+import Card from '@/components/ui/card.vue'
+import Editable from '@/components/ui/editable.vue'
+
+const title = ref('Quarterly report')
+const saved = ref('nothing yet')
+const profile = reactive({ name: 'Grace Hopper', role: 'Rear Admiral', city: '' })
+</script>
+
+<template>
+  <div class="grid items-start gap-6 md:grid-cols-2">
+    <Editable v-model="title" label="Title" hint="Click the text to edit; Enter saves, Esc cancels." @submit="saved = $event" />
+    <p class="text-muted">Saved: <span class="numeral text-ink">{{ saved }}</span></p>
+    <Editable label="Read only" model-value="Locked" readonly />
+    <Editable label="Disabled" model-value="Locked" disabled />
+    <Card title="Profile" class="md:col-span-2 md:max-w-sm">
+      <Editable v-model="profile.name" label="Name" />
+      <Editable v-model="profile.role" label="Role" />
+      <Editable v-model="profile.city" label="City" placeholder="Add a city" />
+    </Card>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# File upload
+
+Dropzone and file list with validation, thumbnails and progress.
+
+Group: Forms. Registry item: http://localhost:5173/r/file-upload.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/file-upload.json
+```
+
+Installs with: theme, utils, field, announce. npm packages: none beyond Vue.
+
+Import it from your own copy: `import Fileupload from '@/components/ui/file-upload.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `v-model` | `File[]` | `[]` | Two-way bound value. |
+| `label` | `string` |  |  |
+| `accept` | `string` |  | Same syntax as the input's `accept`: ".png", "image/*", "image/png". |
+| `maxSize` | `number` |  | Largest file in bytes. |
+| `maxFiles` | `number` |  | Most files in the list. Extra ones are rejected with a reason, whether picked or dropped. |
+| `hint` | `string` |  |  |
+| `error` | `string` |  |  |
+| `required` | `boolean` |  |  |
+| `optional` | `boolean` |  |  |
+| `multiple` | `boolean` | `true` |  |
+| `progress` | `Record<string, number>` |  | Upload progress per file name, 0-100. A file without an entry shows no bar. |
+
+Events: `reject`.
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { reactive, ref, watch } from 'vue'
+import FileUpload from '@/components/ui/file-upload.vue'
+
+const files = ref<File[]>([])
+const progress = reactive<Record<string, number>>({})
+const avatar = ref<File[]>([])
+
+// Pretend to upload: each new file fills up over a couple of seconds.
+watch(files, (list) => {
+  for (const f of list) {
+    if (f.name in progress) continue
+    progress[f.name] = 0
+    const timer = setInterval(() => {
+      progress[f.name] = Math.min(100, (progress[f.name] ?? 0) + 8 + Math.random() * 10)
+      if (progress[f.name]! >= 100) clearInterval(timer)
+    }, 250)
+  }
+})
+</script>
+
+<template>
+  <div class="grid items-start gap-8 md:grid-cols-2">
+    <FileUpload v-model="files" label="Attachments" accept=".png,.jpg,.pdf" :max-size="2 * 1024 * 1024" :max-files="3" :progress="progress" hint="Drop a 4th file, a .txt or one over 2 MB to see it refused." />
+    <FileUpload v-model="avatar" label="Profile picture" accept="image/*" :max-size="500 * 1024" :multiple="false" required />
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Dialog
+
+Modal dialog with focus trap and scroll lock.
+
+Group: Overlays. Registry item: http://localhost:5173/r/dialog.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/dialog.json
+```
+
+Installs with: theme, utils. npm packages: reka-ui.
+
+Import it from your own copy: `import Dialog from '@/components/ui/dialog.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `v-model:open` | `boolean` | `false` | Two-way bound value. |
+| `title (required)` | `string` |  |  |
+| `description` | `string` |  |  |
+| `dismissible` | `boolean` | `true` | false: Escape and outside clicks do nothing and the corner X is hidden; the footer must offer the way out. |
+
+Slots: `trigger`, `default`, `footer`.
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import Button from '@/components/ui/button.vue'
+import Dialog from '@/components/ui/dialog.vue'
+import TextField from '@/components/ui/text-field.vue'
+
+const inviteOpen = ref(false)
+const email = ref('')
+const sent = ref('')
+function send() {
+  sent.value = email.value || 'nobody yet'
+  inviteOpen.value = false
+  email.value = ''
+}
+const terms = Array.from({ length: 12 }, (_, i) => `Clause ${i + 1}. The parties agree to keep their code open and their tokens consistent.`)
+const forcedOpen = ref(false)
+</script>
+
+<template>
+  <div class="grid gap-8">
+    <div class="flex flex-col items-start gap-3">
+      <span class="kicker">A message</span>
+      <Dialog title="Delete project?" description="This can't be undone.">
+        <template #trigger><Button>Open dialog</Button></template>
+        All of the project's files and history will be permanently removed.
+      </Dialog>
+    </div>
+    <div class="flex flex-col items-start gap-3">
+      <span class="kicker">A form, focus starts in the field · last invite: {{ sent || 'none' }}</span>
+      <Dialog v-model:open="inviteOpen" title="Invite a teammate" description="They'll get an email with a link.">
+        <template #trigger><Button>Invite teammate</Button></template>
+        <TextField v-model="email" label="Email" type="email" placeholder="name@company.com" data-autofocus />
+        <template #footer><Button @click="send">Send invite</Button></template>
+      </Dialog>
+    </div>
+    <div class="flex flex-col items-start gap-3">
+      <span class="kicker">Long content scrolls inside; not dismissible variant below</span>
+      <div class="flex flex-wrap gap-2">
+        <Dialog title="Terms of use" description="Please read to the end.">
+          <template #trigger><Button>Read the terms</Button></template>
+          <p v-for="t in terms" :key="t" class="pb-3 text-muted">{{ t }}</p>
+        </Dialog>
+        <Dialog v-model:open="forcedOpen" title="Accept the terms" description="You need to choose to continue." :dismissible="false">
+          <template #trigger><Button>Not dismissible</Button></template>
+          Read the policy, then accept.
+          <template #footer><Button @click="forcedOpen = false">I accept</Button></template>
+        </Dialog>
+      </div>
+    </div>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Sheet
+
+Side panel built on the dialog primitive.
+
+Group: Overlays. Registry item: http://localhost:5173/r/sheet.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/sheet.json
+```
+
+Installs with: theme, utils. npm packages: reka-ui.
+
+Import it from your own copy: `import Sheet from '@/components/ui/sheet.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `v-model:open` | `boolean` | `false` | Two-way bound value. |
+| `title (required)` | `string` |  |  |
+| `description` | `string` |  |  |
+| `side` | `'start' \| 'end'` | `'end'` | Which edge it opens from. Logical, so 'end' is the left edge in right-to-left pages. |
+| `modal` | `boolean` | `true` | false: no overlay, the page behind stays usable and focus is not trapped. Close it with its X or Escape. |
+| `dismissible` | `boolean` | `true` | false: Escape and outside clicks do nothing and the X is hidden. |
+
+Slots: `trigger`, `default`, `footer`.
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import Button from '@/components/ui/button.vue'
+import Checkbox from '@/components/ui/checkbox.vue'
+import RadioGroup from '@/components/ui/radio-group.vue'
+import Select from '@/components/ui/select.vue'
+import Sheet from '@/components/ui/sheet.vue'
+import Switch from '@/components/ui/switch.vue'
+import TextField from '@/components/ui/text-field.vue'
+
+const name = ref('Northwind')
+const inspectorName = ref('Northwind')
+const region = ref('eu')
+const plan = ref('team')
+const digest = ref(true)
+const beta = ref(false)
+const regions = [
+  { value: 'us', label: 'United States' },
+  { value: 'eu', label: 'Europe' },
+  { value: 'ap', label: 'Asia Pacific' },
+]
+const plans = [
+  { value: 'free', label: 'Free' },
+  { value: 'team', label: 'Team' },
+  { value: 'scale', label: 'Scale' },
+]
+const states = ['Open', 'In review', 'Blocked', 'Done', 'Archived']
+const picked = ref<Record<string, boolean>>({ Open: true })
+</script>
+
+<template>
+  <div class="grid gap-8">
+    <div class="flex flex-col items-start gap-3">
+      <span class="kicker">Settings panel</span>
+      <Sheet title="Workspace settings" description="Changes save when you close.">
+        <template #trigger><Button>Open settings</Button></template>
+        <div class="grid gap-5">
+          <TextField v-model="name" label="Workspace name" />
+          <Select v-model="region" :options="regions" />
+          <RadioGroup v-model="plan" :options="plans" />
+          <Switch v-model="digest" label="Weekly digest" />
+          <Switch v-model="beta" label="Join the beta" />
+        </div>
+      </Sheet>
+    </div>
+    <div class="flex flex-col items-start gap-3">
+      <span class="kicker">Filters with a long list</span>
+      <Sheet title="Filters" description="Narrow the results.">
+        <template #trigger><Button>Open filters</Button></template>
+        <div class="flex flex-col items-start gap-3">
+          <Checkbox v-for="s in states" :key="s" v-model="picked[s]" :label="s" />
+          <p class="pt-2 text-muted">Each filter narrows the list straight away.</p>
+        </div>
+      </Sheet>
+    </div>
+    <div class="flex flex-col items-start gap-3">
+      <span class="kicker">From the start edge</span>
+      <Sheet title="Navigation" description="Opens from the start side." side="start">
+        <template #trigger><Button>Open from the start</Button></template>
+        <p class="text-muted">Flips to the right edge in right-to-left pages.</p>
+      </Sheet>
+    </div>
+    <div class="flex flex-col items-start gap-3">
+      <span class="kicker">Non-modal: the page behind stays usable</span>
+      <Sheet title="Inspector" description="No overlay, no focus trap." :modal="false">
+        <template #trigger><Button>Open inspector</Button></template>
+        <div class="grid gap-3">
+          <p class="text-muted">Click elsewhere on the page: this stays open. Close it with its X or Escape.</p>
+          <TextField v-model="inspectorName" label="Workspace name" />
+        </div>
+      </Sheet>
+    </div>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Popover
+
+Floating panel anchored to a trigger.
+
+Group: Overlays. Registry item: http://localhost:5173/r/popover.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/popover.json
+```
+
+Installs with: theme, utils. npm packages: reka-ui.
+
+Import it from your own copy: `import Popover from '@/components/ui/popover.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `v-model:open` | `boolean` | `false` | Two-way bound value. |
+
+Slots: `trigger`, `default`.
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import Badge from '@/components/ui/badge.vue'
+import Button from '@/components/ui/button.vue'
+import Checkbox from '@/components/ui/checkbox.vue'
+import Popover from '@/components/ui/popover.vue'
+import Switch from '@/components/ui/switch.vue'
+import TextField from '@/components/ui/text-field.vue'
+
+const link = ref('https://sui.dame.gg/share/412')
+const editable = ref(true)
+const status = ref(true)
+const owner = ref(false)
+</script>
+
+<template>
+  <div class="grid gap-8">
+    <div class="flex flex-col items-start gap-3">
+      <span class="kicker">Details</span>
+      <Popover>
+        <template #trigger><Button>Show details</Button></template>
+        <div class="grid gap-2">
+          <div class="flex items-center gap-2"><p class="font-medium">Build #412</p><Badge tone="success">Passed</Badge></div>
+          <p class="text-muted">Passed in 38s on main.</p>
+        </div>
+      </Popover>
+    </div>
+    <div class="flex flex-col items-start gap-3">
+      <span class="kicker">With a form</span>
+      <Popover>
+        <template #trigger><Button>Share link</Button></template>
+        <div class="flex flex-col items-start gap-3">
+          <TextField v-model="link" label="Link" />
+          <Switch v-model="editable" label="Allow editing" />
+        </div>
+      </Popover>
+    </div>
+    <div class="flex flex-col items-start gap-3">
+      <span class="kicker">Filters</span>
+      <Popover>
+        <template #trigger><Button>Filter</Button></template>
+        <div class="flex flex-col items-start gap-1">
+          <Checkbox v-model="status" label="Open" />
+          <Checkbox v-model="owner" label="Assigned to me" />
+        </div>
+      </Popover>
+    </div>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Toggletip
+
+A tooltip you click, for touch and screen readers. Focus stays on the button.
+
+Group: Overlays. Registry item: http://localhost:5173/r/toggletip.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/toggletip.json
+```
+
+Installs with: theme, utils, announce. npm packages: reka-ui.
+
+Import it from your own copy: `import Toggletip from '@/components/ui/toggletip.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `v-model:open` | `boolean` | `false` | Two-way bound value. |
+| `content (required)` | `string` |  |  |
+
+Slots: `default`.
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import Button from '@/components/ui/button.vue'
+import Toggletip from '@/components/ui/toggletip.vue'
+import Tooltip from '@/components/ui/tooltip.vue'
+
+const info =
+  'inline-grid size-7 cursor-pointer place-items-center rounded-full text-muted transition-state hover:text-ink focus-ring'
+</script>
+
+<template>
+  <div class="grid gap-8">
+    <div class="grid gap-3">
+      <span class="kicker">Click the icon; Esc or a click outside closes it</span>
+      <div class="flex items-center gap-1">
+        <span>Billing period</span>
+        <Toggletip content="Charged on the first of each month. Changing plans mid-month is prorated.">
+          <button type="button" aria-label="About billing period" :class="info">
+            <svg viewBox="0 0 24 24" class="size-5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="9" />
+              <path d="M12 11v5M12 7.9h.01" />
+            </svg>
+          </button>
+        </Toggletip>
+      </div>
+    </div>
+    <div class="grid max-w-md gap-2">
+      <span class="kicker">Versus a tooltip</span>
+      <p class="text-muted">
+        A tooltip opens on hover and focus, so touch users never see it. Use a toggletip when the text matters, or the
+        screen is touch.
+      </p>
+      <div><Tooltip content="Hover or focus only"><Button>Tooltip</Button></Tooltip></div>
+    </div>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Tooltip
+
+Short hint on hover or focus.
+
+Group: Overlays. Registry item: http://localhost:5173/r/tooltip.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/tooltip.json
+```
+
+Installs with: theme, utils. npm packages: reka-ui.
+
+Import it from your own copy: `import Tooltip from '@/components/ui/tooltip.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `content (required)` | `string` |  |  |
+
+Slots: `default`.
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import Avatar from '@/components/ui/avatar.vue'
+import Button from '@/components/ui/button.vue'
+import Kbd from '@/components/ui/kbd.vue'
+import Tooltip from '@/components/ui/tooltip.vue'
+</script>
+
+<template>
+  <div class="grid max-w-md gap-8">
+    <div class="flex flex-col gap-2">
+      <p class="kicker">Hover or focus</p>
+      <div class="flex flex-wrap items-center gap-3">
+        <Tooltip content="Saves without publishing"><Button>Save draft</Button></Tooltip>
+        <Tooltip content="Ada Lovelace"><Avatar fallback="AL" /></Tooltip>
+        <Tooltip content="Open the command palette"><span><Kbd>Ctrl</Kbd> <Kbd>K</Kbd></span></Tooltip>
+      </div>
+    </div>
+    <div class="flex flex-col gap-2">
+      <p class="kicker">Move across these: the next ones open at once</p>
+      <div class="flex gap-2">
+        <Tooltip content="Bold"><Button>B</Button></Tooltip>
+        <Tooltip content="Italic"><Button>I</Button></Tooltip>
+        <Tooltip content="Underline"><Button>U</Button></Tooltip>
+      </div>
+    </div>
+    <p class="text-muted">A tooltip carries a short hint, never something you need to act on. On touch, a tap shows it for a moment.</p>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Dropdown menu
+
+Menu of actions with arrow-key navigation.
+
+Group: Overlays. Registry item: http://localhost:5173/r/dropdown-menu.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/dropdown-menu.json
+```
+
+Installs with: theme, utils. npm packages: reka-ui.
+
+Import it from your own copy: `import Dropdownmenu from '@/components/ui/dropdown-menu.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `items (required)` | `{ value: string; label: string; disabled?: boolean; shortcut?: string }[]` |  | `shortcut` is a hint at the end of the row (it does not bind the key). |
+
+Events: `select`.
+
+Slots: `trigger`.
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import Button from '@/components/ui/button.vue'
+import DropdownMenu from '@/components/ui/dropdown-menu.vue'
+
+const picked = ref('nothing yet')
+const items = [
+  { value: 'rename', label: 'Rename', shortcut: 'F2' },
+  { value: 'duplicate', label: 'Duplicate', shortcut: 'Ctrl D' },
+  { value: 'archive', label: 'Archive' },
+  { value: 'delete', label: 'Delete', disabled: true },
+]
+const longer = Array.from({ length: 12 }, (_, i) => ({ value: `ws-${i + 1}`, label: `Workspace ${i + 1}` }))
+</script>
+
+<template>
+  <div class="grid gap-8">
+    <div class="flex flex-col items-start gap-3">
+      <span class="kicker">Actions · you picked: {{ picked }}</span>
+      <DropdownMenu :items="items" @select="picked = $event">
+        <template #trigger><Button>Actions</Button></template>
+      </DropdownMenu>
+    </div>
+    <div class="flex flex-col items-start gap-3">
+      <span class="kicker">A long list scrolls with the arrow keys</span>
+      <DropdownMenu :items="longer" @select="picked = $event">
+        <template #trigger><Button>Switch workspace</Button></template>
+      </DropdownMenu>
+    </div>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Alert dialog
+
+Modal that demands a decision, for confirming destructive actions.
+
+Group: Overlays. Registry item: http://localhost:5173/r/alert-dialog.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/alert-dialog.json
+```
+
+Installs with: theme, utils. npm packages: reka-ui.
+
+Import it from your own copy: `import Alertdialog from '@/components/ui/alert-dialog.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `v-model:open` | `boolean` | `false` | Two-way bound value. |
+| `title (required)` | `string` |  |  |
+| `description` | `string` |  |  |
+| `confirmLabel` | `string` | `'Delete'` |  |
+| `cancelLabel` | `string` | `'Cancel'` |  |
+| `loading` | `boolean` |  | The confirmed action is running: the button shows busy, ignores presses, and the dialog stays open until you set this back to false. |
+| `dismissible` | `boolean` | `true` | false: Escape does nothing, so the choice has to be made with a button. |
+
+Events: `confirm`.
+
+Slots: `trigger`, `default`.
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import AlertDialog from '@/components/ui/alert-dialog.vue'
+import Button from '@/components/ui/button.vue'
+
+const status = ref('Project is safe.')
+const slowOpen = ref(false)
+const working = ref(false)
+const result = ref('not run')
+function runSlow() {
+  working.value = true
+  setTimeout(() => {
+    working.value = false
+    result.value = 'deleted'
+  }, 1800)
+}
+</script>
+
+<template>
+  <div class="grid gap-8">
+    <div class="flex flex-col items-start gap-3">
+      <span class="kicker">Destructive · {{ status }}</span>
+      <AlertDialog
+        title="Delete this project?"
+        description="All files and history are permanently removed. This can't be undone."
+        confirm-label="Delete project"
+        @confirm="status = 'Project deleted.'"
+      >
+        <template #trigger><Button>Delete project</Button></template>
+      </AlertDialog>
+    </div>
+    <div class="flex flex-col items-start gap-3">
+      <span class="kicker">Slow action: stays open and busy until done · {{ result }}</span>
+      <AlertDialog
+        v-model:open="slowOpen"
+        title="Delete 3,000 files?"
+        description="This takes a moment and can't be undone."
+        confirm-label="Delete files"
+        :loading="working"
+        @confirm="runSlow"
+      >
+        <template #trigger><Button>Delete files</Button></template>
+      </AlertDialog>
+    </div>
+    <div class="flex flex-col items-start gap-3">
+      <span class="kicker">Not dismissible: Escape does nothing</span>
+      <AlertDialog title="Leave without saving?" description="Choose a button." confirm-label="Leave" cancel-label="Keep editing" :dismissible="false">
+        <template #trigger><Button>Leave page</Button></template>
+      </AlertDialog>
+    </div>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Context menu
+
+Menu of actions on right-click or long-press.
+
+Group: Overlays. Registry item: http://localhost:5173/r/context-menu.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/context-menu.json
+```
+
+Installs with: theme, utils. npm packages: reka-ui.
+
+Import it from your own copy: `import Contextmenu from '@/components/ui/context-menu.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `items (required)` | `{ value: string; label: string; disabled?: boolean; shortcut?: string }[]` |  |  |
+
+Events: `select`.
+
+Slots: `default`.
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import Card from '@/components/ui/card.vue'
+import ContextMenu from '@/components/ui/context-menu.vue'
+
+const picked = ref('nothing yet')
+const items = [
+  { value: 'open', label: 'Open', shortcut: 'Enter' },
+  { value: 'rename', label: 'Rename', shortcut: 'F2' },
+  { value: 'duplicate', label: 'Duplicate' },
+  { value: 'delete', label: 'Delete', disabled: true },
+]
+</script>
+
+<template>
+  <div class="grid gap-3">
+    <span class="kicker">Right-click, or long-press on touch · you picked: {{ picked }}</span>
+    <ContextMenu :items="items" @select="picked = $event">
+      <Card title="Quarterly plan" class="max-w-sm">
+        <p class="text-muted">Right-click anywhere on this card for its actions.</p>
+      </Card>
+    </ContextMenu>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Hover card
+
+Rich preview shown when hovering a link or trigger.
+
+Group: Overlays. Registry item: http://localhost:5173/r/hover-card.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/hover-card.json
+```
+
+Installs with: theme, utils. npm packages: reka-ui.
+
+Import it from your own copy: `import Hovercard from '@/components/ui/hover-card.vue'`.
+
+## Props
+
+No props; it takes content only.
+
+Slots: `trigger`, `default`.
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import Avatar from '@/components/ui/avatar.vue'
+import Badge from '@/components/ui/badge.vue'
+import HoverCard from '@/components/ui/hover-card.vue'
+import Progress from '@/components/ui/progress.vue'
+</script>
+
+<template>
+  <div class="grid max-w-xl gap-8">
+    <div class="grid gap-3">
+      <span class="kicker">A person</span>
+      <p>
+        Built by
+        <HoverCard>
+          <template #trigger>
+            <a href="#/components/hover-card" class="rounded-sm font-medium text-primary underline underline-offset-4 focus-ring">@dame-g</a>
+          </template>
+          <div class="flex gap-3">
+            <Avatar fallback="DG" />
+            <div class="grid gap-1">
+              <p class="font-medium">Dame G</p>
+              <p class="text-sm text-muted">Makes small tools and the sui component set.</p>
+            </div>
+          </div>
+        </HoverCard>
+        in the evenings.
+      </p>
+    </div>
+    <div class="grid gap-3">
+      <span class="kicker">A project</span>
+      <p>
+        Next up is
+        <HoverCard>
+          <template #trigger>
+            <a href="#/components/hover-card" class="rounded-sm font-medium text-primary underline underline-offset-4 focus-ring">the Q4 launch</a>
+          </template>
+          <div class="grid gap-3">
+            <div class="flex items-center justify-between gap-2"><p class="font-medium">Q4 launch</p><Badge tone="warning">At risk</Badge></div>
+            <Progress :model-value="58" label="Done" />
+            <p class="text-sm text-muted">14 of 24 tasks complete. Due Dec 12.</p>
+          </div>
+        </HoverCard>
+        and the website refresh.
+      </p>
+    </div>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Drawer
+
+Bottom sheet you can drag down to dismiss, made for touch.
+
+Group: Overlays. Registry item: http://localhost:5173/r/drawer.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/drawer.json
+```
+
+Installs with: theme, utils. npm packages: reka-ui.
+
+Import it from your own copy: `import Drawer from '@/components/ui/drawer.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `v-model:open` | `boolean` | `false` | Two-way bound value. |
+| `title (required)` | `string` |  |  |
+| `description` | `string` |  |  |
+| `dismissible` | `boolean` | `true` |  |
+
+Slots: `trigger`, `default`, `footer`.
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import Button from '@/components/ui/button.vue'
+import Drawer from '@/components/ui/drawer.vue'
+import Switch from '@/components/ui/switch.vue'
+
+const wifi = ref(true)
+const bluetooth = ref(false)
+const airplane = ref(false)
+</script>
+
+<template>
+  <div class="grid gap-8">
+    <div class="flex flex-col items-start gap-3">
+      <span class="kicker">Simple, made for touch</span>
+      <Drawer title="Share this page" description="Anyone with the link can view it.">
+        <template #trigger><Button>Open drawer</Button></template>
+        <p class="text-muted">Drag the handle down, press Escape, or tap outside to dismiss.</p>
+      </Drawer>
+    </div>
+    <div class="flex flex-col items-start gap-3">
+      <span class="kicker">Quick settings</span>
+      <Drawer title="Quick settings" description="Applies straight away.">
+        <template #trigger><Button>Open settings</Button></template>
+        <div class="grid gap-4 pb-2">
+          <Switch v-model="wifi" label="Wi-Fi" />
+          <Switch v-model="bluetooth" label="Bluetooth" />
+          <Switch v-model="airplane" label="Airplane mode" />
+        </div>
+      </Drawer>
+    </div>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Command
+
+Command palette: ranked, highlighted matches, groups, icons, shortcuts, nested pages and a loading state.
+
+Group: Overlays. Registry item: http://localhost:5173/r/command.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/command.json
+```
+
+Installs with: theme, utils, announce, kbd, spinner. npm packages: reka-ui.
+
+Import it from your own copy: `import Command from '@/components/ui/command.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `v-model:open` | `boolean` | `false` | Two-way bound value. |
+| `items (required)` | `CommandItem[]` |  |  |
+| `placeholder` | `string` | `'Type a command or search…'` |  |
+| `empty` | `string` |  | The title of the empty state. Default: Nothing called “what you typed”. |
+| `filter` | `(item: CommandItem, query: string) => boolean` |  | Your own matching (fuzzy, by keyword...). Default: every word of the query is found in the label, keywords or description, ignoring case and accents. |
+| `loading` | `boolean` |  | Results are on their way: shows a busy row and sets aria-busy. |
+
+Events: `select`.
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import Button from '@/components/ui/button.vue'
+import Command, { type CommandItem } from '@/components/ui/command.vue'
+import Kbd from '@/components/ui/kbd.vue'
+
+const icon = {
+  file: 'M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8zM14 3v5h5',
+  folder: 'M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.7-.9l-.8-1.2A2 2 0 0 0 7.9 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z',
+  save: 'M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2zM17 21v-8H7v8M7 3v5h8',
+  search: 'M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM20 20l-3.5-3.5',
+  palette: 'M12 3a9 9 0 1 0 0 18c1.1 0 2-.9 2-2 0-.5-.2-1-.5-1.3-.3-.3-.5-.8-.5-1.3 0-1.1.9-2 2-2h2.3A4.7 4.7 0 0 0 22 11.7C22 6.9 17.5 3 12 3z',
+  home: 'm3 11 9-8 9 8M5 10v10h14V10',
+  sliders: 'M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0M14 4v4M8 10v4M16 16v4',
+}
+
+const ran = ref('nothing yet')
+const open = ref(false)
+const items: CommandItem[] = [
+  { value: 'new-file', label: 'New file', group: 'File', icon: icon.file, description: 'Start an empty document', shortcut: ['Ctrl', 'N'] },
+  { value: 'open-file', label: 'Open file…', group: 'File', icon: icon.folder, shortcut: ['Ctrl', 'O'] },
+  { value: 'save', label: 'Save', group: 'File', icon: icon.save, shortcut: ['Ctrl', 'S'] },
+  { value: 'find', label: 'Find in files', group: 'Edit', icon: icon.search, keywords: ['search', 'grep'], shortcut: ['Ctrl', 'F'] },
+  {
+    value: 'theme',
+    label: 'Change theme',
+    group: 'View',
+    icon: icon.palette,
+    description: 'Light, dark or high contrast',
+    children: [
+      { value: 'theme-light', label: 'Light' },
+      { value: 'theme-dark', label: 'Dark' },
+      { value: 'theme-contrast', label: 'High contrast', description: 'Full-strength edges' },
+    ],
+  },
+  { value: 'home', label: 'Go to home', group: 'Go to', icon: icon.home },
+  { value: 'settings', label: 'Go to settings', group: 'Go to', icon: icon.sliders },
+  { value: 'export', label: 'Export as PDF', group: 'File', disabled: true, description: 'Needs a saved file' },
+]
+
+// A second palette whose results arrive late.
+const remoteOpen = ref(false)
+const loading = ref(false)
+const remote = ref<CommandItem[]>([])
+watch(remoteOpen, (o) => {
+  if (!o) return
+  remote.value = []
+  loading.value = true
+  setTimeout(() => {
+    remote.value = ['Button', 'Dialog', 'Data table', 'Date picker', 'Dropdown menu'].map((t) => ({ value: t, label: t, group: 'Components', description: 'sui registry' }))
+    loading.value = false
+  }, 900)
+})
+
+function onKey(e: KeyboardEvent) {
+  if (e.key === 'j' && (e.metaKey || e.ctrlKey)) {
+    e.preventDefault()
+    open.value = !open.value
+  }
+}
+onMounted(() => window.addEventListener('keydown', onKey))
+onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
+</script>
+
+<template>
+  <div class="grid gap-6">
+    <div class="grid gap-3">
+      <span class="kicker">Groups, icons, shortcuts, a nested page and a disabled item</span>
+      <div class="flex flex-wrap items-center gap-4">
+        <Button @click="open = true">Open palette</Button>
+        <span class="flex items-center gap-2 text-muted">or <Kbd>Ctrl</Kbd> <Kbd>J</Kbd></span>
+        <span class="text-muted">Ran: <span class="numeral text-ink">{{ ran }}</span></span>
+      </div>
+    </div>
+    <div class="grid gap-3">
+      <span class="kicker">Results that arrive late</span>
+      <div><Button @click="remoteOpen = true">Search the registry</Button></div>
+    </div>
+    <Command v-model:open="open" :items="items" @select="ran = $event" />
+    <Command v-model:open="remoteOpen" :items="remote" :loading="loading" placeholder="Search components…" />
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Toast
+
+Brief notification fired from code: duration, action button, keyed updates and a promise helper.
+
+Group: Overlays. Registry item: http://localhost:5173/r/toast.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/toast.json
+```
+
+Installs with: theme, utils. npm packages: reka-ui.
+
+Import it from your own copy: `import Toast from '@/components/ui/toast.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `duration` | `number` | `5000` |  |
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import Button from '@/components/ui/button.vue'
+import { toast } from '@/components/ui/toast.vue'
+
+const fakeUpload = () => new Promise<void>((resolve) => setTimeout(resolve, 1800))
+</script>
+
+<template>
+  <div class="grid gap-8">
+    <div class="flex flex-col gap-2">
+      <p class="kicker">The five tones</p>
+      <div class="flex flex-wrap gap-3">
+        <Button @click="toast({ title: 'Copied to clipboard', tone: 'neutral' })">Neutral</Button>
+        <Button @click="toast({ title: 'New version available', description: 'Reload to update.', tone: 'info' })">Info</Button>
+        <Button @click="toast({ title: 'Saved', description: 'Your changes are live.', tone: 'success' })">Success</Button>
+        <Button @click="toast({ title: 'Storage almost full', description: '92% of 5 GB used.', tone: 'warning' })">Warning</Button>
+        <Button @click="toast({ title: 'Upload failed', description: 'Check your connection.', tone: 'danger' })">Danger</Button>
+      </div>
+    </div>
+    <div class="flex flex-col gap-2">
+      <p class="kicker">Options</p>
+      <div class="flex flex-wrap gap-3">
+        <Button @click="toast({ title: 'Message archived', tone: 'success', action: { label: 'Undo', onClick: () => toast({ title: 'Restored', tone: 'info' }) } })">With an action</Button>
+        <Button @click="toast({ key: 'sync', title: 'Syncing…', description: new Date().toLocaleTimeString(), tone: 'info' })">Same key updates</Button>
+        <Button @click="toast.promise(fakeUpload(), { loading: 'Uploading…', success: 'Uploaded', error: 'Upload failed' })">Follow a promise</Button>
+      </div>
+    </div>
+    <p class="max-w-md text-muted">
+      Call <code class="numeral">toast()</code> from anywhere; one <code class="numeral">&lt;Toaster /&gt;</code> mounted once in your app shows them.
+      Danger toasts and toasts with an action stay until dismissed.
+    </p>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Tabs
+
+Switch between panels of related content, with optional counts and vertical layout.
+
+Group: Navigation. Registry item: http://localhost:5173/r/tabs.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/tabs.json
+```
+
+Installs with: theme, utils, announce. npm packages: reka-ui.
+
+Import it from your own copy: `import Tabs from '@/components/ui/tabs.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `v-model` | `string` |  | Two-way bound value. |
+| `tabs (required)` | `{ value: string; label: string; count?: number; disabled?: boolean }[]` |  | `count` shows a small number after the label (unread, open items...). |
+| `orientation` | `'horizontal' \| 'vertical'` | `'horizontal'` |  |
+
+Slots: `t.value`.
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import Switch from '@/components/ui/switch.vue'
+import Tabs from '@/components/ui/tabs.vue'
+import TextField from '@/components/ui/text-field.vue'
+
+const current = ref('account')
+const name = ref('Ada Lovelace')
+const email = ref(true)
+const tabs = [
+  { value: 'account', label: 'Account' },
+  { value: 'notifications', label: 'Notifications' },
+  { value: 'billing', label: 'Billing' },
+]
+const inbox = ref('unread')
+const counted = [
+  { value: 'unread', label: 'Unread', count: 12 },
+  { value: 'flagged', label: 'Flagged', count: 3 },
+  { value: 'archived', label: 'Archived' },
+  { value: 'spam', label: 'Spam', count: 0, disabled: true },
+]
+</script>
+
+<template>
+  <div class="grid gap-8">
+    <div class="grid gap-3">
+      <span class="kicker">With panels</span>
+      <Tabs v-model="current" :tabs="tabs" class="max-w-lg">
+        <template #account><TextField v-model="name" label="Display name" /></template>
+        <template #notifications><Switch v-model="email" label="Email me weekly summaries" /></template>
+        <template #billing><p class="text-muted">Team plan, 8 of 10 seats used.</p></template>
+      </Tabs>
+    </div>
+    <div class="grid gap-3">
+      <span class="kicker">Counts and a disabled tab</span>
+      <Tabs v-model="inbox" :tabs="counted">
+        <template #unread><p class="text-muted">12 unread messages.</p></template>
+        <template #flagged><p class="text-muted">Messages you starred.</p></template>
+        <template #archived><p class="text-muted">Archived mail.</p></template>
+        <template #spam><p class="text-muted">Unavailable.</p></template>
+      </Tabs>
+    </div>
+    <div class="grid gap-3">
+      <span class="kicker">Vertical</span>
+      <Tabs :tabs="tabs" orientation="vertical" class="max-w-lg">
+        <template #account><p class="text-muted">Use the up and down arrow keys.</p></template>
+        <template #notifications><p class="text-muted">What reaches your inbox.</p></template>
+        <template #billing><p class="text-muted">Plan and invoices.</p></template>
+      </Tabs>
+    </div>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Accordion
+
+Collapsible sections, one open at a time.
+
+Group: Navigation. Registry item: http://localhost:5173/r/accordion.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/accordion.json
+```
+
+Installs with: theme, utils. npm packages: reka-ui.
+
+Import it from your own copy: `import Accordion from '@/components/ui/accordion.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `items (required)` | `{ value: string; title: string }[]` |  |  |
+
+Slots: `item.value`.
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import Accordion from '@/components/ui/accordion.vue'
+import Badge from '@/components/ui/badge.vue'
+
+const faq = [
+  { value: 'own', title: 'Do I own the code?' },
+  { value: 'theme', title: 'How do I change the look?' },
+  { value: 'update', title: 'How do updates work?' },
+]
+const long = [
+  { value: 'a', title: 'A heading that is long enough that it has to wrap onto a second line on narrow screens' },
+  { value: 'b', title: 'Short one' },
+]
+</script>
+
+<template>
+  <div class="grid gap-8 md:grid-cols-2">
+    <div class="flex flex-col gap-2">
+      <p class="kicker">Default</p>
+      <Accordion :items="faq">
+        <template #own>Yes. The CLI copies the source into your project.</template>
+        <template #theme>Edit the tokens in your theme file; the design rules stay put.</template>
+        <template #update>Re-run the add command and review the diff.</template>
+      </Accordion>
+    </div>
+    <div class="flex flex-col gap-2">
+      <p class="kicker">Long titles and rich content</p>
+      <Accordion :items="long">
+        <template #a>
+          <p class="leading-normal">Panels can hold anything: text, a <Badge tone="success">Badge</Badge> and more.</p>
+        </template>
+        <template #b>Only one panel is open at a time.</template>
+      </Accordion>
+    </div>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Breadcrumb
+
+Shows where the current page sits.
+
+Group: Navigation. Registry item: http://localhost:5173/r/breadcrumb.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/breadcrumb.json
+```
+
+Installs with: theme, utils. npm packages: none beyond Vue.
+
+Import it from your own copy: `import Breadcrumb from '@/components/ui/breadcrumb.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `items (required)` | `{ label: string; href?: string }[]` |  |  |
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import Breadcrumb from '@/components/ui/breadcrumb.vue'
+import Button from '@/components/ui/button.vue'
+
+const short = [{ label: 'Home', href: '#/' }, { label: 'Components', href: '#/components' }, { label: 'Breadcrumb' }]
+const deep = [
+  { label: 'Home', href: '#/' },
+  { label: 'Projects', href: '#/' },
+  { label: 'Quarterly planning workspace', href: '#/' },
+  { label: 'Documents', href: '#/' },
+  { label: 'Roadmap draft with a really long file name.md' },
+]
+</script>
+
+<template>
+  <div class="grid gap-8">
+    <div class="flex flex-col gap-2">
+      <p class="kicker">Short</p>
+      <Breadcrumb :items="short" />
+    </div>
+    <div class="flex flex-col gap-2">
+      <p class="kicker">Deep, long names wrap in a narrow space</p>
+      <Breadcrumb :items="deep" class="max-w-md" />
+    </div>
+    <div class="flex flex-col gap-2">
+      <p class="kicker">In a page header</p>
+      <div class="flex max-w-2xl flex-wrap items-end justify-between gap-4 border-b border-edge pb-4">
+        <div class="flex flex-col gap-2">
+          <Breadcrumb :items="short" />
+          <h3 class="heading text-3xl">Breadcrumb</h3>
+        </div>
+        <Button>Edit page</Button>
+      </div>
+    </div>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Pagination
+
+Page through long lists, with links or buttons and announced page changes.
+
+Group: Navigation. Registry item: http://localhost:5173/r/pagination.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/pagination.json
+```
+
+Installs with: theme, utils, announce. npm packages: reka-ui.
+
+Import it from your own copy: `import Pagination from '@/components/ui/pagination.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `v-model:page` | `number` | `1` | Two-way bound value. |
+| `total (required)` | `number` |  |  |
+| `itemsPerPage` | `number` | `10` |  |
+| `href` | `(page: number) => string` |  | Makes every page a real link (for server-rendered or router-driven pages). The model still updates on click. |
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import Pagination from '@/components/ui/pagination.vue'
+
+const middle = ref(6)
+const few = ref(2)
+const linked = ref(3)
+</script>
+
+<template>
+  <div class="grid gap-6">
+    <div class="grid gap-2">
+      <span class="kicker">Page {{ middle }} of 12</span>
+      <Pagination v-model:page="middle" :total="120" :items-per-page="10" />
+    </div>
+    <div class="grid gap-2">
+      <span class="kicker">Few pages</span>
+      <Pagination v-model:page="few" :total="30" :items-per-page="10" />
+    </div>
+    <div class="grid gap-2">
+      <span class="kicker">As links</span>
+      <Pagination v-model:page="linked" :total="80" :items-per-page="10" :href="(n) => `#/components/pagination?page=${n}`" />
+    </div>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Collapsible
+
+Single section that expands and collapses.
+
+Group: Navigation. Registry item: http://localhost:5173/r/collapsible.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/collapsible.json
+```
+
+Installs with: theme, utils. npm packages: reka-ui.
+
+Import it from your own copy: `import Collapsible from '@/components/ui/collapsible.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `v-model:open` | `boolean` | `false` | Two-way bound value. |
+| `title (required)` | `string` |  |  |
+
+Slots: `default`.
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import Collapsible from '@/components/ui/collapsible.vue'
+import Switch from '@/components/ui/switch.vue'
+
+const open = ref(false)
+const compact = ref(false)
+const faq = [
+  ['What is included?', 'Every component, its theme tokens and the cn() helper. Nothing else.'],
+  ['Can I change it?', 'It is your code now. Edit the file.'],
+  ['How do I update?', 'Run the add command again and review the diff.'],
+  ['Is it accessible?', 'Behaviour and keyboard handling come from Reka UI.'],
+]
+</script>
+
+<template>
+  <div class="grid max-w-lg gap-8">
+    <div class="grid gap-3">
+      <span class="kicker">Questions · first one starts open</span>
+      <Collapsible v-for="([q, a], i) in faq" :key="q" :title="q!" :open="i === 0">{{ a }}</Collapsible>
+    </div>
+    <div class="grid gap-3">
+      <span class="kicker">Controlled · {{ open ? 'open' : 'closed' }}</span>
+      <Collapsible v-model:open="open" title="Advanced options">
+        <div class="grid gap-3">
+          <Switch v-model="compact" label="Compact rows" />
+          <p class="text-muted">These options are rarely needed, so they stay out of the way.</p>
+        </div>
+      </Collapsible>
+    </div>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Skip link
+
+Hidden until focused; jumps the keyboard past the header to the main content.
+
+Group: Navigation. Registry item: http://localhost:5173/r/skip-link.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/skip-link.json
+```
+
+Installs with: theme, utils. npm packages: none beyond Vue.
+
+Import it from your own copy: `import Skiplink from '@/components/ui/skip-link.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `to` | `string` | `'main'` |  |
+
+Slots: `default`.
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import SkipLink from '@/components/ui/skip-link.vue'
+</script>
+
+<template>
+  <div class="grid max-w-xl gap-4">
+    <p class="kicker">Click in this box, then press Tab</p>
+    <div class="relative grid gap-3 rounded-md border border-edge p-4" tabindex="-1">
+      <SkipLink to="skip-demo-target">Skip to the demo content</SkipLink>
+      <nav aria-label="Demo" class="flex gap-4 text-muted"><span>Home</span><span>Docs</span><span>Pricing</span></nav>
+      <div id="skip-demo-target" tabindex="-1" class="rounded-sm bg-surface-tint p-3 outline-none focus:outline-2 focus:outline-primary">Main content: focus lands here.</div>
+    </div>
+    <p class="text-muted">Put it first in the page. It stays hidden until the keyboard reaches it. This site uses one too.</p>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Nav list
+
+List of links or buttons with an active slab, vertical or horizontal. The first letter of each item is strong.
+
+Group: Navigation. Registry item: http://localhost:5173/r/nav-list.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/nav-list.json
+```
+
+Installs with: theme, utils. npm packages: none beyond Vue.
+
+Import it from your own copy: `import Navlist from '@/components/ui/nav-list.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `v-model` | `string` | `''` | Two-way bound value. |
+| `sections (required)` | `NavSection[]` |  |  |
+| `orientation` | `'vertical' \| 'horizontal'` | `'vertical'` |  |
+| `flush` | `boolean` |  | Vertical only: the current row runs out to the container's end edge instead of stopping at its padding, like a marker on a page's margin. |
+| `label` | `string` |  |  |
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import Card from '@/components/ui/card.vue'
+import NavList from '@/components/ui/nav-list.vue'
+
+const side = ref('overview')
+const top = ref('overview')
+const marker = ref('activity')
+const inContext = ref('profile')
+const sections = [
+  { items: [{ value: 'overview', label: 'Overview' }, { value: 'activity', label: 'Activity' }] },
+  { title: 'Workspace', items: [{ value: 'projects', label: 'Projects' }, { value: 'members', label: 'Members' }, { value: 'billing', label: 'Billing' }] },
+]
+const settings = [
+  { title: 'Account', items: [{ value: 'profile', label: 'Profile' }, { value: 'security', label: 'Security' }, { value: 'notifications', label: 'Notifications' }] },
+  { title: 'Team', items: [{ value: 'people', label: 'People' }, { value: 'roles', label: 'Roles' }] },
+]
+const copy: Record<string, string> = {
+  profile: 'Your name, photo and the address people reach you on.',
+  security: 'Passwords, two-factor codes and active sessions.',
+  notifications: 'Choose what lands in your inbox, and when.',
+  people: 'Invite teammates and remove access.',
+  roles: 'Decide who can edit, review or only read.',
+}
+</script>
+
+<template>
+  <div class="grid gap-8">
+    <div class="grid gap-3">
+      <span class="kicker">Vertical, with sections · {{ side }}</span>
+      <div class="max-w-64 overflow-hidden rounded-md shadow-frame"><NavList v-model="side" :sections="sections" /></div>
+    </div>
+    <div class="grid gap-3">
+      <span class="kicker">Flush: the current row runs to the edge · {{ marker }}</span>
+      <div class="max-w-64 overflow-hidden rounded-md shadow-frame"><NavList v-model="marker" flush :sections="sections" /></div>
+    </div>
+    <div class="grid gap-3">
+      <span class="kicker">Horizontal · {{ top }}</span>
+      <div class="overflow-hidden rounded-md shadow-frame"><NavList v-model="top" :sections="sections" orientation="horizontal" /></div>
+    </div>
+    <div class="grid gap-3">
+      <span class="kicker">In a settings page</span>
+      <div class="flex flex-col items-start gap-4 md:flex-row">
+        <div class="w-full overflow-hidden rounded-md shadow-frame md:w-64 md:shrink-0"><NavList v-model="inContext" :sections="settings" /></div>
+        <Card :title="inContext[0]!.toUpperCase() + inContext.slice(1)" class="w-full md:flex-1"><p class="text-muted">{{ copy[inContext] }}</p></Card>
+      </div>
+    </div>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Menubar
+
+Row of menus, like an app menu bar.
+
+Group: Navigation. Registry item: http://localhost:5173/r/menubar.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/menubar.json
+```
+
+Installs with: theme, utils. npm packages: reka-ui.
+
+Import it from your own copy: `import Menubar from '@/components/ui/menubar.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `menus (required)` | `{ value: string; label: string; items: { value: string; label: string; disabled?: boolean; shortcut?: string }[] }[]` |  |  |
+
+Events: `select`.
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import Menubar from '@/components/ui/menubar.vue'
+
+const last = ref('nothing yet')
+const menus = [
+  { value: 'file', label: 'File', items: [{ value: 'new', label: 'New file' }, { value: 'open', label: 'Open…' }, { value: 'save', label: 'Save' }, { value: 'export', label: 'Export as PDF' }] },
+  { value: 'edit', label: 'Edit', items: [{ value: 'undo', label: 'Undo' }, { value: 'redo', label: 'Redo' }, { value: 'cut', label: 'Cut' }, { value: 'copy', label: 'Copy' }, { value: 'paste', label: 'Paste', disabled: true }] },
+  { value: 'view', label: 'View', items: [{ value: 'zoom-in', label: 'Zoom in' }, { value: 'zoom-out', label: 'Zoom out' }, { value: 'full', label: 'Full screen' }] },
+  { value: 'window', label: 'Window', items: [{ value: 'min', label: 'Minimise' }, { value: 'tile', label: 'Tile left' }] },
+  { value: 'help', label: 'Help', items: [{ value: 'docs', label: 'Documentation' }, { value: 'about', label: 'About sui' }] },
+]
+const small = menus.slice(0, 2)
+</script>
+
+<template>
+  <div class="grid gap-8">
+    <div class="grid gap-3">
+      <span class="kicker">App menu bar · {{ last }}</span>
+      <Menubar :menus="menus" @select="(m, i) => (last = `${m} / ${i}`)" />
+      <p class="max-w-md text-sm text-muted">Open one menu, then move across the bar with the arrow keys to switch menus.</p>
+    </div>
+    <div class="grid gap-3">
+      <span class="kicker">Two menus only</span>
+      <Menubar :menus="small" @select="(m, i) => (last = `${m} / ${i}`)" />
+    </div>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Navigation menu
+
+Site navigation with flyout panels.
+
+Group: Navigation. Registry item: http://localhost:5173/r/navigation-menu.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/navigation-menu.json
+```
+
+Installs with: theme, utils. npm packages: reka-ui.
+
+Import it from your own copy: `import Navigationmenu from '@/components/ui/navigation-menu.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `v-model` | `string` | `''` | Two-way bound value. |
+| `items (required)` | `NavItem[]` |  |  |
+| `label` | `string` |  |  |
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import Button from '@/components/ui/button.vue'
+import NavigationMenu from '@/components/ui/navigation-menu.vue'
+
+const second = ref('docs')
+const href = '#/components/navigation-menu'
+const site = [
+  { value: 'docs', label: 'Docs', href },
+  {
+    value: 'guides',
+    label: 'Guides',
+    children: [
+      { label: 'Getting started', description: 'Install a component in a minute.', href },
+      { label: 'Theming', description: 'Change the brand, radius and depth.', href },
+      { label: 'Linting', description: 'Keep compositions on the rules.', href },
+      { label: 'Migrating', description: 'Move an existing app over.', href },
+    ],
+  },
+  { value: 'blog', label: 'Blog', href },
+  { value: 'changelog', label: 'Changelog', href },
+]
+</script>
+
+<template>
+  <div class="grid min-h-72 content-start gap-8">
+    <div class="grid gap-3">
+      <span class="kicker">Links and a flyout, in a header</span>
+      <div class="flex flex-wrap items-center justify-between gap-4 rounded-md px-4 py-2 shadow-frame">
+        <span class="heading text-xl">sui</span>
+        <NavigationMenu v-model="second" :items="site" />
+        <Button>Get started</Button>
+      </div>
+    </div>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Stepper
+
+Steps through a multi-step flow: interactive or read-only, horizontal or vertical, with error and done states.
+
+Group: Navigation. Registry item: http://localhost:5173/r/stepper.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/stepper.json
+```
+
+Installs with: theme, utils, announce. npm packages: reka-ui.
+
+Import it from your own copy: `import Stepper from '@/components/ui/stepper.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `v-model` | `number` | `1` | Two-way bound value. |
+| `steps (required)` | `{ value: number; title: string; description?: string; error?: boolean }[]` |  |  |
+| `interactive` | `boolean` | `true` | Steps are buttons you can jump to. Off: they only show where you are, and your own Next/Back move on. |
+| `orientation` | `'horizontal' \| 'vertical'` | `'horizontal'` |  |
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import Button from '@/components/ui/button.vue'
+import Notice from '@/components/ui/notice.vue'
+import RadioGroup from '@/components/ui/radio-group.vue'
+import Stepper from '@/components/ui/stepper.vue'
+import TextField from '@/components/ui/text-field.vue'
+
+const step = ref(2)
+const name = ref('Grace Hopper')
+const plan = ref('team')
+const steps = [
+  { value: 1, title: 'Account', description: 'Your details' },
+  { value: 2, title: 'Plan', description: 'Pick a tier' },
+  { value: 3, title: 'Done' },
+]
+const plans = [
+  { value: 'solo', label: 'Solo: one project' },
+  { value: 'team', label: 'Team: unlimited projects' },
+]
+const withError = [{ value: 1, title: 'Account' }, { value: 2, title: 'Plan', error: true }, { value: 3, title: 'Payment' }]
+const vstep = ref(2)
+</script>
+
+<template>
+  <div class="grid gap-10 overflow-x-auto">
+    <div class="grid gap-5">
+      <span class="kicker">A flow</span>
+      <Stepper v-model="step" :steps="steps" />
+      <div class="grid max-w-md gap-4">
+        <TextField v-if="step === 1" v-model="name" label="Full name" />
+        <RadioGroup v-else-if="step === 2" v-model="plan" :options="plans" />
+        <Notice v-else tone="success" title="You're all set">Welcome aboard, {{ name }}.</Notice>
+      </div>
+      <div class="flex gap-2">
+        <Button :disabled="step === 1" @click="step--">Back</Button>
+        <Button :disabled="step === steps.length" @click="step++">Next</Button>
+      </div>
+    </div>
+    <div class="grid gap-3">
+      <span class="kicker">An error on a step</span>
+      <Stepper :model-value="3" :steps="withError" />
+    </div>
+    <div class="grid gap-3">
+      <span class="kicker">Vertical</span>
+      <Stepper v-model="vstep" :steps="steps" orientation="vertical" />
+    </div>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Toolbar
+
+Grouped buttons and toggles with roving keyboard focus.
+
+Group: Navigation. Registry item: http://localhost:5173/r/toolbar.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/toolbar.json
+```
+
+Installs with: theme, utils. npm packages: reka-ui.
+
+Import it from your own copy: `import Toolbar from '@/components/ui/toolbar.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `v-model:pressed` | `string[]` | `[]` | Two-way bound value. |
+| `items (required)` | `ToolbarItem[]` |  |  |
+| `label` | `string` |  |  |
+
+Events: `action`.
+
+Slots: `seg.item.value ?? ''`, `t.value ?? ''`.
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import Textarea from '@/components/ui/textarea.vue'
+import Toolbar, { type ToolbarItem } from '@/components/ui/toolbar.vue'
+
+const format = ref<string[]>(['bold'])
+const align = ref<string[]>(['left'])
+const last = ref('nothing yet')
+const text = ref('Select some text and use the toolbar above.')
+
+const formatting: ToolbarItem[] = [
+  { type: 'toggle', value: 'bold', label: 'Bold' },
+  { type: 'toggle', value: 'italic', label: 'Italic' },
+  { type: 'toggle', value: 'underline', label: 'Underline' },
+  { type: 'separator' },
+  { type: 'toggle', value: 'left', label: 'Left' },
+  { type: 'toggle', value: 'center', label: 'Centre' },
+  { type: 'toggle', value: 'right', label: 'Right' },
+  { type: 'separator' },
+  { type: 'button', value: 'undo', label: 'Undo' },
+  { type: 'button', value: 'redo', label: 'Redo' },
+]
+const clipboard: ToolbarItem[] = [
+  { type: 'button', value: 'cut', label: 'Cut' },
+  { type: 'button', value: 'copy', label: 'Copy' },
+  { type: 'button', value: 'paste', label: 'Paste' },
+]
+</script>
+
+<template>
+  <div class="grid gap-8">
+    <div class="grid gap-3">
+      <span class="kicker">An editor toolbar · last action: {{ last }}</span>
+      <Toolbar v-model:pressed="format" :items="formatting.slice(0, 3)" label="Text style" @action="last = $event">
+        <template #bold><span class="font-strong">B</span></template>
+        <template #italic><span class="italic">I</span></template>
+        <template #underline><span class="underline">U</span></template>
+      </Toolbar>
+      <Toolbar v-model:pressed="align" :items="formatting.slice(4)" label="Alignment and history" @action="last = $event" />
+      <Textarea v-model="text" label="Document" />
+    </div>
+    <div class="grid gap-3">
+      <span class="kicker">Buttons only</span>
+      <Toolbar :items="clipboard" label="Clipboard" @action="last = $event" />
+    </div>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Tree
+
+Expandable hierarchy for files and categories.
+
+Group: Navigation. Registry item: http://localhost:5173/r/tree.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/tree.json
+```
+
+Installs with: theme, utils. npm packages: reka-ui.
+
+Import it from your own copy: `import Tree from '@/components/ui/tree.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `v-model` | `string` |  | Two-way bound value. |
+| `items (required)` | `TreeNode[]` |  |  |
+| `defaultExpanded` | `string[]` |  |  |
+| `toggleOn` | `'row' \| 'chevron'` | `'row'` | What opens a folder: a click anywhere on its row, or only its chevron (then the row just selects). Arrow keys always work. |
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import Tree, { type TreeNode } from '@/components/ui/tree.vue'
+
+const file = ref('button.vue')
+const chevronPick = ref('phones')
+const files: TreeNode[] = [
+  {
+    value: 'src',
+    label: 'src',
+    children: [
+      {
+        value: 'components',
+        label: 'components',
+        children: [
+          { value: 'button.vue', label: 'button.vue' },
+          { value: 'dialog.vue', label: 'dialog.vue' },
+          { value: 'tree.vue', label: 'tree.vue' },
+        ],
+      },
+      { value: 'lib', label: 'lib', children: [{ value: 'utils.ts', label: 'utils.ts' }] },
+      { value: 'main.ts', label: 'main.ts' },
+    ],
+  },
+  { value: 'public', label: 'public', children: [{ value: 'favicon.svg', label: 'favicon.svg' }] },
+  { value: 'package.json', label: 'package.json' },
+  { value: 'README.md', label: 'README.md' },
+]
+const store: TreeNode[] = [
+  {
+    value: 'electronics',
+    label: 'Electronics',
+    children: [
+      { value: 'phones', label: 'Phones' },
+      { value: 'laptops', label: 'Laptops' },
+      { value: 'audio', label: 'Audio', children: [{ value: 'headphones', label: 'Headphones' }, { value: 'speakers', label: 'Speakers' }] },
+    ],
+  },
+  { value: 'home', label: 'Home', children: [{ value: 'kitchen', label: 'Kitchen' }, { value: 'garden', label: 'Garden' }] },
+  { value: 'books', label: 'Books' },
+]
+</script>
+
+<template>
+  <div class="grid gap-8 md:grid-cols-2">
+    <div class="grid content-start gap-3">
+      <span class="kicker">Files · {{ file }}</span>
+      <div class="max-w-xs overflow-hidden rounded-md shadow-frame">
+        <Tree v-model="file" :items="files" :default-expanded="['src', 'components']" />
+      </div>
+    </div>
+    <div class="grid content-start gap-3">
+      <span class="kicker">Toggle on the chevron only · {{ chevronPick }}</span>
+      <div class="max-w-xs overflow-hidden rounded-md shadow-frame">
+        <Tree v-model="chevronPick" :items="store" toggle-on="chevron" :default-expanded="['electronics']" />
+      </div>
+    </div>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Scroll area
+
+Scrollable region with a styled scrollbar.
+
+Group: Data. Registry item: http://localhost:5173/r/scroll-area.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/scroll-area.json
+```
+
+Installs with: theme, utils. npm packages: reka-ui.
+
+Import it from your own copy: `import Scrollarea from '@/components/ui/scroll-area.vue'`.
+
+## Props
+
+No props; it takes content only.
+
+Slots: `default`.
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import Avatar from '@/components/ui/avatar.vue'
+import ScrollArea from '@/components/ui/scroll-area.vue'
+
+const people = [
+  ['AL', 'Ada Lovelace', 'Maintainer'],
+  ['LT', 'Linus Torvalds', 'Contributor'],
+  ['GH', 'Grace Hopper', 'Reviewer'],
+  ['AT', 'Alan Turing', 'Maintainer'],
+  ['MH', 'Margaret Hamilton', 'Contributor'],
+  ['DK', 'Donald Knuth', 'Reviewer'],
+  ['BL', 'Barbara Liskov', 'Maintainer'],
+  ['KT', 'Ken Thompson', 'Contributor'],
+]
+</script>
+
+<template>
+  <div class="grid max-w-sm gap-3">
+    <span class="kicker">Scroll with the wheel, the bar or the keyboard</span>
+    <ScrollArea class="h-56">
+      <div v-for="[initials, name, role] in people" :key="name" class="flex items-center gap-3 py-2">
+        <Avatar :fallback="initials!" />
+        <div class="grid leading-tight">
+          <span class="font-medium">{{ name }}</span>
+          <span class="text-sm text-muted">{{ role }}</span>
+        </div>
+      </div>
+    </ScrollArea>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Empty state
+
+Calm tinted placeholder for when there is nothing to show yet.
+
+Group: Data. Registry item: http://localhost:5173/r/empty-state.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/empty-state.json
+```
+
+Installs with: theme, utils, announce. npm packages: none beyond Vue.
+
+Import it from your own copy: `import Emptystate from '@/components/ui/empty-state.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `title (required)` | `string` |  |  |
+| `description` | `string` |  |  |
+| `announce` | `boolean` |  | Say "title. description" aloud when this appears, for results that empty out after a search or filter. |
+
+Slots: `icon`, `default`.
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import Button from '@/components/ui/button.vue'
+import EmptyState from '@/components/ui/empty-state.vue'
+</script>
+
+<template>
+  <div class="grid items-start gap-6 md:grid-cols-2">
+    <div class="flex flex-col gap-2">
+      <p class="kicker">First use, with an action</p>
+      <EmptyState title="No projects yet" description="Create your first project to see it here.">
+        <Button>New project</Button>
+      </EmptyState>
+    </div>
+    <div class="flex flex-col gap-2">
+      <p class="kicker">No results</p>
+      <EmptyState title="No matches for “overdue”" description="Try a different word, or clear your filters.">
+        <Button>Clear filters</Button>
+      </EmptyState>
+    </div>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Description list
+
+Label and value rows, ruled apart, for facts about one thing.
+
+Group: Data. Registry item: http://localhost:5173/r/description-list.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/description-list.json
+```
+
+Installs with: theme, utils, badge. npm packages: none beyond Vue.
+
+Import it from your own copy: `import Descriptionlist from '@/components/ui/description-list.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `items (required)` | `(DescriptionItem \| null \| undefined)[]` |  |  |
+| `empty` | `string` |  | Message when there are no rows. |
+| `loading` | `boolean` |  |  |
+| `as` | `'dl' \| 'ul'` |  | `dl` for label and value pairs, `ul` for plain facts. Defaults to `ul` when no row has a label. |
+
+Events: `action`.
+
+Slots: `text`, `action`.
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import Button from '@/components/ui/button.vue'
+import Card from '@/components/ui/card.vue'
+import DescriptionList from '@/components/ui/description-list.vue'
+
+const contact = [
+  { label: 'Name', text: 'Grace Hopper' },
+  { label: 'Email', text: 'grace@example.com', badge: 'Verified', badgeTone: 'success' as const, action: 'Edit' },
+  { label: 'Phone', text: '+1 202 555 0143', badge: 'Unconfirmed', badgeTone: 'warning' as const },
+  { label: 'Billing address', text: '1 Hopper Way, Arlington VA', action: 'Edit' },
+]
+const facts = [{ text: 'Statement covers 12 September' }, { text: 'Due 31 October', badge: 'In 9 days', badgeTone: 'info' as const }, { text: 'Paid in full', badge: 'Settled', badgeTone: 'success' as const }]
+const editing = ref('')
+</script>
+
+<template>
+  <div class="grid gap-6 md:grid-cols-2">
+    <Card title="Billing contact" class="md:col-span-2">
+      <DescriptionList :items="contact" @action="(item) => (editing = item.label ?? '')" />
+      <p class="mt-3 text-muted">{{ editing ? `Editing ${editing}` : 'Click an Edit action: it fires an event.' }}</p>
+    </Card>
+    <Card title="Plain facts"><DescriptionList :items="facts" /></Card>
+    <Card title="Action slot">
+      <DescriptionList :items="contact.slice(0, 2)">
+        <template #action><Button>Copy</Button></template>
+      </DescriptionList>
+    </Card>
+    <Card title="Loading"><DescriptionList :items="[]" loading /></Card>
+    <Card title="Empty"><DescriptionList :items="[]" empty="No details yet." /></Card>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Carousel
+
+Scroll-snapping slides with previous, next and dots.
+
+Group: Data. Registry item: http://localhost:5173/r/carousel.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/carousel.json
+```
+
+Installs with: theme, utils. npm packages: none beyond Vue.
+
+Import it from your own copy: `import Carousel from '@/components/ui/carousel.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `v-model:index` | `number` | `0` | Two-way bound value. |
+| `perView` | `number` | `1` | Slides shown at once, at most: fewer are shown when the track is too narrow for `minWidth`. |
+| `gap` | `number` | `1` | Space between slides, in rem. |
+| `minWidth` | `number` | `14` | The narrowest a slide may get before the carousel shows fewer at once, in rem. |
+| `label` | `string` |  |  |
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import Badge from '@/components/ui/badge.vue'
+import Button from '@/components/ui/button.vue'
+import Card from '@/components/ui/card.vue'
+import Carousel from '@/components/ui/carousel.vue'
+
+const hero = ref(0)
+const slides = [
+  { tone: 'bg-primary text-on-primary', badge: 'Own', title: 'Own the source', text: 'Every component is a file in your repo. Change the file and you have changed the component.' },
+  { tone: 'bg-info-soft text-ink', badge: 'Theme', title: 'Theme the tokens', text: 'Brand, radius, depth and font are the only knobs. Contrast is checked as you turn them.' },
+  { tone: 'bg-success-soft text-ink', badge: 'Lint', title: 'Lint the rules', text: 'A preset for @shadcn/lint keeps pages positioning components rather than restyling them.' },
+  { tone: 'bg-warning-soft text-ink', badge: 'Reka', title: 'Accessible by default', text: 'Focus, keyboard and dismissal come from Reka UI, so the behaviour is not yours to maintain.' },
+  { tone: 'bg-surface-tint text-ink', badge: 'Slab', title: 'One distinct look', text: 'Raised faces sit on a darker slab, and tone edges are slabs turned on their side.' },
+]
+const cards = ['Overview', 'Activity', 'Members', 'Billing', 'Settings', 'Audit log']
+</script>
+
+<template>
+  <div class="grid gap-10">
+    <!-- A hero: one slide at a time, the first slide in view is v-model. -->
+    <div class="grid gap-2">
+      <Carousel v-model:index="hero" label="What sui gives you">
+        <div v-for="s in slides" :key="s.title" :class="['flex min-h-56 flex-col items-start justify-end gap-3 rounded-md p-8 shadow-frame', s.tone]">
+          <Badge>{{ s.badge }}</Badge>
+          <h3 class="heading text-3xl">{{ s.title }}</h3>
+          <p class="max-w-md leading-normal">{{ s.text }}</p>
+        </div>
+      </Carousel>
+      <p class="text-sm text-muted">Slide {{ hero + 1 }} of {{ slides.length }}. Arrow keys, dots, drag or swipe.</p>
+    </div>
+
+    <!-- Several at once: three on a wide track, fewer when it narrows. -->
+    <Carousel :per-view="3" label="Workspace sections">
+      <Card v-for="c in cards" :key="c" :title="c">
+        <p class="text-muted">The {{ c.toLowerCase() }} for this workspace.</p>
+        <div><Button>Open</Button></div>
+      </Card>
+    </Carousel>
+
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Chart
+
+Line, area and bar charts drawn in SVG from the theme tokens.
+
+Group: Data. Registry item: http://localhost:5173/r/chart.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/chart.json
+```
+
+Installs with: theme, utils. npm packages: none beyond Vue.
+
+Import it from your own copy: `import Chart from '@/components/ui/chart.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `type` | `'line' \| 'area' \| 'bar'` | `'line'` | What is being shown, not a look: every type uses the same drawing language. |
+| `categories (required)` | `string[]` |  |  |
+| `series (required)` | `ChartSeries[]` |  |  |
+| `height` | `number` | `undefined` | Pixel height of the plot; the width is the container's. Defaults to 280, or 48 for a sparkline. |
+| `stacked` | `boolean` | `false` | Stack bars and areas on top of each other instead of side by side / overlapping. Positive and negative values stack away from zero on their own sides. |
+| `format` | `(value: number) => string` |  | Formats a value for the axis, the tooltip and the screen-reader table. |
+| `unit` | `string` |  | Appended to the default number format (`%`, ` ms`). Ignored when `format` is set. |
+| `min` | `number` |  | Fix the bottom or top of the value axis. A line may float above zero; bars and areas always include it. |
+| `max` | `number` |  |  |
+| `axes` | `boolean` | `true` | Draw the axes and gridlines. Off gives a bare line. |
+| `sparkline` | `boolean` |  | A compact trend: just the line (or area) and its last point, no axes or legend. |
+| `legend` | `boolean` | `undefined` | Show the legend (also the way to hide a series). Defaults to on for more than one series. |
+| `loading` | `boolean` |  |  |
+| `label` | `string` |  |  |
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import Card from '@/components/ui/card.vue'
+import Chart from '@/components/ui/chart.vue'
+
+const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+const money = (v: number) => `${v < 0 ? '-' : ''}$${new Intl.NumberFormat().format(Math.abs(v))}`
+
+const growth = [
+  { name: 'Visitors', data: [3200, 4100, 3800, 5200, 6100, 5800, 7200, 7900, 7600, 8800, 9400, 10600] },
+  { name: 'Signups', data: [410, 620, 550, 880, 1010, 960, 1300, 1520, 1440, 1730, 1910, 2250] },
+]
+const cashflow = [
+  { name: 'In', data: [8200, 9100, 8800, 10400, 11200, 12900] },
+  { name: 'Out', data: [-6400, -7100, -9600, -7800, -8300, -9100] },
+]
+const uptime = [{ name: 'Uptime', data: [99.9, 99.95, 99.4, 99.99, 100, 99.8, 99.92, 99.97, 98.9, 99.96, 99.99, 100] }]
+
+const trends = [
+  { title: 'Signups', value: '2,250', data: [4, 6, 5, 8, 7, 9, 12, 10, 13, 15, 14, 18] },
+  { title: 'Errors', value: '5', data: [18, 16, 17, 13, 14, 11, 12, 9, 8, 9, 6, 5] },
+  { title: 'Latency', value: '184 ms', data: [210, 198, 205, 190, 201, 186, 192, 180, 188, 176, 181, 184] },
+]
+</script>
+
+<template>
+  <div class="grid gap-6 lg:grid-cols-2">
+    <Card title="Growth" class="lg:col-span-2">
+      <Chart type="line" :categories="months" :series="growth" label="Visitors and signups by month" />
+    </Card>
+    <Card title="Cash in and out">
+      <Chart type="bar" stacked :categories="months.slice(0, 6)" :series="cashflow" :format="money" label="Money in and out by month" />
+    </Card>
+    <Card title="Uptime">
+      <Chart type="area" :categories="months" :series="uptime" :min="98" :max="100" unit="%" :height="280" label="Uptime by month" />
+    </Card>
+    <Card title="Trends, loading, empty" class="lg:col-span-2">
+      <div class="grid gap-6 sm:grid-cols-3">
+        <div v-for="t in trends" :key="t.title" class="grid gap-1">
+          <span class="kicker">{{ t.title }}</span>
+          <span class="numeral text-3xl font-medium">{{ t.value }}</span>
+          <Chart type="area" sparkline :categories="months" :series="[{ name: t.title, data: t.data }]" :label="`${t.title} over the year`" />
+        </div>
+      </div>
+      <div class="grid gap-6 sm:grid-cols-2">
+        <Chart loading :categories="months" :series="growth" :height="96" />
+        <Chart type="bar" :categories="[]" :series="[{ name: 'Orders', data: [] }]" :height="96" />
+      </div>
+    </Card>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# List
+
+One-tab-stop list with arrow keys and typeahead, for choosing a row or marking the current one.
+
+Group: Data. Registry item: http://localhost:5173/r/list.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/list.json
+```
+
+Installs with: theme, utils. npm packages: none beyond Vue.
+
+Import it from your own copy: `import List from '@/components/ui/list.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `v-model` | `string` |  | Two-way bound value. |
+| `items (required)` | `ListItem[]` |  |  |
+| `label (required)` | `string` |  | Names the list for screen readers. |
+| `mode` | `'select' \| 'current'` | `'select'` | `select` marks the chosen rows with a tick, like a choice. `current` marks the row you are in with the primary edge, like a place. |
+| `followFocus` | `boolean` |  | Choosing follows the arrow keys, so moving is choosing. Without it, Enter or Space chooses. |
+| `empty` | `string` |  | Message when there are no items. |
+| `loading` | `boolean` |  |  |
+
+Slots: `trailing`.
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import Badge from '@/components/ui/badge.vue'
+import Card from '@/components/ui/card.vue'
+import List from '@/components/ui/list.vue'
+
+const threads = [
+  { value: 'launch', title: 'Launch checklist', description: 'Ada: the docs still need a pass' },
+  { value: 'budget', title: 'Budget review', description: 'Linus: numbers attached' },
+  { value: 'offsite', title: 'Team offsite', description: 'Grace: dates are locked' },
+  { value: 'hiring', title: 'Hiring plan', description: 'Alan: two roles open', disabled: true },
+  { value: 'roadmap', title: 'Roadmap Q3', description: 'Margaret: draft v2' },
+]
+const plans = [
+  { value: 'free', title: 'Free', description: '1 project' },
+  { value: 'team', title: 'Team', description: '10 projects, shared themes' },
+  { value: 'scale', title: 'Scale', description: 'Unlimited, priority support' },
+]
+const current = ref('budget')
+const plan = ref('team')
+const follow = ref('launch')
+const unread: Record<string, number> = { launch: 3, offsite: 1 }
+</script>
+
+<template>
+  <div class="grid gap-8 md:grid-cols-2">
+    <Card title="Current place" class="md:row-span-2">
+      <List v-model="current" label="Inbox" mode="current" :items="threads">
+        <template #trailing="{ item }"><Badge v-if="unread[item.value]" tone="info">{{ unread[item.value] }}</Badge></template>
+      </List>
+      <p class="text-muted">Tab in once, then arrows, Home, End or type “bu”. Enter or Space chooses; the disabled row is skipped.</p>
+    </Card>
+    <Card title="Choosing one"><List v-model="plan" label="Plan" :items="plans" /></Card>
+    <Card title="Follow focus"><List v-model="follow" label="Threads" follow-focus :items="threads.slice(0, 3)" /></Card>
+    <Card title="Empty"><List label="Nothing" :items="[]" empty="No threads yet." /></Card>
+    <Card title="Loading"><List label="Loading" :items="[]" loading /></Card>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Virtual list
+
+Draws only the rows in view, for lists of tens of thousands of items.
+
+Group: Data. Registry item: http://localhost:5173/r/virtual-list.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/virtual-list.json
+```
+
+Installs with: theme, utils. npm packages: none beyond Vue.
+
+Import it from your own copy: `import Virtuallist from '@/components/ui/virtual-list.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `items (required)` | `T[]` |  |  |
+| `itemHeight` | `number` |  | Every row is exactly this tall (px). Leave it out and rows are measured as they are drawn, starting from `estimate`. |
+| `estimate` | `number` | `48` |  |
+| `height` | `string` | `'20rem'` | Any CSS length: the height of the scrolling window. |
+| `overscan` | `number` | `4` | Rows drawn beyond the edges of the window. |
+| `label (required)` | `string` |  | Names the list for screen readers. |
+| `empty` | `string` |  | Message when there are no items. |
+
+Slots: `item`.
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import Button from '@/components/ui/button.vue'
+import VirtualList from '@/components/ui/virtual-list.vue'
+
+const emails = Array.from({ length: 20000 }, (_, i) => ({
+  id: i,
+  from: ['Ada', 'Linus', 'Grace', 'Alan', 'Margaret'][i % 5]!,
+  subject: `Message ${i + 1}: ${['Quarterly numbers', 'Lunch?', 'Re: the release', 'Heads up', 'Invoice attached'][i % 5]}`,
+}))
+// Rows of different heights are measured as they appear.
+const notes = Array.from({ length: 3000 }, (_, i) => ({
+  id: i,
+  text: `Note ${i + 1}. ${'A longer note wraps onto more lines and the list keeps up. '.repeat(1 + ((i * 7) % 4))}`,
+}))
+const list = ref<{ scrollToIndex: (index: number) => void }>()
+</script>
+
+<template>
+  <div class="grid gap-8 md:grid-cols-2">
+    <div class="grid content-start gap-2">
+      <p class="kicker">20,000 rows, a fixed height each</p>
+      <VirtualList ref="list" :items="emails" :item-height="52" height="20rem" label="Mailbox">
+        <template #item="{ item, index }">
+          <div class="flex h-full items-center gap-3 px-4">
+            <span class="numeral w-14 text-sm text-muted">{{ index + 1 }}</span>
+            <span class="min-w-0 flex-1 truncate"><span class="font-medium">{{ item.from }}</span> {{ item.subject }}</span>
+          </div>
+        </template>
+      </VirtualList>
+      <div class="flex flex-wrap items-center gap-3">
+        <Button @click="list?.scrollToIndex(12345)">Jump to 12,346</Button>
+        <p class="text-muted">Focus it for arrows, Page Up and Down, Home and End.</p>
+      </div>
+    </div>
+    <div class="grid content-start gap-2">
+      <p class="kicker">3,000 rows, heights measured as they appear</p>
+      <VirtualList :items="notes" height="20rem" label="Notes">
+        <template #item="{ item }"><p class="px-4 py-3 leading-normal">{{ item.text }}</p></template>
+      </VirtualList>
+    </div>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Data table
+
+A quiet captioned table for any data. Opt in to sort, search, filters, resizing, a column menu, selection and paging; also server mode, windowing and cards on narrow screens.
+
+Group: Data. Registry item: http://localhost:5173/r/data-table.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/data-table.json
+```
+
+Installs with: theme, utils, pagination, popover, checkbox, button, announce. npm packages: none beyond Vue.
+
+Import it from your own copy: `import Datatable from '@/components/ui/data-table.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `v-model:selected` | `(string \| number)[]` | `[]` | Two-way bound value. |
+| `v-model:page` | `number` | `1` | Two-way bound value. |
+| `columns (required)` | `Column[]` |  |  |
+| `rows (required)` | `Row[]` |  |  |
+| `selectable` | `boolean` |  |  |
+| `pageSize` | `number` |  |  |
+| `rowKey` | `string` |  | Field that identifies a row in `selected`. Defaults to the row's position in `rows`. |
+| `label` | `string` | `'Data table'` | The table's name for screen readers: it is the table's caption, hidden unless `showCaption`. |
+| `showCaption` | `boolean` |  |  |
+| `empty` | `string` |  | Message when there are no rows. The `empty` slot replaces it. |
+| `searchable` | `boolean` |  | A search box above the table that matches any column. |
+| `searchDebounce` | `number` | `200` |  |
+| `resizable` | `boolean` |  | Column resizing: drag the edge, or focus it and use the arrow keys (Shift for bigger steps, Home resets, Esc cancels). |
+| `columnMenu` | `boolean` |  | A Columns menu to show and hide columns. |
+| `stickyFirst` | `boolean` |  | Keeps the first column in view while the table scrolls sideways. |
+| `maxHeight` | `string` |  | Any CSS length. The table scrolls inside it and its header stays in view. |
+| `dense` | `boolean` |  |  |
+| `striped` | `boolean` |  |  |
+| `cards` | `boolean` |  | Below a medium container width every row becomes a card with the column labels beside the values. |
+| `manual` | `boolean` |  | Server mode: the table does not sort, filter or page itself. It emits `queryChange` and shows what `rows` and `total` say. |
+| `total` | `number` |  |  |
+| `loading` | `boolean` |  |  |
+| `error` | `string` |  |  |
+| `rowLabel` | `string \| ((row: Row) => string)` |  | Names a row's checkbox: a column key, or a function. Defaults to the first column. |
+| `virtual` | `number` |  | Turns on windowing once there are more rows than this. Rows are `rowHeight` tall. |
+| `rowHeight` | `number` |  |  |
+
+Events: `queryChange`, `retry`.
+
+Slots: ``cell-${c.key}``, `empty`.
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import Badge from '@/components/ui/badge.vue'
+import Button from '@/components/ui/button.vue'
+import DataTable from '@/components/ui/data-table.vue'
+
+const names = ['Ada', 'Zoë', 'Grace', 'Alan', 'Margaret', 'Dennis', 'Barbara', 'Ken', 'Radia', 'Guido', 'Hedy', 'Tim', 'José', 'Édith']
+const roles = ['Maintainer', 'Contributor', 'Reviewer']
+const rows = names.map((name, i) => ({
+  id: name.toLowerCase(),
+  name,
+  role: roles[i % 3]!,
+  commits: 40 + ((i * 97) % 380),
+  joined: new Date(2019 + (i % 6), (i * 5) % 12, 1 + ((i * 7) % 27)),
+  spend: 120 + ((i * 731) % 9000) + 0.5,
+}))
+const columns = [
+  { key: 'name', label: 'Name', sortable: true, filter: 'text' as const },
+  { key: 'role', label: 'Role', sortable: true, filter: 'select' as const },
+  { key: 'commits', label: 'Commits', sortable: true, filter: 'number' as const, format: 'number' as const },
+  { key: 'joined', label: 'Joined', sortable: true, format: 'date' as const },
+  { key: 'spend', label: 'Spend', sortable: true, format: 'currency' as const },
+]
+const plainColumns = columns.map(({ key, label, format }) => ({ key, label, format }))
+const selected = ref<(string | number)[]>(['grace'])
+
+const invoices = [
+  { number: 'INV-1042', customer: 'Northwind', total: 1280 },
+  { number: 'INV-1043', customer: 'Contoso', total: 460 },
+  { number: 'INV-1044', customer: 'Fabrikam', total: 3120 },
+]
+const invoiceColumns = [
+  { key: 'number', label: 'Invoice' },
+  { key: 'customer', label: 'Customer', sortable: true },
+  { key: 'total', label: 'Total (USD)', sortable: true, align: 'end' as const },
+]
+
+// A custom cell: the status is shown as a Badge but sorts and filters on its text.
+const tasks = [
+  { id: 1, task: 'Ship the registry', status: 'Done', due: 3 },
+  { id: 2, task: 'Write the docs', status: 'Active', due: 9 },
+  { id: 3, task: 'Fix the focus ring', status: 'Blocked', due: 2 },
+  { id: 4, task: 'Tidy the theme', status: 'Active', due: 14 },
+]
+const taskColumns = [
+  { key: 'task', label: 'Task', sortable: true },
+  { key: 'status', label: 'Status', sortable: true },
+  { key: 'due', label: 'Due', sortable: true, align: 'end' as const, format: (v: unknown) => `in ${v} days` },
+]
+const tone = { Done: 'success', Active: 'info', Blocked: 'danger' } as const
+
+// Wide table: sticky first column and a short window
+const wide = Array.from({ length: 14 }, (_, i) => ({
+  id: i,
+  region: ['North', 'South', 'East', 'West'][i % 4]!,
+  q1: 120 + i * 17,
+  q2: 140 + i * 11,
+  q3: 90 + i * 23,
+  q4: 160 + i * 9,
+  total: 510 + i * 60,
+}))
+const wideColumns = [
+  { key: 'region', label: 'Region', width: 160 },
+  ...['q1', 'q2', 'q3', 'q4', 'total'].map((k) => ({ key: k, label: k.toUpperCase(), width: 140, sortable: true })),
+]
+
+// Server mode: the table asks, we answer later
+const everyone = Array.from({ length: 87 }, (_, i) => ({ id: i + 1, user: `user-${String(i + 1).padStart(3, '0')}`, plan: ['Free', 'Team', 'Scale'][i % 3]!, seats: 1 + (i % 9) }))
+const serverRows = ref<typeof everyone>([])
+const serverTotal = ref(everyone.length)
+const loading = ref(true)
+const failing = ref(false)
+const last = ref('nothing yet')
+let lastQuery: { sort: { key: string; dir: string } | null; search: string; page: number } = { sort: null, search: '', page: 1 }
+function load(q = lastQuery) {
+  lastQuery = q
+  loading.value = true
+  failing.value = false
+  last.value = `page ${q.page}${q.sort ? `, sorted by ${q.sort.key} ${q.sort.dir}` : ''}${q.search ? `, search “${q.search}”` : ''}`
+  setTimeout(() => {
+    loading.value = false
+    if (broken.value) return (failing.value = true)
+    let list = everyone.filter((r) => !q.search || r.user.includes(q.search.toLowerCase()))
+    if (q.sort) {
+      const { key, dir } = q.sort
+      list = [...list].sort((a, b) => String(a[key as 'user']).localeCompare(String(b[key as 'user']), undefined, { numeric: true }) * (dir === 'asc' ? 1 : -1))
+    }
+    serverTotal.value = list.length
+    serverRows.value = list.slice((q.page - 1) * 8, q.page * 8)
+  }, 700)
+}
+load()
+const broken = ref(false)
+const serverColumns = [
+  { key: 'id', label: 'ID', sortable: true },
+  { key: 'user', label: 'User', sortable: true },
+  { key: 'plan', label: 'Plan' },
+  { key: 'seats', label: 'Seats', sortable: true },
+]
+
+// Windowing: 5000 rows, only those in view exist in the page
+const big = Array.from({ length: 5000 }, (_, i) => ({ id: i, event: `evt_${String(i).padStart(5, '0')}`, kind: ['click', 'view', 'submit'][i % 3]!, ms: 20 + ((i * 37) % 900) }))
+const bigColumns = [
+  { key: 'event', label: 'Event' },
+  { key: 'kind', label: 'Kind', sortable: true },
+  { key: 'ms', label: 'Duration (ms)', sortable: true },
+]
+</script>
+
+<template>
+  <div class="grid gap-10">
+    <div class="grid gap-2">
+      <p class="kicker">Everything on · {{ selected.length }} selected</p>
+      <DataTable
+        v-model:selected="selected"
+        label="Team"
+        :columns="columns"
+        :rows="rows"
+        row-key="id"
+        selectable
+        searchable
+        resizable
+        column-menu
+        :page-size="6"
+        row-label="name"
+      />
+      <p class="text-muted">Search “jose” finds José: matching ignores case and accents.</p>
+    </div>
+
+    <div class="grid gap-8 md:grid-cols-2">
+      <div class="grid content-start gap-2">
+        <p class="kicker">Static: it is just a quiet table</p>
+        <DataTable label="Invoices" show-caption :columns="invoiceColumns" :rows="invoices" />
+      </div>
+      <div class="grid content-start gap-2">
+        <p class="kicker">Dense, striped, custom cell</p>
+        <DataTable label="Tasks" :columns="taskColumns" :rows="tasks" dense striped>
+          <template #cell-status="{ value }"><Badge :tone="tone[value as keyof typeof tone]">{{ value }}</Badge></template>
+        </DataTable>
+      </div>
+      <div class="grid content-start gap-2">
+        <p class="kicker">Empty</p>
+        <DataTable label="Invoices" :columns="invoiceColumns" :rows="[]" empty="No invoices yet." />
+      </div>
+      <div class="grid content-start gap-2">
+        <p class="kicker">Cards on a narrow container</p>
+        <DataTable label="Team" :columns="plainColumns" :rows="rows.slice(0, 2)" cards class="max-w-xs" />
+      </div>
+    </div>
+
+    <div class="grid gap-2">
+      <p class="kicker">Sticky header and first column</p>
+      <DataTable label="Regions" :columns="wideColumns" :rows="wide" row-key="id" sticky-first max-height="14rem" striped class="max-w-xl" />
+    </div>
+
+    <div class="grid gap-2">
+      <div class="flex flex-wrap items-center gap-3">
+        <p class="kicker">Server mode · last request: {{ last }}</p>
+        <Button @click="((broken = !broken), load())">{{ broken ? 'Make it work' : 'Make it fail' }}</Button>
+      </div>
+      <DataTable
+        label="Users"
+        :columns="serverColumns"
+        :rows="serverRows"
+        :total="serverTotal"
+        :page-size="8"
+        manual
+        searchable
+        :loading="loading"
+        :error="failing ? 'We could not load the users.' : undefined"
+        @query-change="load"
+        @retry="load()"
+      />
+    </div>
+
+    <div class="grid gap-2">
+      <p class="kicker">Windowing: 5,000 rows, a few dozen in the page</p>
+      <DataTable label="Events" :columns="bigColumns" :rows="big" :virtual="100" max-height="16rem" dense row-key="id" class="max-w-xl" />
+    </div>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
+
+
+---
+
+# Resizable
+
+Split panes with a draggable handle.
+
+Group: Data. Registry item: http://localhost:5173/r/resizable.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/resizable.json
+```
+
+Installs with: theme, utils. npm packages: reka-ui.
+
+Import it from your own copy: `import Resizable from '@/components/ui/resizable.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `direction` | `'horizontal' \| 'vertical'` | `'horizontal'` |  |
+| `sizes` | `[number, number]` | `[50, 50]` |  |
+| `minSize` | `number` | `15` |  |
+
+Events: `resize`.
+
+Slots: `panel-a`, `panel-b`.
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import NavList from '@/components/ui/nav-list.vue'
+import Resizable from '@/components/ui/resizable.vue'
+
+const file = ref('button.vue')
+const sections = [
+  { title: 'Files', items: [{ value: 'button.vue', label: 'button.vue' }, { value: 'dialog.vue', label: 'dialog.vue' }, { value: 'tabs.vue', label: 'tabs.vue' }] },
+]
+</script>
+
+<template>
+  <div class="grid gap-8">
+    <div class="grid gap-2">
+      <p class="kicker">An editor: files, code and a console</p>
+      <Resizable :sizes="[28, 72]" :min-size="15" class="h-80 max-w-3xl">
+        <template #panel-a><NavList v-model="file" :sections="sections" label="Files" /></template>
+        <template #panel-b>
+          <Resizable direction="vertical" :sizes="[65, 35]" :min-size="20" class="h-full">
+            <template #panel-a>
+              <pre class="numeral p-4 text-sm leading-relaxed text-ink">// {{ file }}
+export const label = 'sui'
+export const depth = 2</pre>
+            </template>
+            <template #panel-b>
+              <p class="numeral p-4 text-sm leading-relaxed text-muted">✓ typecheck passed<br />✓ lint passed</p>
+            </template>
+          </Resizable>
+        </template>
+      </Resizable>
+    </div>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.

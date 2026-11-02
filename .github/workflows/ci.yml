@@ -1,168 +1,40 @@
-name: CI
+name: ci
 on:
-  pull_request:
   push:
     branches: [main]
-  # Nightly: the tests in Firefox and WebKit, which pull requests skip to stay fast, and the Iconify aliases (network).
-  schedule:
-    - cron: "17 4 * * *"
-  workflow_dispatch:
-
-permissions:
-  contents: read
-
-# A new push to a pull request cancels its older run. Runs on main always finish, since Release waits for them.
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
-
-env:
-  CI: "true"
+  pull_request:
 
 jobs:
-  # Everything that reads the source: generated files, CSS rules, layers, props tables, README links, lint, formatting,
-  # types (including test/types.test-d.ts) and unused code.
-  lint:
-    if: github.event_name != 'schedule'
+  check:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v7
-      - uses: ./.github/actions/setup
-      # Before the tokens build below rewrites it: fails when the committed src/generated/defaults.ts is stale.
-      - run: node packages/tokens/scripts/generate.mjs --check
-      # Built once here: the source checks and the Vue type check import @eos-ui/tokens, which resolves to its build.
-      - run: pnpm tokens
-      # Before typecheck, which regenerates index.ts, globals.ts and component-names.ts: fails when the committed ones are stale.
-      - run: pnpm check:source
-      - run: pnpm lint
-      - run: pnpm format:check
-      # `pnpm -r`, not `pnpm typecheck`, which builds the tokens first for a fresh checkout.
-      - run: pnpm -r typecheck
-      - run: pnpm knip
-
-  # Real-browser tests in Chromium, in Playwright's image, which has the browsers and their system packages installed, so
-  # no run downloads them. The tag must match the playwright version in the lockfile: `pnpm check:source` (lint job)
-  # fails with the tag to use when a dependency update moves it.
-  test:
-    if: github.event_name != 'schedule'
-    runs-on: ubuntu-latest
-    container:
-      image: mcr.microsoft.com/playwright:v1.64.1-noble
-      options: --ipc=host
-    timeout-minutes: 20
-    steps:
-      - uses: actions/checkout@v7
-      - uses: ./.github/actions/setup
-      - run: pnpm test
-
-  # What gets published, built once: size budgets, server render, the built stylesheet, then the packed tarballs
-  # (publint, attw) installed in a fresh app. On Node 22, the lowest supported version.
-  package:
-    if: github.event_name != 'schedule'
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      - uses: actions/checkout@v7
-      - uses: ./.github/actions/setup
-        with:
-          node-version: 22
-      - run: pnpm build
-      - run: pnpm check:package
-      - run: pnpm smoke --no-build
-
-  # A change under packages/ needs a changeset, unless the pull request carries the `no-changeset` label (docs wording, tests, internal refactors).
-  changeset:
-    if: >-
-      github.event_name == 'pull_request' &&
-      !contains(github.event.pull_request.labels.*.name, 'no-changeset') &&
-      github.head_ref != 'changeset-release/main'
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
-      # Only the Changesets CLI, at the version the root package.json pins, not the whole workspace.
-      - uses: pnpm/action-setup@v6
-      - uses: actions/setup-node@v7
-        with:
-          node-version: 24
-      - run: pnpm dlx "@changesets/cli@$(node -p "require('./package.json').devDependencies['@changesets/cli']")" status --since=origin/${{ github.base_ref }}
-
-  # The one check branch protection requires, so adding or renaming a job above never touches the rule. A skipped job
-  # (changeset with the label) counts as passing.
-  ci-ok:
-    if: always() && github.event_name != 'schedule'
-    needs: [lint, test, package, changeset]
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - run: |
-          if [ "${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}" = "true" ]; then
-            echo "A required job did not pass."
-            exit 1
-          fi
-
-  # Nightly and on demand. Never blocks a pull request: engines differ in small ways, and a failure here is read, not gated.
-  browsers:
-    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    continue-on-error: true
-    permissions:
-      contents: read
-      issues: write
-    env:
-      EOS_BROWSERS: chromium,firefox,webkit
-    steps:
-      - uses: actions/checkout@v7
-      - uses: ./.github/actions/setup
-      - run: pnpm --filter @eos-ui/vue exec playwright install --with-deps chromium firefox webkit
-      - run: pnpm test
-      - name: Report a failure
-        if: failure()
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - run: bun run check
+      - run: bun test tests
+      - run: bun run build
         env:
-          GH_TOKEN: ${{ github.token }}
-          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-        run: |
-          title="Nightly browser tests failed"
-          body="The Firefox and WebKit run failed: $RUN_URL"
-          number=$(gh issue list --state open --search "in:title \"$title\"" --json number --jq '.[0].number')
-          if [ -n "$number" ]; then
-            gh issue comment "$number" --body "$body"
-          else
-            gh issue create --title "$title" --body "$body"
-          fi
+          SUI_REGISTRY_URL: https://sui.dame.gg/r
 
-  # Nightly and on demand: every Iconify alias in src/icons/aliases.ts still exists upstream. Needs the network (the
-  # Iconify API), so it never blocks a pull request; a failure opens or updates an issue.
-  icon-aliases:
-    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+  install:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
-    continue-on-error: true
-    permissions:
-      contents: read
-      issues: write
+    needs: check
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
-        with:
-          node-version: 24
-      # The script imports only src/icons/aliases.ts, which has no dependencies, so it needs no install.
-      - run: node packages/vue/scripts/validate-icon-aliases.mjs
-      - name: Report a failure
-        if: failure()
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - run: bun run smoke
+
+  audit:
+    runs-on: ubuntu-latest
+    needs: check
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - run: bunx playwright-core install --with-deps chromium
+      - run: bun run build
         env:
-          GH_TOKEN: ${{ github.token }}
-          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-        run: |
-          title="Nightly icon alias check failed"
-          body="An Iconify alias in packages/vue/src/icons/aliases.ts no longer resolves: $RUN_URL"
-          number=$(gh issue list --state open --search "in:title \"$title\"" --json number --jq '.[0].number')
-          if [ -n "$number" ]; then
-            gh issue comment "$number" --body "$body"
-          else
-            gh issue create --title "$title" --body "$body"
-          fi
+          SUI_REGISTRY_URL: https://sui.dame.gg/r
+      - run: bun run audit

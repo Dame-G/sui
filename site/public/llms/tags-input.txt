@@ -1,0 +1,62 @@
+# Tags input
+
+Type to add several values as removable chips.
+
+Group: Forms. Registry item: http://localhost:5173/r/tags-input.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/tags-input.json
+```
+
+Installs with: theme, utils, field. npm packages: reka-ui.
+
+Import it from your own copy: `import Tagsinput from '@/components/ui/tags-input.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `v-model` | `string[]` | `[]` | Two-way bound value. |
+| `label (required)` | `string` |  |  |
+| `hint` | `string` |  |  |
+| `placeholder` | `string` |  |  |
+| `error` | `string` |  |  |
+| `required` | `boolean` |  |  |
+| `optional` | `boolean` |  |  |
+| `hideLabel` | `boolean` |  |  |
+| `readonly` | `boolean` |  |  |
+| `disabled` | `boolean` |  |  |
+| `loading` | `boolean` |  |  |
+| `name` | `string` |  |  |
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { computed, ref } from 'vue'
+import TagsInput from '@/components/ui/tags-input.vue'
+
+const tags = ref(['design', 'vue'])
+const empty = ref<string[]>([])
+const few = ref(['one'])
+const fewError = computed(() => (few.value.length < 2 ? 'Add at least two topics.' : undefined))
+</script>
+
+<template>
+  <div class="grid items-start gap-6 md:grid-cols-2">
+    <TagsInput v-model="tags" label="Topics" hint="Enter or comma adds, Backspace removes." />
+    <TagsInput v-model="empty" label="Empty" placeholder="Type and press Enter" />
+    <TagsInput v-model="few" label="Error" :error="fewError" required />
+    <TagsInput :model-value="['ada', 'grace']" label="Saving" loading />
+    <TagsInput :model-value="['ada', 'grace']" label="Read only" readonly />
+    <TagsInput :model-value="['ada', 'grace']" label="Disabled" disabled />
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.

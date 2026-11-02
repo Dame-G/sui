@@ -1,0 +1,22 @@
+{
+  "name": "sui-site",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "typecheck": "vue-tsc --noEmit"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "latest",
+    "@types/node": "latest",
+    "@vitejs/plugin-vue": "latest",
+    "tailwindcss": "latest",
+    "typescript": "~5.9.3",
+    "vite": "latest",
+    "vue-tsc": "latest"
+  },
+  "dependencies": {
+    "shiki": "^4.5.0"
+  }
+}

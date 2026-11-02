@@ -1,0 +1,60 @@
+# Field
+
+The shared anatomy of every input: label with Required/Optional, hint or error, and an aside for a counter.
+
+Group: Forms. Registry item: http://localhost:5173/r/field.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/field.json
+```
+
+Installs with: theme, utils, announce. npm packages: reka-ui.
+
+Import it from your own copy: `import Field from '@/components/ui/field.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `label (required)` | `string` |  |  |
+| `hint` | `string` |  |  |
+| `error` | `string` |  |  |
+| `required` | `boolean` |  |  |
+| `optional` | `boolean` |  |  |
+| `hideLabel` | `boolean` |  |  |
+| `id` | `string` |  |  |
+| `disabled` | `boolean` |  |  |
+
+Slots: `default`, `aside`.
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import Field from '@/components/ui/field.vue'
+import Slider from '@/components/ui/slider.vue'
+import TextField from '@/components/ui/text-field.vue'
+
+const volume = ref([40])
+const name = ref('')
+</script>
+
+<template>
+  <div class="grid items-start gap-6 md:grid-cols-2">
+    <TextField v-model="name" label="Built on Field" hint="Label, hint, error and flag come from one place." required />
+    <TextField label="Optional, with a counter" :maxlength="40" counter optional />
+    <TextField label="Error" model-value="" error="This field is required." required />
+    <Field v-slot="{ id }" label="Around any control" :hint="`${volume[0]}%`">
+      <Slider v-model="volume" :labelledby="`${id}-label`" />
+    </Field>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.

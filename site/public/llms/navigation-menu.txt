@@ -1,0 +1,69 @@
+# Navigation menu
+
+Site navigation with flyout panels.
+
+Group: Navigation. Registry item: http://localhost:5173/r/navigation-menu.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/navigation-menu.json
+```
+
+Installs with: theme, utils. npm packages: reka-ui.
+
+Import it from your own copy: `import Navigationmenu from '@/components/ui/navigation-menu.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `v-model` | `string` | `''` | Two-way bound value. |
+| `items (required)` | `NavItem[]` |  |  |
+| `label` | `string` |  |  |
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import Button from '@/components/ui/button.vue'
+import NavigationMenu from '@/components/ui/navigation-menu.vue'
+
+const second = ref('docs')
+const href = '#/components/navigation-menu'
+const site = [
+  { value: 'docs', label: 'Docs', href },
+  {
+    value: 'guides',
+    label: 'Guides',
+    children: [
+      { label: 'Getting started', description: 'Install a component in a minute.', href },
+      { label: 'Theming', description: 'Change the brand, radius and depth.', href },
+      { label: 'Linting', description: 'Keep compositions on the rules.', href },
+      { label: 'Migrating', description: 'Move an existing app over.', href },
+    ],
+  },
+  { value: 'blog', label: 'Blog', href },
+  { value: 'changelog', label: 'Changelog', href },
+]
+</script>
+
+<template>
+  <div class="grid min-h-72 content-start gap-8">
+    <div class="grid gap-3">
+      <span class="kicker">Links and a flyout, in a header</span>
+      <div class="flex flex-wrap items-center justify-between gap-4 rounded-md px-4 py-2 shadow-frame">
+        <span class="heading text-xl">sui</span>
+        <NavigationMenu v-model="second" :items="site" />
+        <Button>Get started</Button>
+      </div>
+    </div>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.

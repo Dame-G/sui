@@ -1,0 +1,49 @@
+# Link
+
+Text link with the identity underline, hover and focus.
+
+Group: Primitives. Registry item: http://localhost:5173/r/link.json
+
+## Install
+
+```sh
+bunx shadcn-vue@latest add http://localhost:5173/r/link.json
+```
+
+Installs with: theme, utils. npm packages: reka-ui.
+
+Import it from your own copy: `import Link from '@/components/ui/link.vue'`.
+
+## Props
+
+| Prop | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `href` | `string` |  |  |
+| `external` | `boolean` |  |  |
+
+Also takes everything in PrimitiveProps, and `class` for placement only.
+
+Slots: `default`.
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import Link from '@/components/ui/link.vue'
+</script>
+
+<template>
+  <div class="grid max-w-prose gap-4 leading-relaxed">
+    <p>
+      Read the <Link href="#/start">getting started guide</Link>, or see how
+      <Link href="https://reka-ui.com" external>Reka UI</Link> handles the behaviour. External links open in a new tab.
+    </p>
+    <p>A link that has gone away: <Link href="#/" aria-disabled="true">archived page</Link>.</p>
+  </div>
+</template>
+```
+
+## Rules
+
+- Style it through theme tokens, not classes: sui has one design per component and no variants. `tone` exists only on status components.
+- You own the copy: edit the file if the design must change.
