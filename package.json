@@ -13,7 +13,8 @@
     "lint": "eslint .",
     "test": "bun test tests",
     "smoke": "bun scripts/smoke.ts",
-    "audit": "bun scripts/audit.ts"
+    "audit": "bun scripts/audit.ts",
+    "deploy": "SUI_REGISTRY_URL=https://sui.dame.gg/r bun run build && bunx wrangler deploy"
   },
   "devDependencies": {
     "@shadcn/lint": "latest",
