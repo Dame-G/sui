@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, defineAsyncComponent, ref, watch } from 'vue'
+import { computed, defineAsyncComponent, nextTick, ref, watch } from 'vue'
 import { components, groups } from '@registry/components'
 import api from 'virtual:sui-props'
 import { route } from '@/site/router'
@@ -84,6 +84,14 @@ const tabs = [
   { value: 'usage', label: 'Usage' },
   { value: 'source', label: 'Source' },
 ]
+
+// Keep the open component in view in the long sidebar.
+const sideList = ref<HTMLElement>()
+watch(
+  () => current.value.name,
+  () => nextTick(() => sideList.value?.querySelector('[aria-current="page"]')?.scrollIntoView({ block: 'nearest' })),
+  { immediate: true, flush: 'post' },
+)
 </script>
 
 <template>
@@ -96,7 +104,7 @@ const tabs = [
     </div>
     <aside class="side-nav hidden print:hidden md:flex md:w-72 md:shrink-0 md:flex-col md:self-start md:overflow-hidden md:rounded-md md:bg-surface md:shadow-frame">
       <div class="p-3 pb-0"><SearchField v-model="filter" label="Find a component" hide-label placeholder="Find a component" /></div>
-      <div class="min-h-0 grow overflow-y-auto overscroll-contain">
+      <div ref="sideList" class="min-h-0 grow overflow-y-auto overscroll-contain">
         <NavList v-if="shown.length" flush :model-value="current.name" :sections="shown" label="Components" />
         <p v-else class="p-6 text-muted">No component called “{{ filter }}”.</p>
       </div>

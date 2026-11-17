@@ -1,5 +1,5 @@
 // Single source of truth: drives the registry build and the docs site.
-export type Group = 'Primitives' | 'Forms' | 'Overlays' | 'Navigation' | 'Data'
+export type Group = 'Primitives' | 'Forms' | 'Dates' | 'Overlays' | 'Navigation' | 'Data'
 
 export interface Component {
   name: string // file name in ui/ and registry item name
@@ -11,7 +11,7 @@ export interface Component {
   uses?: string[] // other registry components this one imports
 }
 
-export const groups: Group[] = ['Primitives', 'Forms', 'Overlays', 'Navigation', 'Data']
+export const groups: Group[] = ['Primitives', 'Forms', 'Dates', 'Overlays', 'Navigation', 'Data']
 
 export const components: Component[] = [
   { name: 'button', title: 'Button', group: 'Primitives', description: 'Primary action: a face on a slab that sinks onto it when pressed, with a busy state and icon slots.' },
@@ -44,12 +44,12 @@ export const components: Component[] = [
   { name: 'toggle-group', title: 'Toggle group', group: 'Forms', description: 'Segmented single-choice control; can stretch to fill the width.' },
   { name: 'combobox', title: 'Combobox', group: 'Forms', description: 'Type to filter a list and pick one or many, with groups, descriptions, clear, loading and freeform entry.', uses: ['field', 'spinner', 'announce'] },
   { name: 'number-field', title: 'Number field', group: 'Forms', description: 'Numeric input with stepper buttons and keyboard steps.', uses: ['field'] },
-  { name: 'calendar', title: 'Calendar', group: 'Forms', description: 'Month grid for picking a date, with presets, marked days and a Today/Clear footer.', deps: ['@internationalized/date'] },
-  { name: 'date-picker', title: 'Date picker', group: 'Forms', description: 'Field that opens a calendar in a popover.', deps: ['@internationalized/date'], uses: ['calendar', 'field'] },
-  { name: 'date-range-picker', title: 'Date range picker', group: 'Forms', description: 'Pick a start and end date from one calendar popover.', deps: ['@internationalized/date'], uses: ['range-calendar', 'field'] },
-  { name: 'range-calendar', title: 'Range calendar', group: 'Forms', description: 'Month grid for picking a start and end date, with a band between, presets and marked days.', deps: ['@internationalized/date'] },
-  { name: 'time-field', title: 'Time field', group: 'Forms', description: 'Segmented hour and minute input.', deps: ['@internationalized/date'], uses: ['field'] },
-  { name: 'date-field', title: 'Date field', group: 'Forms', description: 'Typed, segmented day, month and year input.', deps: ['@internationalized/date'], uses: ['field'] },
+  { name: 'calendar', title: 'Calendar', group: 'Dates', description: 'Month grid for picking a date, with presets, marked days and a Today/Clear footer.', deps: ['@internationalized/date'] },
+  { name: 'date-picker', title: 'Date picker', group: 'Dates', description: 'Field that opens a calendar in a popover.', deps: ['@internationalized/date'], uses: ['calendar', 'field'] },
+  { name: 'date-range-picker', title: 'Date range picker', group: 'Dates', description: 'Pick a start and end date from one calendar popover.', deps: ['@internationalized/date'], uses: ['range-calendar', 'field'] },
+  { name: 'range-calendar', title: 'Range calendar', group: 'Dates', description: 'Month grid for picking a start and end date, with a band between, presets and marked days.', deps: ['@internationalized/date'] },
+  { name: 'time-field', title: 'Time field', group: 'Dates', description: 'Segmented hour and minute input.', deps: ['@internationalized/date'], uses: ['field'] },
+  { name: 'date-field', title: 'Date field', group: 'Dates', description: 'Typed, segmented day, month and year input.', deps: ['@internationalized/date'], uses: ['field'] },
   { name: 'fieldset', title: 'Fieldset', group: 'Forms', description: 'Groups related controls under a legend with a shared hint and error.', plain: true },
   { name: 'color-picker', title: 'Color picker', group: 'Forms', description: 'Pick a colour from an area, a hue slider, swatches or a hex field.' },
   { name: 'pin-input', title: 'Pin input', group: 'Forms', description: 'One box per character, for one-time codes.', uses: ['field'] },

@@ -23,7 +23,10 @@ for (const [width, scheme] of [[1200, 'light'], [1200, 'dark'], [375, 'light']] 
   for (const name of pages) {
     await page.goto(`http://localhost:4398/#/${name}`)
     await page.waitForTimeout(250)
-    await page.evaluate((s) => (document.documentElement.dataset.scheme = s), scheme)
+    // The site writes light tokens inline from its stored theme, so only the stored scheme plus a reload really switches it.
+    await page.evaluate((s) => localStorage.setItem('sui-theme-v2', JSON.stringify({ scheme: s })), scheme)
+    await page.reload()
+    await page.waitForTimeout(250)
     if (width === 375) {
       const over = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)
       if (over > 0) problems.push(`overflow +${over}px at 375px: ${name || 'home'}`)
