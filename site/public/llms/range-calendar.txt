@@ -2,7 +2,7 @@
 
 Month grid for picking a start and end date, with a band between, presets and marked days.
 
-Group: Forms. Registry item: http://localhost:5173/r/range-calendar.json
+Group: Dates. Registry item: http://localhost:5173/r/range-calendar.json
 
 ## Install
 

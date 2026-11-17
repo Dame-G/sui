@@ -2,7 +2,7 @@
 
 Month grid for picking a date, with presets, marked days and a Today/Clear footer.
 
-Group: Forms. Registry item: http://localhost:5173/r/calendar.json
+Group: Dates. Registry item: http://localhost:5173/r/calendar.json
 
 ## Install
 

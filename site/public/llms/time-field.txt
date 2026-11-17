@@ -2,7 +2,7 @@
 
 Segmented hour and minute input.
 
-Group: Forms. Registry item: http://localhost:5173/r/time-field.json
+Group: Dates. Registry item: http://localhost:5173/r/time-field.json
 
 ## Install
 
