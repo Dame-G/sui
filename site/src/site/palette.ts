@@ -128,6 +128,15 @@ export function derivePrimary(brand: string, scheme: Scheme = 'light') {
   return scheme === 'light' ? '#000000' : '#ffffff'
 }
 
+/**
+ * The neutrals and tints are the primary colour's hue at a fixed lightness and a little chroma, so they follow the theme.
+ * Same numbers as the `oklch(from var(--color-primary) L C h)` defaults in registry/theme.css.
+ */
+const NEUTRAL = {
+  light: { tint: [0.899, 0.021], edge: [0.579, 0.022], selection: [0.821, 0.061], wash: [0.797, 0.042], scrim: [0.3, 0.05] },
+  dark: { page: [0.19, 0.015], surface: [0.226, 0.02], tint: [0.293, 0.027], paper: [0.206, 0.017], ink: [0.976, 0.006], muted: [0.786, 0.018], edge: [0.602, 0.028], edgeStrong: [0.662, 0.028], selection: [0.424, 0.06], wash: [0.797, 0.042] },
+} as const
+
 export interface Row { pair: string; ratio: number; min: number; ok: boolean; kind: 'text' | 'non-text' | 'body' }
 
 /** Every colour token for a scheme and contrast level, each one settled to pass its pair. */
@@ -144,22 +153,34 @@ export function buildPalette(brand: string, scheme: Scheme, level: Contrast) {
     rows.push({ pair, ratio, min, ok: ratio >= min - 0.005, kind })
   }
 
-  const surface = b.surface
-  const tint = high ? mix(b.ink, surface, 0.08) : b.tint // high contrast: a plain grey tint
-  t['--color-page'] = b.page
+  const primary = derivePrimary(brand, scheme)
+  const hue = toOklch(primary).h
+  const tone = (lc: readonly [number, number]) => fromOklch(lc[0], lc[1], hue)
+  const dk = scheme === 'dark' ? NEUTRAL.dark : undefined
+  const lt = NEUTRAL.light
+  const page = dk ? tone(dk.page) : b.page
+  const surface = dk ? tone(dk.surface) : b.surface
+  const paper = dk ? tone(dk.paper) : b.paper
+  const baseTint = dk ? tone(dk.tint) : tone(lt.tint)
+  const tint = high ? mix(b.ink, surface, 0.08) : baseTint // high contrast: a plain grey tint
+  const inkBase = dk ? tone(dk.ink) : b.ink
+  const mutedBase = dk ? tone(dk.muted) : b.muted
+  t['--color-page'] = page
   t['--color-surface'] = surface
   t['--color-surface-tint'] = tint
-  t['--color-paper'] = b.paper
-  t['--color-ink'] = settle(b.ink, [b.page, surface, tint, b.paper], body).color
+  t['--color-paper'] = paper
+  t['--color-ink'] = settle(inkBase, [page, surface, tint, paper], body).color
   t['--color-brand'] = brand
-  t['--color-selection'] = b.selection
-  t['--color-scrim'] = b.scrim
+  t['--color-selection'] = tone(dk ? dk.selection : lt.selection)
+  t['--color-scrim'] = dk ? b.scrim : tone(lt.scrim) + '8c'
+  const wash = tone(dk ? dk.wash : lt.wash)
+  t['--color-wash-hover'] = wash + (dk ? '24' : '80')
+  t['--color-wash-press'] = wash + (dk ? '42' : 'bf')
 
-  t['--color-muted'] = settle(b.muted, [surface, tint, b.page], text).color
-  const primary = derivePrimary(brand, scheme)
+  t['--color-muted'] = settle(mutedBase, [surface, tint, page], text).color
   t['--color-primary'] = primary
   t['--color-on-primary'] = b.onPrimary
-  const soft = settleBg(high ? tint : mix(brand, surface, 0.16), primary, surface, text)
+  const soft = settleBg(high ? tint : mix(primary, surface, dk ? 0.2 : 0.11), primary, surface, text)
   t['--color-primary-soft'] = soft
   t['--color-info-soft'] = soft
 
@@ -172,8 +193,8 @@ export function buildPalette(brand: string, scheme: Scheme, level: Contrast) {
   t['--color-on-danger'] = settle(b.onDanger, [t['--color-danger']!], text).color
 
   // edges: full strength in high contrast
-  t['--color-edge'] = high ? t['--color-ink']! : settle(b.edge, [surface, tint], nonText).color
-  t['--color-edge-strong'] = high ? t['--color-ink']! : settle(b.edgeStrong, [surface, tint], nonText).color
+  t['--color-edge'] = high ? t['--color-ink']! : settle(tone(dk ? dk.edge : lt.edge), [surface, tint], nonText).color
+  t['--color-edge-strong'] = high ? t['--color-ink']! : settle(dk ? tone(dk.edgeStrong) : b.edgeStrong, [surface, tint], nonText).color
   t['--color-focus'] = t['--color-ink']!
 
   const g = (k: string) => t[`--color-${k}`]!

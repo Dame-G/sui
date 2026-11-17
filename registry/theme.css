@@ -19,7 +19,7 @@
   --color-primary-hover: color-mix(in srgb, var(--color-primary), black 8%);
   --color-primary-press: color-mix(in srgb, var(--color-primary), black 16%);
   --color-primary-slab: color-mix(in srgb, var(--color-primary), black 30%);
-  --color-primary-soft: color-mix(in srgb, var(--color-brand) 16%, var(--color-surface));
+  --color-primary-soft: color-mix(in oklch, var(--color-primary) 11%, var(--color-surface));
 
   /* ---- colour: tones ----------------------------------------------------------- */
   --color-info: var(--color-primary);
@@ -38,18 +38,18 @@
   /* ---- colour: neutrals -------------------------------------------------------- */
   --color-ink: #000000;
   --color-muted: #515151;
-  --color-edge: #6d7d84; /* 1px frames */
+  --color-edge: oklch(from var(--color-primary) 0.579 0.022 h); /* 1px frames */
   --color-edge-strong: #767676; /* control edges and neutral slabs */
   --color-page: #ffffff;
   --color-surface: #ffffff;
-  --color-surface-tint: #d0e1e8; /* wells and neutral chips */
+  --color-surface-tint: oklch(from var(--color-primary) 0.899 0.021 h); /* wells and neutral chips */
   --color-paper: #fefcf7;
   --color-skeleton: color-mix(in srgb, var(--color-ink) 6%, var(--color-surface));
-  --color-wash-hover: color-mix(in srgb, #a1c3d1 50%, transparent);
-  --color-wash-press: color-mix(in srgb, #a1c3d1 75%, transparent);
+  --color-wash-hover: oklch(from var(--color-primary) 0.797 0.042 h / 0.5);
+  --color-wash-press: oklch(from var(--color-primary) 0.797 0.042 h / 0.75);
   --color-wash-ring: color-mix(in srgb, var(--color-ink) 42%, transparent);
-  --color-scrim: rgb(8 41 50 / 0.55);
-  --color-selection: #9bcde3;
+  --color-scrim: oklch(from var(--color-primary) 0.3 0.05 h / 0.55);
+  --color-selection: oklch(from var(--color-primary) 0.821 0.061 h);
   --color-focus: var(--color-ink);
 
   /* ---- type -------------------------------------------------------------------- */
@@ -253,16 +253,17 @@
    Every pair is checked: body text 7:1, other text 4.5:1, edges and focus 3:1 (the playground's Theme page re-checks them live). */
 :root[data-scheme='dark'] {
   color-scheme: dark;
-  --color-page: #0d1519;
-  --color-surface: #121e23;
-  --color-surface-tint: #1d2f36;
-  --color-paper: #0f191d;
-  --color-ink: #f3f8fa;
-  --color-muted: #aebcc2;
-  --color-edge: #6f858d;
-  --color-edge-strong: #8197a0;
+  --color-page: oklch(from var(--color-primary) 0.19 0.015 h);
+  --color-surface: oklch(from var(--color-primary) 0.226 0.02 h);
+  --color-surface-tint: oklch(from var(--color-primary) 0.293 0.027 h);
+  --color-paper: oklch(from var(--color-primary) 0.206 0.017 h);
+  --color-ink: oklch(from var(--color-primary) 0.976 0.006 h);
+  --color-muted: oklch(from var(--color-primary) 0.786 0.018 h);
+  --color-edge: oklch(from var(--color-primary) 0.602 0.028 h);
+  --color-edge-strong: oklch(from var(--color-primary) 0.662 0.028 h);
   --color-primary: #59c0de;
   --color-on-primary: #00212b;
+  --color-primary-soft: color-mix(in oklch, var(--color-primary) 20%, var(--color-surface));
   --color-primary-hover: color-mix(in srgb, var(--color-primary), white 8%);
   --color-primary-press: color-mix(in srgb, var(--color-primary), white 16%);
   --color-primary-slab: color-mix(in srgb, var(--color-primary), black 40%);
@@ -276,10 +277,10 @@
   --color-danger-press: color-mix(in srgb, var(--color-danger), white 16%);
   --color-danger-slab: color-mix(in srgb, var(--color-danger), black 40%);
   --color-danger-soft: #3b1613;
-  --color-wash-hover: color-mix(in srgb, #a1c3d1 14%, transparent);
-  --color-wash-press: color-mix(in srgb, #a1c3d1 26%, transparent);
+  --color-wash-hover: oklch(from var(--color-primary) 0.797 0.042 h / 0.14);
+  --color-wash-press: oklch(from var(--color-primary) 0.797 0.042 h / 0.26);
   --color-scrim: rgb(0 0 0 / 0.65);
-  --color-selection: #245567;
+  --color-selection: oklch(from var(--color-primary) 0.424 0.06 h);
   --shadow-well: inset 0 2px 0 0 rgb(0 0 0 / 0.35);
   --shadow-drop: 0 12px 32px -8px rgb(0 0 0 / 0.6);
   --shadow-float:
@@ -289,16 +290,17 @@
 @media (prefers-color-scheme: dark) {
   :root[data-scheme='auto'] {
     color-scheme: dark;
-    --color-page: #0d1519;
-    --color-surface: #121e23;
-    --color-surface-tint: #1d2f36;
-    --color-paper: #0f191d;
-    --color-ink: #f3f8fa;
-    --color-muted: #aebcc2;
-    --color-edge: #6f858d;
-    --color-edge-strong: #8197a0;
+    --color-page: oklch(from var(--color-primary) 0.19 0.015 h);
+    --color-surface: oklch(from var(--color-primary) 0.226 0.02 h);
+    --color-surface-tint: oklch(from var(--color-primary) 0.293 0.027 h);
+    --color-paper: oklch(from var(--color-primary) 0.206 0.017 h);
+    --color-ink: oklch(from var(--color-primary) 0.976 0.006 h);
+    --color-muted: oklch(from var(--color-primary) 0.786 0.018 h);
+    --color-edge: oklch(from var(--color-primary) 0.602 0.028 h);
+    --color-edge-strong: oklch(from var(--color-primary) 0.662 0.028 h);
     --color-primary: #59c0de;
     --color-on-primary: #00212b;
+    --color-primary-soft: color-mix(in oklch, var(--color-primary) 20%, var(--color-surface));
     --color-primary-hover: color-mix(in srgb, var(--color-primary), white 8%);
     --color-primary-press: color-mix(in srgb, var(--color-primary), white 16%);
     --color-primary-slab: color-mix(in srgb, var(--color-primary), black 40%);
@@ -312,10 +314,10 @@
     --color-danger-press: color-mix(in srgb, var(--color-danger), white 16%);
     --color-danger-slab: color-mix(in srgb, var(--color-danger), black 40%);
     --color-danger-soft: #3b1613;
-    --color-wash-hover: color-mix(in srgb, #a1c3d1 14%, transparent);
-    --color-wash-press: color-mix(in srgb, #a1c3d1 26%, transparent);
+    --color-wash-hover: oklch(from var(--color-primary) 0.797 0.042 h / 0.14);
+    --color-wash-press: oklch(from var(--color-primary) 0.797 0.042 h / 0.26);
     --color-scrim: rgb(0 0 0 / 0.65);
-    --color-selection: #245567;
+    --color-selection: oklch(from var(--color-primary) 0.424 0.06 h);
     --shadow-well: inset 0 2px 0 0 rgb(0 0 0 / 0.35);
     --shadow-drop: 0 12px 32px -8px rgb(0 0 0 / 0.6);
     --shadow-float:

@@ -35,7 +35,7 @@ describe('buildPalette', () => {
         test(`${brand} ${scheme} ${level}: every pair passes, tokens are hex`, () => {
           const { tokens, issues } = buildPalette(brand, scheme, level)
           expect(issues).toEqual([])
-          for (const [k, v] of Object.entries(tokens)) if (k !== '--color-scrim') expect(isHex(v)).toBe(true)
+          for (const [k, v] of Object.entries(tokens)) if (!/scrim|wash/.test(k)) expect(isHex(v)).toBe(true) // those carry an alpha
         })
 
   test('action colour keeps AAA text', () => {

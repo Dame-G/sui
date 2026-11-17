@@ -20,7 +20,7 @@ Layout: `registry/` = component source of truth (`ui/`, `lib/`, `theme.css`, `re
 - Soft tinted tones (`tone-info|success|warning|danger|neutral`), striped "still to do" areas (`stripes`), dashed edge for disabled/busy (`dashed-edge`).
 - Three weights only: regular, medium, strong (no bold). Mono for labels and figures (`kicker`, `numeral`).
 - No `variant`/`size` style props. One design per component; users edit their copy. A semantic `tone` is allowed on status components (Notice, Badge).
-- Colours only via theme tokens (`bg-primary`, `text-ink`, `bg-primary-soft`...). Action colour states (hover/press/slab/soft) are derived in CSS from `--color-primary`, which the playground derives from the brand with a 7:1 white-text guarantee.
+- Colours only via theme tokens (`bg-primary`, `text-ink`, `bg-primary-soft`...). Action colour states (hover/press/slab/soft) and every tint and neutral (surface-tint, edges, wash, selection, scrim, the dark surfaces) are derived in CSS from `--color-primary` (`oklch(from var(--color-primary) L C h)`: its hue, fixed lightness and chroma), so changing the one token re-themes everything; `site/src/site/palette.ts` mirrors the same L/C numbers and settles contrast, which the playground derives from the brand with a 7:1 white-text guarantee.
 - Theming = tokens in `registry/theme.css` (brand/primary, radius, depth, fonts). Components never read user config.
 - `bun run lint` (@shadcn/lint) enforces this on consumers of components; fix what it reports rather than disabling it. No arbitrary values or inline styles outside `registry/`.
 - Card, Dialog and Sheet share one header: a primary band on a slab edge, white text. Each part draws its own border and radius; don't clip with overflow-hidden.

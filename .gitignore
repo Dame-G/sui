@@ -4,3 +4,4 @@ site/public/r
 .env
 .DS_Store
 .claude/settings.local.json
+.wrangler
