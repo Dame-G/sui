@@ -2,7 +2,7 @@
 
 Pick a start and end date from one calendar popover.
 
-Group: Forms. Registry item: http://localhost:5173/r/date-range-picker.json
+Group: Dates. Registry item: http://localhost:5173/r/date-range-picker.json
 
 ## Install
 

@@ -40,12 +40,6 @@ Setup: install Tailwind v4, add the `@` alias, add a components.json, then `@imp
 - [Toggle group](http://localhost:5173/llms/toggle-group.txt): Segmented single-choice control; can stretch to fill the width.
 - [Combobox](http://localhost:5173/llms/combobox.txt): Type to filter a list and pick one or many, with groups, descriptions, clear, loading and freeform entry.
 - [Number field](http://localhost:5173/llms/number-field.txt): Numeric input with stepper buttons and keyboard steps.
-- [Calendar](http://localhost:5173/llms/calendar.txt): Month grid for picking a date, with presets, marked days and a Today/Clear footer.
-- [Date picker](http://localhost:5173/llms/date-picker.txt): Field that opens a calendar in a popover.
-- [Date range picker](http://localhost:5173/llms/date-range-picker.txt): Pick a start and end date from one calendar popover.
-- [Range calendar](http://localhost:5173/llms/range-calendar.txt): Month grid for picking a start and end date, with a band between, presets and marked days.
-- [Time field](http://localhost:5173/llms/time-field.txt): Segmented hour and minute input.
-- [Date field](http://localhost:5173/llms/date-field.txt): Typed, segmented day, month and year input.
 - [Fieldset](http://localhost:5173/llms/fieldset.txt): Groups related controls under a legend with a shared hint and error.
 - [Color picker](http://localhost:5173/llms/color-picker.txt): Pick a colour from an area, a hue slider, swatches or a hex field.
 - [Pin input](http://localhost:5173/llms/pin-input.txt): One box per character, for one-time codes.
@@ -54,6 +48,15 @@ Setup: install Tailwind v4, add the `@` alias, add a components.json, then `@imp
 - [Label](http://localhost:5173/llms/label.txt): Standalone label that stays tied to its control.
 - [Editable](http://localhost:5173/llms/editable.txt): Text you click to edit in place.
 - [File upload](http://localhost:5173/llms/file-upload.txt): Dropzone and file list with validation, thumbnails and progress.
+
+## Dates
+
+- [Calendar](http://localhost:5173/llms/calendar.txt): Month grid for picking a date, with presets, marked days and a Today/Clear footer.
+- [Date picker](http://localhost:5173/llms/date-picker.txt): Field that opens a calendar in a popover.
+- [Date range picker](http://localhost:5173/llms/date-range-picker.txt): Pick a start and end date from one calendar popover.
+- [Range calendar](http://localhost:5173/llms/range-calendar.txt): Month grid for picking a start and end date, with a band between, presets and marked days.
+- [Time field](http://localhost:5173/llms/time-field.txt): Segmented hour and minute input.
+- [Date field](http://localhost:5173/llms/date-field.txt): Typed, segmented day, month and year input.
 
 ## Overlays
 

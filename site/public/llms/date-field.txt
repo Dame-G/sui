@@ -2,7 +2,7 @@
 
 Typed, segmented day, month and year input.
 
-Group: Forms. Registry item: http://localhost:5173/r/date-field.json
+Group: Dates. Registry item: http://localhost:5173/r/date-field.json
 
 ## Install
 

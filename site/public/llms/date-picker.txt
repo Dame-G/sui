@@ -2,7 +2,7 @@
 
 Field that opens a calendar in a popover.
 
-Group: Forms. Registry item: http://localhost:5173/r/date-picker.json
+Group: Dates. Registry item: http://localhost:5173/r/date-picker.json
 
 ## Install
 

@@ -2014,7 +2014,7 @@ const rooms = ref(9)
 
 Month grid for picking a date, with presets, marked days and a Today/Clear footer.
 
-Group: Forms. Registry item: http://localhost:5173/r/calendar.json
+Group: Dates. Registry item: http://localhost:5173/r/calendar.json
 
 ## Install
 
@@ -2085,7 +2085,7 @@ const noWeekends = (d: DateValue) => [0, 6].includes(d.toDate(getLocalTimeZone()
 
 Field that opens a calendar in a popover.
 
-Group: Forms. Registry item: http://localhost:5173/r/date-picker.json
+Group: Dates. Registry item: http://localhost:5173/r/date-picker.json
 
 ## Install
 
@@ -2162,7 +2162,7 @@ const weekend = (d: DateValue) => [0, 6].includes(d.toDate(getLocalTimeZone()).g
 
 Pick a start and end date from one calendar popover.
 
-Group: Forms. Registry item: http://localhost:5173/r/date-range-picker.json
+Group: Dates. Registry item: http://localhost:5173/r/date-range-picker.json
 
 ## Install
 
@@ -2238,7 +2238,7 @@ const presets = [
 
 Month grid for picking a start and end date, with a band between, presets and marked days.
 
-Group: Forms. Registry item: http://localhost:5173/r/range-calendar.json
+Group: Dates. Registry item: http://localhost:5173/r/range-calendar.json
 
 ## Install
 
@@ -2315,7 +2315,7 @@ const closed = (d: { toDate: (tz: string) => Date }) => d.toDate(getLocalTimeZon
 
 Segmented hour and minute input.
 
-Group: Forms. Registry item: http://localhost:5173/r/time-field.json
+Group: Dates. Registry item: http://localhost:5173/r/time-field.json
 
 ## Install
 
@@ -2377,7 +2377,7 @@ const closeError = computed(() => (close.value && open.value && String(close.val
 
 Typed, segmented day, month and year input.
 
-Group: Forms. Registry item: http://localhost:5173/r/date-field.json
+Group: Dates. Registry item: http://localhost:5173/r/date-field.json
 
 ## Install
 
